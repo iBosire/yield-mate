@@ -3,6 +3,7 @@ import 'package:yield_mate/pages/register.dart';
 import 'package:flutter/material.dart';
 import 'package:yield_mate/pages/field.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:yield_mate/services/auth.dart';
 
 
 class LoginPage extends StatefulWidget {
@@ -13,6 +14,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class LoginPageState extends State<LoginPage> {
+  final AuthService _auth = AuthService();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,6 +68,23 @@ class LoginPageState extends State<LoginPage> {
                     );
                   },
                   child: const Text('Register'),
+                ),
+                const SizedBox(height: 15),
+                OutlinedButton(
+                  onPressed: () async {
+                    dynamic result = await _auth.signInAnon();
+                    if(result == null) {
+                      print('Error signing in');
+                    } else {
+                      print('Signed in');
+                      print(result);
+                      Navigator.push(
+                        context, 
+                        MaterialPageRoute(builder: (context) => const HomePage())
+                      );
+                    }
+                  },
+                  child: const Text('Sign in Anonymously'),
                 ),
               ],
             )
