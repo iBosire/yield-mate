@@ -77,7 +77,7 @@ class LoginPageState extends State<LoginPage> {
                       print('Error signing in');
                     } else {
                       print('Signed in');
-                      print(result);
+                      print(result.uid);
                       Navigator.push(
                         context, 
                         MaterialPageRoute(builder: (context) => const HomePage())

@@ -1,66 +1,30 @@
 class UserModel {
+  final String uid;
+
   String name;
   String iconPath;
-  String totalProjects;
+  int totalProjects;
   String averageScore;
   String totalFarmSize;
   bool isCurrentlySelected;
 
   UserModel({
-    required this.name, 
+    required this.uid,
+    this.name = "", 
     required this.iconPath,
-    required this.totalProjects,
-    required this.averageScore,
-    required this.totalFarmSize,
-    required this.isCurrentlySelected,
+    this.totalProjects = 0,
+    this.averageScore = "0",
+    this.totalFarmSize = "",
+    this.isCurrentlySelected = false,
     });
 
   static List<UserModel> getUsers() {
     List<UserModel> users = [];
-
-    users.add(
-      UserModel(
-        name: 'John Doe',
-        iconPath: 'assets/icons/user.svg',
-        totalProjects: '5',
-        averageScore: '70',
-        totalFarmSize: '10 Acres',
-        isCurrentlySelected: true,
-      ),
-    );
-
-    users.add(
-      UserModel(
-        name: 'Jane Doe',
-        iconPath: 'assets/icons/user.svg',
-        totalProjects: '3',
-        averageScore: '80',
-        totalFarmSize: '5 Acres',
-        isCurrentlySelected: false,
-      ),
-    );
-
-    users.add(
-      UserModel(
-        name: 'John Smith',
-        iconPath: 'assets/icons/user.svg',
-        totalProjects: '7',
-        averageScore: '60',
-        totalFarmSize: '15 Acres',
-        isCurrentlySelected: false,
-      ),
-    );
-
-    users.add(
-      UserModel(
-        name: 'Jane Smith',
-        iconPath: 'assets/icons/user.svg',
-        totalProjects: '4',
-        averageScore: '90',
-        totalFarmSize: '8 Acres',
-        isCurrentlySelected: false,
-      ),
-    );
+    users.add(UserModel(uid: "1", name: "John Doe", iconPath: "assets/icons/user.svg", totalProjects: 5, averageScore: "4.5", totalFarmSize: "10 acres", isCurrentlySelected: false));
+    users.add(UserModel(uid: "2", name: "Jane Doe", iconPath: "assets/icons/user.svg", totalProjects: 3, averageScore: "4.0", totalFarmSize: "5 acres", isCurrentlySelected: false));
+    users.add(UserModel(uid: "3", name: "John Smith", iconPath: "assets/icons/user.svg", totalProjects: 2, averageScore: "3.5", totalFarmSize: "3 acres", isCurrentlySelected: false));
+    users.add(UserModel(uid: "4", name: "Jane Smith", iconPath: "assets/icons/user.svg", totalProjects: 1, averageScore: "3.0", totalFarmSize: "2 acres", isCurrentlySelected: false));
+    users.add(UserModel(uid: "5", name: "John Doe", iconPath: "assets/icons/user.svg", totalProjects: 5, averageScore: "4.5", totalFarmSize: "10 acres", isCurrentlySelected: false));
 
     return users;
   }
