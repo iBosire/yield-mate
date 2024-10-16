@@ -4,6 +4,8 @@ import 'package:yield_mate/models/plot_model.dart';
 import 'package:yield_mate/models/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:yield_mate/pages/wrapper.dart';
+import 'package:yield_mate/services/auth.dart';
 
 import '../models/category_model.dart';
 
@@ -15,6 +17,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final AuthService _auth = AuthService();
   List<CategoryModel> categories = [];
   List<PlotModel> plots = [];
   List<UserModel> users = [];
@@ -87,8 +90,9 @@ class _HomePageState extends State<HomePage> {
         elevation: 0.0,
         centerTitle: true,
         leading: GestureDetector(
-          onTap: () {
-            Navigator.pop(context);
+          onTap: () async {
+            await _auth.signOut();
+            Navigator.push(context, MaterialPageRoute(builder: (context) => const Wrapper()));
           },
           child: Container(
             margin: const EdgeInsets.all(10),

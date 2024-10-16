@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:yield_mate/models/user_model.dart';
+import 'package:yield_mate/pages/wrapper.dart';
 
 class AuthService {
 
@@ -8,16 +10,20 @@ class AuthService {
   // auth change user stream
   Stream<UserModel?> get user {
     return _auth.authStateChanges()
-      .map((User? user) => _userFromFirebaseUser(user!));
+      .map((User? user) => _userFromFirebaseUser(user));
   }
+
   // create user object
-  UserModel? _userFromFirebaseUser(User user) {
-    return user != null ? UserModel(uid: user.uid, iconPath: 'assets/icons/user.svg') : null;
+  UserModel? _userFromFirebaseUser(User? user) {
+    if (user == null) {
+      return null;
+    }
+    return UserModel(uid: user.uid, iconPath: 'assets/icons/user.svg');
   }
 
 
   // Sign in anonymously
-  Future signInAnon() async {
+  Future<UserModel?> signInAnon() async {
     try {
       UserCredential result = await _auth.signInAnonymously();
       User? user = result.user;
@@ -30,4 +36,13 @@ class AuthService {
 
   // Sign in with email and password
 
+  //  Sign out
+  Future signOut() async {
+    try {
+      return await _auth.signOut();
+    } catch(e) {
+      print(e.toString());
+      return null;
+    }
+  }
 }
