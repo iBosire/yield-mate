@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:yield_mate/services/auth.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -9,10 +12,18 @@ class RegisterPage extends StatefulWidget {
 }
 
 class RegisterPageState extends State<RegisterPage> {
+  final AuthService _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
   bool _obscureTextP = true;
   bool _obscureTextC = true;
   String _password = '';
+
+  // text fields
+  String _firstName = '';
+  String _lastName = '';
+  String _username = '';
+  String _email = '';
+
 
   final String _emailPattern = r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$';
 
@@ -47,6 +58,7 @@ class RegisterPageState extends State<RegisterPage> {
                       borderRadius: BorderRadius.circular(10),
                       ),
                   ),
+                  onChanged: (value) => _firstName = value,
                   validator: (value) {
                     if (value!.isEmpty) {
                       return 'Please enter your first name';
@@ -66,6 +78,7 @@ class RegisterPageState extends State<RegisterPage> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
+                  onChanged: (value) => _lastName = value,
                   validator: (value) {
                     if (value!.isEmpty) {
                       return 'Please enter your last name';
@@ -84,6 +97,7 @@ class RegisterPageState extends State<RegisterPage> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
+                  onChanged: (value) => _username = value,
                   validator: (value) {
                     if (value!.isEmpty) {
                       return 'Please enter a username';
@@ -106,6 +120,7 @@ class RegisterPageState extends State<RegisterPage> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
+                  onChanged: (value) => _email = value,
                   validator: (value) {
                     if (value!.isEmpty) {
                       return 'Please enter an email';
@@ -137,8 +152,8 @@ class RegisterPageState extends State<RegisterPage> {
                     ),
                   ),
                   validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Please enter a password';
+                    if (value!.isEmpty || value.length < 6) {
+                      return 'Please enter a password that is at least 6 characters long';
                     }
                     _password = value;
                     return null;
@@ -185,6 +200,7 @@ class RegisterPageState extends State<RegisterPage> {
                           backgroundColor: Colors.teal,
                         ),
                       );
+                      log('First Name: $_firstName, Last Name: $_lastName, Username: $_username, Email: $_email, Password: $_password');
                       Navigator.pop(context);
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
