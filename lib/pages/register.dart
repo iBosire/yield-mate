@@ -210,10 +210,12 @@ class RegisterPageState extends State<RegisterPage> {
                             backgroundColor: Colors.teal,
                           ),
                         );
+                        // error message
                         setState(() {
                           error = "account already exists";
                         });
-                        log(error);
+                        // error log
+                        log(result[1].toString());
                       } else {
                         Navigator.pop(context);
                       }

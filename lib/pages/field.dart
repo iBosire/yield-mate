@@ -2,6 +2,8 @@ import 'package:yield_mate/models/plot_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:yield_mate/pages/wrapper.dart';
+import 'package:yield_mate/services/auth.dart';
 
 
 class FieldPage extends StatefulWidget {
@@ -12,6 +14,7 @@ class FieldPage extends StatefulWidget {
 }
 
 class FieldPageState extends State<FieldPage> {
+  final AuthService _auth = AuthService();
   List<PlotModel> plots = [];
   int _selectedTabIndex = 0;
 
@@ -92,8 +95,9 @@ class FieldPageState extends State<FieldPage> {
         elevation: 0.0,
         centerTitle: true,
         leading: GestureDetector(
-          onTap: () {
-            Navigator.pop(context);
+          onTap: () async {
+            await _auth.signOut();
+            Navigator.push(context, MaterialPageRoute(builder: (context) => const Wrapper()));
           },
           child: Container(
             margin: const EdgeInsets.all(10),

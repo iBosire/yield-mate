@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yield_mate/models/user_model.dart';
+import 'package:yield_mate/pages/field.dart';
 import 'package:yield_mate/pages/login.dart';
-import 'package:yield_mate/pages/home.dart';
 
 
 class Wrapper extends StatelessWidget {
@@ -14,7 +14,7 @@ class Wrapper extends StatelessWidget {
     if(user == null) {
       return const LoginPage();
     } else {
-      return const HomePage();
+      return const FieldPage();
     }
   }
 }

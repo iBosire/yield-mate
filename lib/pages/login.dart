@@ -5,6 +5,7 @@ import 'package:yield_mate/pages/register.dart';
 import 'package:flutter/material.dart';
 import 'package:yield_mate/pages/field.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:yield_mate/pages/wrapper.dart';
 import 'package:yield_mate/services/auth.dart';
 
 
@@ -19,6 +20,8 @@ class LoginPageState extends State<LoginPage> {
   final AuthService _auth = AuthService();
   final _signInFormKey = GlobalKey<FormState>();
   bool obscureText = true;
+  String error = '';
+  String _emailPattern = r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$';
 
   // text field values
   String email = '';
@@ -39,26 +42,96 @@ class LoginPageState extends State<LoginPage> {
               style: TextStyle(fontSize: 24),
             ),
             const SizedBox(height: 20),
-            // ListView(
-            //   shrinkWrap: true,
-            //   padding: const EdgeInsets.all(20),
-            //   children: [
-            //     _signInForm(),
-            //   ],
-            // ),
-            const SizedBox(height: 20),
+            ListView(
+              shrinkWrap: true,
+              padding: const EdgeInsets.all(20),
+              children: [
+                Form(
+                key: _signInFormKey,
+                child: Column(
+                  children: [
+                    TextFormField(
+                      decoration: InputDecoration(
+                        hintText: 'Email',
+                        labelText: 'Email',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      onChanged: (value) => email = value,
+                      validator: (value) {
+                        if(value == null || value.isEmpty) {
+                          return 'Please enter your email';
+                        }
+                        if(!RegExp(_emailPattern).hasMatch(value)) {
+                          return 'Please enter a valid email';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    TextFormField(
+                      obscureText: obscureText,
+                      decoration: InputDecoration(
+                        hintText: 'Password',
+                        labelText: 'Password',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        suffixIcon: IconButton(
+                          icon: Icon(obscureText ? Icons.visibility_off : Icons.visibility),
+                          onPressed: () {
+                            setState(() {
+                              obscureText = !obscureText;
+                            });
+                          },
+                        ),
+                      ),
+                      onChanged: (value) => password = value,
+                      validator: (value) {
+                        if(value == null || value.isEmpty) {
+                          return 'Please enter your password';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    ElevatedButton(
+                      onPressed: () async {
+                        if(_signInFormKey.currentState!.validate()) {
+                          log('Validated: email: $email, password: $password');
+                          dynamic result = await _auth.signInWithEmailAndPassword(email, password);
+                          if(result[0] == null){
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text("incorrect credentials"),
+                                backgroundColor: Colors.teal,
+                              )
+                            );
+                          } else {
+                            Navigator.push(
+                              context, 
+                              MaterialPageRoute(builder: (context) => const Wrapper())
+                            );
+                          }
+                        }
+                      },
+                      child: const Text('Login'),
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      error, 
+                      style: const TextStyle(
+                        color: Colors.red
+                      )
+                    ),
+                  ],
+                ),
+              )
+            ],
+            ),
             Column(
               children: [
-                OutlinedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context, 
-                      MaterialPageRoute(builder: (context) => const FieldPage())
-                    );
-                  },
-                  child: const Text('Login as Farmer'),
-                ),
-                const SizedBox(height: 15),
                 OutlinedButton(
                   onPressed: () {
                     Navigator.push(
@@ -79,22 +152,22 @@ class LoginPageState extends State<LoginPage> {
                   child: const Text('Register'),
                 ),
                 const SizedBox(height: 15),
-                OutlinedButton(
-                  onPressed: () async {
-                    dynamic result = await _auth.signInAnon();
-                    if(result == null) {
-                      log('Error signing in');
-                    } else {
-                      log('Signed in');
-                      log(result.uid);
-                      Navigator.push(
-                        context, 
-                        MaterialPageRoute(builder: (context) => const HomePage())
-                      );
-                    }
-                  },
-                  child: const Text('Sign in Anonymously'),
-                ),
+                // OutlinedButton(
+                //   onPressed: () async {
+                //     dynamic result = await _auth.signInAnon();
+                //     if(result == null) {
+                //       log('Error signing in');
+                //     } else {
+                //       log('Signed in');
+                //       log(result.uid);
+                //       Navigator.push(
+                //         context, 
+                //         MaterialPageRoute(builder: (context) => const HomePage())
+                //       );
+                //     }
+                //   },
+                //   child: const Text('Sign in Anonymously'),
+                // ),
               ],
             )
           ],
@@ -160,9 +233,28 @@ class LoginPageState extends State<LoginPage> {
                   onPressed: () {
                     if(_signInFormKey.currentState!.validate()) {
                       log('Validated: email: $email, password: $password');
+                      dynamic result = _auth.signInWithEmailAndPassword(email, password);
+                      if(result[0] == null){
+                        setState(() {
+                          error = "Incorrect Credentials";
+                          log(result[1]);
+                        });
+                      } else {
+                        Navigator.push(
+                          context, 
+                          MaterialPageRoute(builder: (context) => const Wrapper())
+                        );
+                      }
                     }
                   },
                   child: const Text('Login'),
+                ),
+                SizedBox(height: 10),
+                Text(
+                  error, 
+                  style: const TextStyle(
+                    color: Colors.red
+                  )
                 ),
               ],
             ),

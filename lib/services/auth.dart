@@ -47,6 +47,17 @@ class AuthService {
   }
 
   // Sign in with email and password
+  Future<List<dynamic>> signInWithEmailAndPassword(String email, String password) async {
+    try {
+      UserCredential result = await _auth.signInWithEmailAndPassword(email: email, password: password);
+      User? user = result.user;
+      return [_userFromFirebaseUser(user!), null];
+    } catch(e) {
+      log(e.toString());
+      return [null, e];
+    }
+  }
+
 
   //  Sign out
   Future signOut() async {
