@@ -17,6 +17,7 @@ class RegisterPageState extends State<RegisterPage> {
   bool _obscureTextP = true;
   bool _obscureTextC = true;
   String _password = '';
+  String error = '';
 
   // text fields
   String _firstName = '';
@@ -202,15 +203,20 @@ class RegisterPageState extends State<RegisterPage> {
                       );
                       log('First Name: $_firstName, Last Name: $_lastName, Username: $_username, Email: $_email, Password: $_password');
                       dynamic result = await _auth.registerWithEmailAndPassword(_email, _password);
-                      if (result == null) {
+                      if (result[0] == null) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text('Error registering user'),
                             backgroundColor: Colors.teal,
                           ),
                         );
+                        setState(() {
+                          error = "account already exists";
+                        });
+                        log(error);
+                      } else {
+                        Navigator.pop(context);
                       }
-                      Navigator.pop(context);
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
@@ -221,6 +227,13 @@ class RegisterPageState extends State<RegisterPage> {
                     }
                   },
                   child: const Text('Register'),
+                ),
+                SizedBox(height: 10),
+                Text(
+                  error, 
+                  style: const TextStyle(
+                    color: Colors.red
+                  )
                 ),
               ],
             ),
