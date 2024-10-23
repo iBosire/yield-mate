@@ -192,7 +192,7 @@ class RegisterPageState extends State<RegisterPage> {
                 const SizedBox(height: 10),
                 // REGISTER BUTTON
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
@@ -201,6 +201,15 @@ class RegisterPageState extends State<RegisterPage> {
                         ),
                       );
                       log('First Name: $_firstName, Last Name: $_lastName, Username: $_username, Email: $_email, Password: $_password');
+                      dynamic result = await _auth.registerWithEmailAndPassword(_email, _password);
+                      if (result == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Error registering user'),
+                            backgroundColor: Colors.teal,
+                          ),
+                        );
+                      }
                       Navigator.pop(context);
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
