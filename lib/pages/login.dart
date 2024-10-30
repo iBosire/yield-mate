@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:yield_mate/pages/home.dart';
 import 'package:yield_mate/pages/register.dart';
 import 'package:flutter/material.dart';
-import 'package:yield_mate/pages/field.dart';
+import 'package:yield_mate/shared/loading.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:yield_mate/pages/wrapper.dart';
 import 'package:yield_mate/services/auth.dart';
@@ -22,6 +22,7 @@ class LoginPageState extends State<LoginPage> {
   bool obscureText = true;
   String error = '';
   String _emailPattern = r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$';
+  bool loading = false;
 
   // text field values
   String email = '';
@@ -29,7 +30,7 @@ class LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return loading ? const Loading() : Scaffold(
       appBar: _appBar(),
       backgroundColor: Colors.white,
       body: Center(
@@ -99,9 +100,15 @@ class LoginPageState extends State<LoginPage> {
                     ElevatedButton(
                       onPressed: () async {
                         if(_signInFormKey.currentState!.validate()) {
-                          log('Validated: email: $email, password: $password');
+                          // loading page
+                          setState(() {
+                            loading = true;
+                          });
                           dynamic result = await _auth.signInWithEmailAndPassword(email, password);
                           if(result[0] == null){
+                            setState(() {
+                              loading = false;
+                            });
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text("incorrect credentials"),

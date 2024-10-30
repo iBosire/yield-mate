@@ -1,5 +1,5 @@
 import 'dart:developer';
-
+import 'package:yield_mate/shared/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:yield_mate/services/auth.dart';
@@ -18,6 +18,7 @@ class RegisterPageState extends State<RegisterPage> {
   bool _obscureTextC = true;
   String _password = '';
   String error = '';
+  bool loading = false;
 
   // text fields
   String _firstName = '';
@@ -30,7 +31,7 @@ class RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return loading ? const Loading() : Scaffold(
       appBar: appBar('Registration'),
       backgroundColor: Colors.white,
       body: ListView(
@@ -201,7 +202,9 @@ class RegisterPageState extends State<RegisterPage> {
                           backgroundColor: Colors.teal,
                         ),
                       );
-                      log('First Name: $_firstName, Last Name: $_lastName, Username: $_username, Email: $_email, Password: $_password');
+                      setState(() {
+                        loading = true;
+                      });
                       dynamic result = await _auth.registerWithEmailAndPassword(_email, _password);
                       if (result[0] == null) {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -213,6 +216,7 @@ class RegisterPageState extends State<RegisterPage> {
                         // error message
                         setState(() {
                           error = "account already exists";
+                          loading = false;
                         });
                         // error log
                         log(result[1].toString());
