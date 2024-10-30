@@ -108,13 +108,8 @@ class LoginPageState extends State<LoginPage> {
                           if(result[0] == null){
                             setState(() {
                               loading = false;
+                            error = "Incorrect Credentials";
                             });
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text("incorrect credentials"),
-                                backgroundColor: Colors.teal,
-                              )
-                            );
                           } else {
                             Navigator.push(
                               context, 

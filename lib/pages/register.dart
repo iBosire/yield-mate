@@ -205,7 +205,7 @@ class RegisterPageState extends State<RegisterPage> {
                       setState(() {
                         loading = true;
                       });
-                      dynamic result = await _auth.registerWithEmailAndPassword(_email, _password);
+                      dynamic result = await _auth.registerWithEmailAndPassword(_email, _password, _firstName, _lastName, _username);
                       if (result[0] == null) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
