@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
           fontFamily: 'Poppins',
         ),
         debugShowCheckedModeBanner: false,
-        home: const Wrapper(),
+        home: Wrapper(),
       ),
     );
   }

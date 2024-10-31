@@ -99,7 +99,7 @@ class LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 10),
                     ElevatedButton(
                       onPressed: () async {
-                        if(_signInFormKey.currentState!.validate()) {
+                        if(_signInFormKey.currentState != null && _signInFormKey.currentState!.validate()) {
                           // loading page
                           setState(() {
                             loading = true;
@@ -110,12 +110,11 @@ class LoginPageState extends State<LoginPage> {
                               loading = false;
                             error = "Incorrect Credentials";
                             });
-                          } else {
-                            Navigator.push(
-                              context, 
-                              MaterialPageRoute(builder: (context) => const Wrapper())
-                            );
                           }
+                        } else {
+                          setState(() {
+                            error = "Please enter valid credentials";
+                          });
                         }
                       },
                       child: const Text('Login'),

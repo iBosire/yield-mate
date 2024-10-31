@@ -1,9 +1,16 @@
+import 'dart:developer';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:yield_mate/models/plot_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:yield_mate/pages/farmer/plot_list.dart';
 import 'package:yield_mate/pages/wrapper.dart';
 import 'package:yield_mate/services/auth.dart';
+import 'package:yield_mate/services/database.dart';
+import 'package:provider/provider.dart';
 
 
 class FieldPage extends StatefulWidget {
@@ -15,47 +22,55 @@ class FieldPage extends StatefulWidget {
 
 class FieldPageState extends State<FieldPage> {
   final AuthService _auth = AuthService();
-  List<PlotModel> plots = [];
+  List<dynamic> plots = [];
   int _selectedTabIndex = 0;
+  String currentUser = "";
 
-  void _getPlots() {
-    plots = PlotModel.getPlots();
+  Future<void> _getPlots(String uid) async {
+    plots = await DatabaseService(uid: uid).getPlotsByUser();
   }
 
   void onItemTapped(int index) {
     setState(() {
       _selectedTabIndex = index;
-      _getPlots();
+      _getPlots(currentUser);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    _getPlots();    
+    
+    _auth.user.listen((user) {
+      currentUser = user?.uid ?? 'No user';
+      log("Current User: $currentUser");
+    }); // Ensure this is awaited if necessary
 
     List<Widget> navPages = <Widget>[
       ListView(
         children: [
-          AllPlotsSection(plots: plots),
+          AllPlotsSection(plots: plots.cast<PlotModel>()),
         ],
       ),
       ListView(
         children: [
-          AllPlotsSection(plots: plots.where((plot) => plot.status == 0).toList()),
+          AllPlotsSection(plots: plots.where((plot) => plot.status == 0).toList().cast<PlotModel>()),
         ],
       ),
       ListView(
         children: [
-          AllPlotsSection(plots: plots.where((plot) => plot.status == 1).toList()),
+          AllPlotsSection(plots: plots.where((plot) => plot.status == 1).toList().cast<PlotModel>()),
         ]
       )
     ];
 
-    return Scaffold(
+    return StreamProvider<QuerySnapshot<Object?>?>.value(
+      initialData: null,
+      value: DatabaseService(uid: currentUser).plots,
+      child: Scaffold(
         appBar: appBar('Field Page'),
         backgroundColor: Colors.white,
         body: Center(
-            child: navPages.elementAt(_selectedTabIndex),
+            child: PlotList(),
           ),
         bottomNavigationBar: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
@@ -78,7 +93,8 @@ class FieldPageState extends State<FieldPage> {
           currentIndex: _selectedTabIndex,
           onTap: onItemTapped,
         ),
-      );
+      )
+    );
   }
 
   AppBar appBar(String screenTitle) {
