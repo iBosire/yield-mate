@@ -72,7 +72,7 @@ class FieldPageState extends State<FieldPage> {
         appBar: appBar('Field Page'),
         backgroundColor: Colors.white,
         body: Center(
-            child: PlotList(),
+            child: navPages[_selectedTabIndex],
           ),
         bottomNavigationBar: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
@@ -213,7 +213,7 @@ class AllPlotsSection extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        '${plots[index].size} | Score: ${plots[index].score} | Crop: ${plots[index].crop}',
+                        '${plots[index].size} Acres | Score: ${plots[index].score} | Crop: ${plots[index].crop}',
                         style: const TextStyle(
                           color: Colors.grey,
                           fontSize: 16,
@@ -224,7 +224,7 @@ class AllPlotsSection extends StatelessWidget {
                   ),
                   GestureDetector(
                     onTap: () {
-                      
+                      Navigator.pushNamed(context, '/plot', arguments: plots[index]);
                     },
                     child: SvgPicture.asset('assets/icons/right-arrow.svg',)
                     ),
