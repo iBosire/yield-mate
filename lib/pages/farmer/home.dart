@@ -1,6 +1,5 @@
 import 'dart:developer';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:yield_mate/models/plot_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -222,12 +221,22 @@ class AllPlotsSection extends StatelessWidget {
                       ),
                     ],
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pushNamed(context, '/plot', arguments: plots[index]);
-                    },
-                    child: SvgPicture.asset('assets/icons/right-arrow.svg',)
+                  Container(
+                    margin: const EdgeInsets.all(10),
+                    alignment: Alignment.center,
+                    width: 37,
+                    height: 37,
+                    decoration: BoxDecoration(
+                      color: const Color(0xffF7F8F8),
+                      borderRadius: BorderRadius.circular(10),
                     ),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(context, '/plot', arguments: plots[index]);
+                      },
+                      child: Icon(Icons.arrow_forward_ios_rounded, size: 30, color: Colors.grey,),
+                      ),
+                  ),
                 ],
               ),
             );
