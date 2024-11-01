@@ -1,8 +1,9 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
+import 'package:yield_mate/models/plot_model.dart';
 
 class PlotList extends StatefulWidget {
   const PlotList({super.key});
@@ -14,24 +15,47 @@ class PlotList extends StatefulWidget {
 class _PlotListState extends State<PlotList> {
   @override
   Widget build(BuildContext context) {
-    final plots = Provider.of<QuerySnapshot<Object?>?>(context);
-    for (var doc in plots!.docs) {
-      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-      log(data.toString());
-    }
-    
-    if (plots != null) {
-      return ListView.builder(
-        itemCount: plots.docs.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(plots.docs[index]['name']),
-            subtitle: Text(plots.docs[index]['crop']),
-          );
-        },
+    final plots = Provider.of<List<PlotModel?>?>(context);
+
+    if (plots == null) {
+      return const Center(
+        child: CircularProgressIndicator(),
       );
-    } else {
-      return CircularProgressIndicator();
     }
+
+    return ListView.builder(
+      itemCount: plots.length,
+      itemBuilder: (context, index) {
+        var plot = plots[index];
+        return ListTile(
+          title: Text(plot?.name ?? 'No Name'),
+          subtitle: Text(plot?.crop ?? 'No Crop'),
+        );
+      },
+    );
   }
 }
+
+//    final plots = Provider.of<QuerySnapshot<Object?>?>(context);
+
+//     if (plots == null) {
+//       return const Center(
+//         child: CircularProgressIndicator(),
+//       );
+//     }
+
+//     for (var doc in plots.docs) {
+//       Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+//       log(data.toString());
+//     }
+
+//     return ListView.builder(
+//       itemCount: plots.docs.length,
+//       itemBuilder: (context, index) {
+//         var data = plots.docs[index].data() as Map<String, dynamic>;
+//         return ListTile(
+//           title: Text(data['name'] ?? 'No Name'),
+//           subtitle: Text(data['crop'] ?? 'No Crop'),
+//         );
+//       },
+//     );

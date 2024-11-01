@@ -1,84 +1,39 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class PlotModel {
+  String plotId;
   String name;
+  String userId;
   String iconPath;
-  String size;
+  double size;
   int status;
   String crop;
-  String score;
-  bool isCurrentlySelected;
+  int score;
+  String regionId;
+  String seedId;
+  int seedAmount;
+  bool active;
+  Timestamp dateCreated;
+  Timestamp? dateUpdated;
+  List<dynamic> nutrients;
+  int? yieldAmount;
 
   PlotModel({
+    required this.plotId,
     required this.name,
+    required this.userId,
     required this.iconPath,
     required this.size,
     required this.status,
     required this.crop,
     required this.score,
-    required this.isCurrentlySelected,
+    required this.regionId,
+    required this.seedId,
+    required this.seedAmount,
+    required this.active,
+    required this.dateCreated,
+    required this.nutrients,
+    this.yieldAmount,
+    this.dateUpdated,
   });
-
-  static List<PlotModel> getPlots() {
-    List<PlotModel> plots = [];
-
-    plots.add(
-      PlotModel(
-        name: 'Plot 1',
-        iconPath: 'assets/icons/field.svg',
-        size: '1.5 Acres',
-        status: 1,
-        crop: 'Maize',
-        score: '80',
-        isCurrentlySelected: true,
-      ),
-    );
-
-    plots.add(
-      PlotModel(
-        name: 'Plot 2',
-        iconPath: 'assets/icons/field.svg',
-        size: '2 Acres',
-        status: 0,
-        crop: 'Beans',
-        score: '70',
-        isCurrentlySelected: false,
-      ),
-    );
-
-    plots.add(
-      PlotModel(
-        name: 'Plot 3',
-        iconPath: 'assets/icons/field.svg',
-        size: '1.5 Acres',
-        status: 0,
-        crop: 'Maize',
-        score: '90',
-        isCurrentlySelected: false,
-      ),
-    );
-
-    plots.add(
-      PlotModel(
-        name: 'Plot 4',
-        iconPath: 'assets/icons/field.svg',
-        size: '2 Acres',
-        status: 1,
-        crop: 'Beans',
-        score: '60',
-        isCurrentlySelected: false,
-      ),
-    );
-
-    plots.add(
-      PlotModel(
-        name: 'Plot 5',
-        iconPath: 'assets/icons/field.svg',
-        size: '1.5 Acres',
-        status: 1,
-        crop: 'Maize',
-        score: '70',
-        isCurrentlySelected: false,
-      ),
-    );
-    return plots;
-  }
 }

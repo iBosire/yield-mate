@@ -1,7 +1,6 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:yield_mate/models/plot_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -37,9 +36,12 @@ class FieldPageState extends State<FieldPage> {
     });
   }
 
+  void setData() async {
+    await DatabaseService(uid: currentUser).addPlot("Plot 2", "Beans", 1.3, "2", "3", 30, [12, 13, 14, 15, 16], 0);
+  }
+
   @override
   Widget build(BuildContext context) {
-    
     _auth.user.listen((user) {
       currentUser = user?.uid ?? 'No user';
       log("Current User: $currentUser");
@@ -63,9 +65,9 @@ class FieldPageState extends State<FieldPage> {
       )
     ];
 
-    return StreamProvider<QuerySnapshot<Object?>?>.value(
+    return StreamProvider<List<PlotModel?>?>.value(
       initialData: null,
-      value: DatabaseService(uid: currentUser).plots,
+      value: DatabaseService(uid: currentUser).plotStream,
       child: Scaffold(
         appBar: appBar('Field Page'),
         backgroundColor: Colors.white,

@@ -26,17 +26,12 @@ class _HomePageState extends State<HomePage> {
     categories = CategoryModel.getCategories();
   }
 
-  void _getPlots() {
-    plots = PlotModel.getPlots();
-  }
-
   void _getUsers() {
     users = UserModel.getUsers();
   }
 
   void _initialData() {
     _getCategories();
-    _getPlots();
     _getUsers();
   }
 
@@ -311,8 +306,8 @@ class PlotsSection extends StatelessWidget {
                         borderRadius: BorderRadius.circular(25),
                         gradient: LinearGradient(
                           colors: [
-                            plots[index].isCurrentlySelected ? Color.fromARGB(255, 39, 167, 156) : Colors.transparent,
-                            plots[index].isCurrentlySelected ? Color.fromARGB(255, 43, 124, 64) : Colors.transparent,
+                            plots[index].active ? Color.fromARGB(255, 39, 167, 156) : Colors.transparent,
+                            plots[index].active ? Color.fromARGB(255, 43, 124, 64) : Colors.transparent,
                           ],
                           begin: Alignment.centerLeft,
                           end: Alignment.centerRight,
@@ -322,7 +317,7 @@ class PlotsSection extends StatelessWidget {
                         child: Text(
                           'View',
                           style: TextStyle(
-                            color: plots[index].isCurrentlySelected ? Colors.white : Colors.grey,
+                            color: plots[index].active ? Colors.white : Colors.grey,
                             fontSize: 16,
                             fontWeight: FontWeight.w400,
                           ),
