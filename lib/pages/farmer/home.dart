@@ -115,7 +115,6 @@ class FieldPageState extends State<FieldPage> {
         leading: GestureDetector(
           onTap: () async {
             await _auth.signOut();
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const Wrapper()));
           },
           child: Container(
             margin: const EdgeInsets.all(10),
@@ -124,11 +123,7 @@ class FieldPageState extends State<FieldPage> {
               color: const Color(0xffF7F8F8),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: SvgPicture.asset(
-              'assets/icons/back.svg',
-              height: 20,
-              width: 20,
-            )
+            child: Icon(Icons.logout, color: Colors.grey,),
           )
         ),
         actions: [
@@ -204,7 +199,7 @@ class AllPlotsSection extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  SvgPicture.asset(plots[index].iconPath, height: 50, width: 50),
+                  Icon(Icons.grass, size: 50,),
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,

@@ -32,7 +32,6 @@ class DatabaseService {
     return await plotCollection.doc('demo').set({
       'user': uid,
       'name': 'Demo Plot',
-      'iconPath': 'assets/icons/plot_icon.png',
       'size': 1.0,
       'status': 0,
       'crop': 'Maize',
@@ -52,7 +51,6 @@ class DatabaseService {
     return await plotCollection.add({
       'user': uid,
       'name': name,
-      'iconPath': 'assets/icons/plot_icon.png',
       'size': size,
       'status': 0,
       'crop': crop,
@@ -98,7 +96,6 @@ class DatabaseService {
         plotId: doc.id,
         name: doc['name'] ?? '',
         userId: doc['user'] ?? '',
-        iconPath: doc['iconPath'] ?? '',
         size: doc['size'] ?? 0,
         status: doc['status'] ?? 0,
         crop: doc['crop'] ?? '',

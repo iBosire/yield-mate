@@ -4,7 +4,6 @@ class PlotModel {
   String plotId;
   String name;
   String userId;
-  String iconPath;
   double size;
   int status;
   String crop;
@@ -22,7 +21,6 @@ class PlotModel {
     required this.plotId,
     required this.name,
     required this.userId,
-    required this.iconPath,
     required this.size,
     required this.status,
     required this.crop,

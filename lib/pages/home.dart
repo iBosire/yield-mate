@@ -277,7 +277,7 @@ class PlotsSection extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    SvgPicture.asset(plots[index].iconPath, height: 50, width: 50),
+                    SvgPicture.asset('yield_mate/assets/icons/plot_icon.svg', height: 50, width: 50),
                     Column(
                       children: [
                         Text(

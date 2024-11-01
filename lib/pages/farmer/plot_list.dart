@@ -22,18 +22,92 @@ class _PlotListState extends State<PlotList> {
         child: CircularProgressIndicator(),
       );
     }
-
-    return ListView.builder(
-      itemCount: plots.length,
-      itemBuilder: (context, index) {
-        var plot = plots[index];
-        return ListTile(
-          title: Text(plot?.name ?? 'No Name'),
-          subtitle: Text(plot?.crop ?? 'No Crop'),
-        );
-      },
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.only(left: 20, top: 20),
+          child: Text(
+            'Plots',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        const SizedBox(height: 15),
+        ListView.separated(
+          itemCount: plots.length,
+          shrinkWrap: true,
+          separatorBuilder: (context, index) => const SizedBox(height: 20),
+          padding: const EdgeInsets.only(left: 20, right: 20),
+          itemBuilder: (context, index) {
+            return Container(
+              height: 100,
+              decoration: BoxDecoration(
+                color:Colors.white,
+                borderRadius: BorderRadius.circular(15),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xff1D1617).withOpacity(0.11),
+                    offset: const Offset(0, 10),
+                    blurRadius: 40,
+                    spreadRadius: 0,
+                  )
+                ]
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Icon(Icons.grass, size: 50,),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        plots[index]?.name ?? "No Name",
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        '${plots[index]?.size ?? 'Unknown Size'} Acres | Score: ${plots[index]?.score ?? 'Unknown Score'} | Crop: ${plots[index]?.crop ?? 'Unknown Crop'}',
+                        style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ],
+                  ),
+                  GestureDetector(
+                    onTap: () async {
+                      // got to details page with field id
+                      Navigator.pushNamed(context, '/plot', arguments: plots[index]);
+                    },
+                    child: SvgPicture.asset('assets/icons/right-arrow.svg',)
+                    ),
+                ],
+              ),
+            );
+          },
+        )
+      ],
     );
   }
+    // return ListView.builder(
+    //   itemCount: plots.length,
+    //   itemBuilder: (context, index) {
+    //     var plot = plots[index];
+    //     return ListTile(
+    //       title: Text(plot?.name ?? 'No Name'),
+    //       subtitle: Text(plot?.crop ?? 'No Crop'),
+    //     );
+    //   },
+    // );
 }
 
 //    final plots = Provider.of<QuerySnapshot<Object?>?>(context);

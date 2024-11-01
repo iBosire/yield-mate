@@ -30,7 +30,7 @@ class LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return loading ? const Loading() : Scaffold(
+    return loading ? Loading() : Scaffold(
       appBar: _appBar(),
       backgroundColor: Colors.white,
       body: Center(
