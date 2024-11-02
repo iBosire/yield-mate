@@ -1,33 +1,26 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class UserModel {
   final String uid;
-
-  String name;
-  String iconPath;
-  int totalProjects;
-  String averageScore;
-  String totalFarmSize;
-  bool isCurrentlySelected;
+  String? username;
+  String? fName;
+  String? lName;
+  String? email;
+  String? type;
+  Timestamp? createdAt;
+  Timestamp? updatedAt;
+  // bool loggedIn;
 
   UserModel({
     required this.uid,
-    this.name = "", 
-    required this.iconPath,
-    this.totalProjects = 0,
-    this.averageScore = "0",
-    this.totalFarmSize = "",
-    this.isCurrentlySelected = false,
+    this.username,
+    this.fName,
+    this.lName,
+    this.email,
+    this.type,
+    this.createdAt,
+    this.updatedAt,
     });
-
-  static List<UserModel> getUsers() {
-    List<UserModel> users = [];
-    users.add(UserModel(uid: "1", name: "John Doe", iconPath: "assets/icons/user.svg", totalProjects: 5, averageScore: "4.5", totalFarmSize: "10 acres", isCurrentlySelected: false));
-    users.add(UserModel(uid: "2", name: "Jane Doe", iconPath: "assets/icons/user.svg", totalProjects: 3, averageScore: "4.0", totalFarmSize: "5 acres", isCurrentlySelected: false));
-    users.add(UserModel(uid: "3", name: "John Smith", iconPath: "assets/icons/user.svg", totalProjects: 2, averageScore: "3.5", totalFarmSize: "3 acres", isCurrentlySelected: false));
-    users.add(UserModel(uid: "4", name: "Jane Smith", iconPath: "assets/icons/user.svg", totalProjects: 1, averageScore: "3.0", totalFarmSize: "2 acres", isCurrentlySelected: false));
-    users.add(UserModel(uid: "5", name: "John Doe", iconPath: "assets/icons/user.svg", totalProjects: 5, averageScore: "4.5", totalFarmSize: "10 acres", isCurrentlySelected: false));
-
-    return users;
-  }
 
 
   // UserModel.fromJson(Map<String, dynamic> json) {

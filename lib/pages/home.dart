@@ -1,11 +1,13 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'package:provider/provider.dart';
 import 'package:yield_mate/models/plot_model.dart';
 import 'package:yield_mate/models/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:yield_mate/pages/wrapper.dart';
 import 'package:yield_mate/services/auth.dart';
+import 'package:yield_mate/services/database.dart';
 
 import '../models/category_model.dart';
 
@@ -21,23 +23,27 @@ class _HomePageState extends State<HomePage> {
   List<CategoryModel> categories = [];
   List<PlotModel> plots = [];
   List<UserModel> users = [];
+  String currentUser = "";
 
   void _getCategories() {
     categories = CategoryModel.getCategories();
   }
 
-  void _getUsers() {
-    users = UserModel.getUsers();
-  }
+  // void _getUsers() async {
+  //   users = UserModel.getUsers();
+  // }
 
   void _initialData() {
     _getCategories();
-    _getUsers();
+    // _getUsers();
   }
 
   @override
   Widget build(BuildContext context) {
     _initialData();
+    _auth.user.listen((user) {
+      currentUser = user?.uid ?? 'No user';
+    }); // Ensure this is awaited if necessary
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -49,7 +55,7 @@ class _HomePageState extends State<HomePage> {
             ListView(
               children: [
                 // USERS
-                UsersSection(users: users),
+                UsersSection(users: users, uid: currentUser),
                 SizedBox(height: 40),
               ],
             ),
@@ -87,7 +93,7 @@ class _HomePageState extends State<HomePage> {
         leading: GestureDetector(
           onTap: () async {
             await _auth.signOut();
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const Wrapper()));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => Wrapper()));
           },
           child: Container(
             margin: const EdgeInsets.all(10),
@@ -157,83 +163,89 @@ class UsersSection extends StatelessWidget {
   const UsersSection({
     super.key,
     required this.users,
+    required this.uid,
   });
 
-  final List<UserModel> users;
+  final List<dynamic> users;
+  final String uid;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 20),
-          child: Text(
-            'Users',
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
+    return StreamProvider<List<UserModel?>?>.value(
+      initialData: null,
+      value: DatabaseService(uid: uid).userStream,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 20),
+            child: Text(
+              'Users',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
-        ),
-        SizedBox(height: 15),
-        ListView.separated(
-          itemCount: users.length,
-          shrinkWrap: true,
-          separatorBuilder: (context, index) => SizedBox(height: 20),
-          padding: EdgeInsets.only(left: 20, right: 20),
-          itemBuilder: (context, index) {
-            return Container(
-              height: 100,
-              decoration: BoxDecoration(
-                color: users[index].isCurrentlySelected ? Colors.white: Colors.transparent,
-                borderRadius: BorderRadius.circular(15),
-                boxShadow: users[index].isCurrentlySelected ? [
-                  BoxShadow(
-                    color: Color(0xff1D1617).withOpacity(0.11),
-                    offset: Offset(0, 10),
-                    blurRadius: 40,
-                    spreadRadius: 0,
-                  )
-                ] : [] 
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  SvgPicture.asset(users[index].iconPath, height: 50, width: 50),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        users[index].name,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+          SizedBox(height: 15),
+          ListView.separated(
+            itemCount: users.length,
+            shrinkWrap: true,
+            separatorBuilder: (context, index) => SizedBox(height: 20),
+            padding: EdgeInsets.only(left: 20, right: 20),
+            itemBuilder: (context, index) {
+              return Container(
+                height: 100,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(15),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color(0xff1D1617).withOpacity(0.11),
+                      offset: Offset(0, 10),
+                      blurRadius: 40,
+                      spreadRadius: 0,
+                    )
+                  ]
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Icon(Icons.person_outline, size: 50,),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          users[index].fName + ' ' + users[index].lName,
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      Text(
-                        '${users[index].totalProjects} Projects | ${users[index].averageScore}% | ${users[index].totalFarmSize}',
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
+                        Text(
+                          '${users[index].type} | 5 Projects | Average Score: 80%',
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  GestureDetector(
-                    onTap: () {},
-                    child: SvgPicture.asset('assets/icons/right-arrow.svg',)
+                      ],
                     ),
-                ],
-              ),
-            );
-          },
-        )
-      ],
+                    GestureDetector(
+                      onTap: () {},
+                      child: SvgPicture.asset('assets/icons/right-arrow.svg',)
+                      ),
+                  ],
+                ),
+              );
+            },
+          )
+        ],
+      ),
     );
   }
 }

@@ -127,8 +127,8 @@ class FieldPageState extends State<FieldPage> {
         ),
         actions: [
           GestureDetector(
-            onTap: () {
-
+            onTap: () async {
+              _showSettings(context, _auth);
             },
             child: Container(
               margin: const EdgeInsets.all(10),
@@ -149,6 +149,36 @@ class FieldPageState extends State<FieldPage> {
     );
   }
 }
+
+void _showSettings(BuildContext context, AuthService _auth) {
+      showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return Container(
+            height: 200,
+            color: Colors.white,
+            child: Column(
+              children: [
+                ListTile(
+                  leading: Icon(Icons.logout),
+                  title: Text('Logout'),
+                  onTap: () async {
+                    await _auth.signOut();
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.settings),
+                  title: Text('Settings'),
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
+          );
+        }
+      );
+    }
 
 class AllPlotsSection extends StatelessWidget {
   const AllPlotsSection({

@@ -18,7 +18,7 @@ class AuthService {
     if (user == null) {
       return null;
     }
-    return UserModel(uid: user.uid, iconPath: 'assets/icons/user.svg');
+    return UserModel(uid: user.uid);
   }
 
 
@@ -41,7 +41,7 @@ class AuthService {
       User? user = result.user;
 
       // create a new document for the user with the uid
-      await DatabaseService(uid: user!.uid).updateUserData(email, username, fName, lName);
+      await DatabaseService(uid: user!.uid).createNewUser(email, username, fName, lName);
       return [_userFromFirebaseUser(user), null];
     } catch(e) {
       log(e.toString());
@@ -50,14 +50,17 @@ class AuthService {
   }
 
   // Sign in with email and password
-  Future<List<dynamic>> signInWithEmailAndPassword(String email, String password) async {
+  Future signInWithEmailAndPassword(String email, String password) async {
     try {
       UserCredential result = await _auth.signInWithEmailAndPassword(email: email, password: password);
       User? user = result.user;
-      return [_userFromFirebaseUser(user!), null];
+      if(user != null) {
+        log("User: ${user.uid}");
+      }
+      return _userFromFirebaseUser(user!);
     } catch(e) {
       log(e.toString());
-      return [null, e];
+      return null;
     }
   }
 

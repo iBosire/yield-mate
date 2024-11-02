@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:yield_mate/models/plot_model.dart';
+import 'package:yield_mate/models/user_model.dart';
 
 class DatabaseService {
 
@@ -17,14 +18,55 @@ class DatabaseService {
   final CollectionReference seedCollection = FirebaseFirestore.instance.collection('seeds');
 
   // user functions
-  Future updateUserData(String email, String username, String fName, String lName) async {
+  Future createNewUser(String email, String username, String fName, String lName) async {
     await demoPlotData();
     return await userCollection.doc(uid).set({
       'email': email,
       'username': username,
-      'First Name': fName,
-      'Last Name': lName,
+      'fName': fName,
+      'lName': lName,
+      'type': 'farmer',
+      'createdAt': DateTime.now(),
+      'updatedAt': DateTime.now(),
     });
+  }
+  Future updateUserDetails(String username, String fName, String lName) async {
+    return await userCollection.doc(uid).update({
+      'username': username,
+      'fName': fName,
+      'lName': lName,
+      'updatedAt': DateTime.now(),
+    });
+  }
+  Stream<List<UserModel>> get userStream{
+    return userCollection.snapshots().map((QuerySnapshot snapshot) => _userListFromSnapshot(snapshot));
+  }
+  List<UserModel> _userListFromSnapshot(QuerySnapshot snapshot) {
+    return snapshot.docs.map((doc) {
+      return UserModel(
+        uid: doc.id,
+        username: doc['username'] ?? '',
+        fName: doc['fName'] ?? '',
+        lName: doc['lName'] ?? '',
+        email: doc['email'] ?? '',
+        type: doc['type'] ?? '',
+        createdAt: doc['createdAt'] ?? '',
+        updatedAt: doc['updatedAt'] ?? '',
+      );
+    }).toList();
+  }
+  Future<UserModel> getUserData() async {
+    DocumentSnapshot doc = await userCollection.doc(uid).get();
+    return UserModel(
+      uid: doc.id,
+      username: doc['username'] ?? '',
+      fName: doc['fName'] ?? '',
+      lName: doc['lName'] ?? '',
+      email: doc['email'] ?? '',
+      type: doc['type'] ?? '',
+      createdAt: doc['createdAt'] ?? '',
+      updatedAt: doc['updatedAt'] ?? '',
+    );
   }
 
   // plot functions
@@ -42,6 +84,7 @@ class DatabaseService {
       'active': true,
       'yieldAmount': 1,
       'dateCreated': DateTime.now(),
+      'dateUpdated': DateTime.now(),
       'nutrients': [1, 2, 3],
     });
   }

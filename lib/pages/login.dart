@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:yield_mate/models/user_model.dart';
 import 'package:yield_mate/pages/home.dart';
 import 'package:yield_mate/pages/register.dart';
 import 'package:flutter/material.dart';
@@ -104,11 +105,17 @@ class LoginPageState extends State<LoginPage> {
                           setState(() {
                             loading = true;
                           });
-                          dynamic result = await _auth.signInWithEmailAndPassword(email, password);
-                          if(result[0] == null){
+                          UserModel? result = await _auth.signInWithEmailAndPassword(email, password);
+                        if(result != null){
+                            log("Sign in Result: ${result.uid}");
+                            Navigator.push(
+                              context, 
+                              MaterialPageRoute(builder: (context) => Wrapper())
+                            );
+                          } else {
                             setState(() {
                               loading = false;
-                            error = "Incorrect Credentials";
+                              error = "Incorrect Credentials";
                             });
                           }
                         } else {
@@ -235,15 +242,14 @@ class LoginPageState extends State<LoginPage> {
                     if(_signInFormKey.currentState!.validate()) {
                       log('Validated: email: $email, password: $password');
                       dynamic result = _auth.signInWithEmailAndPassword(email, password);
-                      if(result[0] == null){
+                      if(result == null){
                         setState(() {
                           error = "Incorrect Credentials";
-                          log(result[1]);
                         });
                       } else {
                         Navigator.push(
                           context, 
-                          MaterialPageRoute(builder: (context) => const Wrapper())
+                          MaterialPageRoute(builder: (context) => Wrapper())
                         );
                       }
                     }
