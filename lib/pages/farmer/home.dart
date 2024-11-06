@@ -89,8 +89,7 @@ class FieldPageState extends State<FieldPage> {
             child: Builder(
               builder: (context) => ElevatedButton(
                 onPressed: () {
-                  setData();
-                  setState(() {});
+                  Navigator.pushNamed(context, '/addplot');
                 },
                 child: const Text('Add Plot'),
               ),

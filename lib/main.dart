@@ -30,7 +30,9 @@ class MyApp extends StatelessWidget {
         initialRoute: '/',
         routes: {
           '/': (context) => Wrapper(),
-          '/plot': (context) => DetailsPage(),
+          '/plot': (context) => DetailsPage(type: 'viewplot',),
+          '/addplot': (context) => DetailsPage(type: 'newplot',),
+          '/editplot': (context) => DetailsPage(type: 'editplot',),
         },
       ),
     );
