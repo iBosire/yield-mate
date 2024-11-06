@@ -20,12 +20,14 @@ class FieldPage extends StatefulWidget {
 
 class FieldPageState extends State<FieldPage> {
   final AuthService _auth = AuthService();
-  List<dynamic> plots = [];
+  List<PlotModel?> plots = [];
   int _selectedTabIndex = 0;
   String currentUser = "";
 
-  Future<void> _getPlots(String uid) async {
-    plots = await DatabaseService(uid: uid).getPlotsByUser();
+  Future<List<PlotModel?>?> _getPlots(String uid) async {
+    log("UID passed to _getPlots: $uid");
+    List<PlotModel?> p = await DatabaseService(uid: uid).getPlotsByUser();
+    return p;
   }
 
   void onItemTapped(int index) {
@@ -40,26 +42,70 @@ class FieldPageState extends State<FieldPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    _auth.user.listen((user) {
-      currentUser = user?.uid ?? 'No user';
-      log("Current User: $currentUser");
-    }); // Ensure this is awaited if necessary
+  void initState() {
+    super.initState();
+    _auth.user.first.then((_) {
+      _auth.user.listen((user) {
+        setState(() {
+          currentUser = user?.uid ?? 'No user';
+          log("Current User: $currentUser");
+        });
+      });
+    });
+  }
 
+  @override
+  Widget build(BuildContext context) {
+    
     List<Widget> navPages = <Widget>[
       ListView(
         children: [
-          AllPlotsSection(plots: plots.cast<PlotModel>()),
+          // AllPlotsSection(plots: plots.cast<PlotModel>()),
+          FutureBuilder<List<PlotModel?>?>(
+            future: _getPlots(currentUser), 
+            builder: (context, snapshot){
+              if(snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              } else if(snapshot.hasError) {
+                log("Error: ${snapshot.error}");
+                return const Center(
+                  child: Text('Error loading plots'),
+                );
+              } else if(snapshot.hasData) {
+                log("Data: ${snapshot.data}");
+                plots = snapshot.data!;
+                return AllPlotsSection(plots: snapshot.data!.cast<PlotModel>());
+              } else {
+                return const Center(
+                  child: Text('No plots found'),
+                );
+              }
+            }
+          ),
+          const SizedBox(height: 20),
+          Center(
+            child: Builder(
+              builder: (context) => ElevatedButton(
+                onPressed: () {
+                  setData();
+                  setState(() {});
+                },
+                child: const Text('Add Plot'),
+              ),
+            ),
+          ),
         ],
       ),
       ListView(
         children: [
-          AllPlotsSection(plots: plots.where((plot) => plot.status == 0).toList().cast<PlotModel>()),
+          AllPlotsSection(plots: plots.where((plot) => plot?.status == 0).toList().cast<PlotModel>()),
         ],
       ),
       ListView(
         children: [
-          AllPlotsSection(plots: plots.where((plot) => plot.status == 1).toList().cast<PlotModel>()),
+          AllPlotsSection(plots: plots.where((plot) => plot?.status == 1).toList().cast<PlotModel>()),
         ]
       )
     ];
@@ -190,6 +236,11 @@ class AllPlotsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if(plots.isEmpty) {
+      return const Center(
+        child: Text('No plots found'),
+      );
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
