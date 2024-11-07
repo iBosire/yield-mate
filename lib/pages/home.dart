@@ -174,78 +174,107 @@ class UsersSection extends StatelessWidget {
     return StreamProvider<List<UserModel?>?>.value(
       initialData: null,
       value: DatabaseService(uid: uid).userStream,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 20),
-            child: Text(
-              'Users',
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
+      child: FutureBuilder(
+        future: DatabaseService(uid: uid).userStream.first,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (snapshot.hasData) {
+            return allUsers(snapshot.data!);
+          } else {
+            return Center(child: Text('No data'));
+          }
+        }
+      ),
+    );
+  }
+
+  Column allUsers(List<UserModel> user) {
+    final users = user;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 20, top: 20),
+          child: Text(
+            'Users',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: 15),
-          ListView.separated(
-            itemCount: users.length,
-            shrinkWrap: true,
-            separatorBuilder: (context, index) => SizedBox(height: 20),
-            padding: EdgeInsets.only(left: 20, right: 20),
-            itemBuilder: (context, index) {
-              return Container(
-                height: 100,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(15),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Color(0xff1D1617).withOpacity(0.11),
-                      offset: Offset(0, 10),
-                      blurRadius: 40,
-                      spreadRadius: 0,
-                    )
-                  ]
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Icon(Icons.person_outline, size: 50,),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          users[index].fName + ' ' + users[index].lName,
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
+        ),
+        SizedBox(height: 15),
+        ListView.separated(
+          itemCount: users.length,
+          shrinkWrap: true,
+          separatorBuilder: (context, index) => SizedBox(height: 20),
+          padding: EdgeInsets.only(left: 20, right: 20),
+          itemBuilder: (context, index) {
+            return Container(
+              height: 100,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(15),
+                boxShadow: [
+                  BoxShadow(
+                    color: Color(0xff1D1617).withOpacity(0.11),
+                    offset: Offset(0, 10),
+                    blurRadius: 40,
+                    spreadRadius: 0,
+                  )
+                ]
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Icon(Icons.person_outline, size: 40,),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${users[index].fName ?? ''} ${users[index].lName ?? ''}',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
                         ),
-                        Text(
-                          '${users[index].type} | 5 Projects | Average Score: 80%',
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400,
-                          ),
+                      ),
+                      Text(
+                        '${users[index].type} | 5 Projects ',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400,
                         ),
-                      ],
+                      ),
+                    ],
+                  ),
+                  Container(
+                    margin: const EdgeInsets.all(10),
+                    alignment: Alignment.center,
+                    width: 37,
+                    height: 37,
+                    decoration: BoxDecoration(
+                      color: Color(0xffF7F8F8),
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    GestureDetector(
+                    child: GestureDetector(
                       onTap: () {},
                       child: SvgPicture.asset('assets/icons/right-arrow.svg',)
                       ),
-                  ],
-                ),
-              );
-            },
-          )
-        ],
-      ),
+                  ),
+                ],
+              ),
+            );
+          },
+        )
+      ],
     );
   }
 }

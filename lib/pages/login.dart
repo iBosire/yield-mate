@@ -38,7 +38,7 @@ class LoginPageState extends State<LoginPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            SvgPicture.asset('assets/icons/plant-logo.svg', height: 200,),
+            SvgPicture.asset('assets/icons/plant-logo.svg', height: 150,),
             const Text(
               'Login',
               style: TextStyle(fontSize: 24),
@@ -98,33 +98,54 @@ class LoginPageState extends State<LoginPage> {
                       },
                     ),
                     const SizedBox(height: 10),
-                    ElevatedButton(
-                      onPressed: () async {
-                        if(_signInFormKey.currentState != null && _signInFormKey.currentState!.validate()) {
-                          // loading page
-                          setState(() {
-                            loading = true;
-                          });
-                          UserModel? result = await _auth.signInWithEmailAndPassword(email, password);
-                        if(result != null){
-                            log("Sign in Result: ${result.uid}");
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            fixedSize: const Size(120, 40),
+                          ),
+                          onPressed: () async {
+                            if(_signInFormKey.currentState != null && _signInFormKey.currentState!.validate()) {
+                              // loading page
+                              setState(() {
+                                loading = true;
+                              });
+                              UserModel? result = await _auth.signInWithEmailAndPassword(email, password);
+                            if(result != null){
+                                log("Sign in Result: ${result.uid}");
+                                Navigator.push(
+                                  context, 
+                                  MaterialPageRoute(builder: (context) => Wrapper())
+                                );
+                              } else {
+                                setState(() {
+                                  loading = false;
+                                  error = "Incorrect Credentials";
+                                });
+                              }
+                            } else {
+                              setState(() {
+                                error = "Please enter valid credentials";
+                              });
+                            }
+                          },
+                          child: const Text('Login'),
+                        ),
+                        const SizedBox(width: 10),
+                        OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            fixedSize: const Size(120, 40),
+                          ),
+                          onPressed: () {
                             Navigator.push(
                               context, 
-                              MaterialPageRoute(builder: (context) => Wrapper())
+                              MaterialPageRoute(builder: (context) => const RegisterPage())
                             );
-                          } else {
-                            setState(() {
-                              loading = false;
-                              error = "Incorrect Credentials";
-                            });
-                          }
-                        } else {
-                          setState(() {
-                            error = "Please enter valid credentials";
-                          });
-                        }
-                      },
-                      child: const Text('Login'),
+                          },
+                          child: const Text('Register'),
+                        ),
+                      ],
                     ),
                     SizedBox(height: 10),
                     Text(
@@ -138,46 +159,46 @@ class LoginPageState extends State<LoginPage> {
               )
             ],
             ),
-            Column(
-              children: [
-                // OutlinedButton(
-                //   onPressed: () {
-                //     Navigator.push(
-                //       context, 
-                //       MaterialPageRoute(builder: (context) => const HomePage())
-                //       );
-                //   },
-                //   child: const Text('Login as Admin'),
-                // ),
-                // const SizedBox(height: 15),
-                OutlinedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context, 
-                      MaterialPageRoute(builder: (context) => const RegisterPage())
-                    );
-                  },
-                  child: const Text('Register'),
-                ),
-                const SizedBox(height: 15),
-                // OutlinedButton(
-                //   onPressed: () async {
-                //     dynamic result = await _auth.signInAnon();
-                //     if(result == null) {
-                //       log('Error signing in');
-                //     } else {
-                //       log('Signed in');
-                //       log(result.uid);
-                //       Navigator.push(
-                //         context, 
-                //         MaterialPageRoute(builder: (context) => const HomePage())
-                //       );
-                //     }
-                //   },
-                //   child: const Text('Sign in Anonymously'),
-                // ),
-              ],
-            )
+            // Column(
+            //   children: [
+            //     // OutlinedButton(
+            //     //   onPressed: () {
+            //     //     Navigator.push(
+            //     //       context, 
+            //     //       MaterialPageRoute(builder: (context) => const HomePage())
+            //     //       );
+            //     //   },
+            //     //   child: const Text('Login as Admin'),
+            //     // ),
+            //     // const SizedBox(height: 15),
+            //     // OutlinedButton(
+            //     //   onPressed: () {
+            //     //     Navigator.push(
+            //     //       context, 
+            //     //       MaterialPageRoute(builder: (context) => const RegisterPage())
+            //     //     );
+            //     //   },
+            //     //   child: const Text('Register'),
+            //     // ),
+            //     // const SizedBox(height: 15),
+            //     // OutlinedButton(
+            //     //   onPressed: () async {
+            //     //     dynamic result = await _auth.signInAnon();
+            //     //     if(result == null) {
+            //     //       log('Error signing in');
+            //     //     } else {
+            //     //       log('Signed in');
+            //     //       log(result.uid);
+            //     //       Navigator.push(
+            //     //         context, 
+            //     //         MaterialPageRoute(builder: (context) => const HomePage())
+            //     //       );
+            //     //     }
+            //     //   },
+            //     //   child: const Text('Sign in Anonymously'),
+            //     // ),
+            //   ],
+            // )
           ],
         ),
       ),
