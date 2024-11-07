@@ -16,6 +16,7 @@ class DatabaseService {
   final CollectionReference plotCollection = FirebaseFirestore.instance.collection('plots');
   final CollectionReference regionCollection = FirebaseFirestore.instance.collection('regions');
   final CollectionReference seedCollection = FirebaseFirestore.instance.collection('seeds');
+  final CollectionReference cropCollection = FirebaseFirestore.instance.collection('crops');
 
   // user functions
   Future createNewUser(String email, String username, String fName, String lName) async {
@@ -30,6 +31,7 @@ class DatabaseService {
       'updatedAt': DateTime.now(),
     });
   }
+  // update user details
   Future updateUserDetails(String username, String fName, String lName) async {
     return await userCollection.doc(uid).update({
       'username': username,
@@ -38,9 +40,11 @@ class DatabaseService {
       'updatedAt': DateTime.now(),
     });
   }
+  // user stream
   Stream<List<UserModel>> get userStream{
     return userCollection.snapshots().map((QuerySnapshot snapshot) => _userListFromSnapshot(snapshot));
   }
+  // convert user data from snapshot
   List<UserModel> _userListFromSnapshot(QuerySnapshot snapshot) {
     return snapshot.docs.map((doc) {
       return UserModel(
@@ -55,6 +59,7 @@ class DatabaseService {
       );
     }).toList();
   }
+  // get user data
   Future<UserModel> getUserData() async {
     DocumentSnapshot doc = await userCollection.doc(uid).get();
     return UserModel(
@@ -68,8 +73,20 @@ class DatabaseService {
       updatedAt: doc['updatedAt'] ?? '',
     );
   }
+  // delete user
+  Future deleteUser(String userId) async {
+    return await userCollection.doc(userId).delete();
+  }
+  // get all users
+  Future getUsers() async {
+    QuerySnapshot response = await userCollection.where("type", isEqualTo: "farmer").get();
+    List<UserModel> users = _userListFromSnapshot(response);
+    log("Response from the DB: ${users.length} users");
+    return users;
+  }
 
-  // plot functions
+
+  // PLOT FUNCTIONS
   Future demoPlotData() async {
     return await plotCollection.doc('demo').set({
       'user': uid,
@@ -88,7 +105,6 @@ class DatabaseService {
       'nutrients': [1, 2, 3],
     });
   }
-
   // create plot
   Future addPlot(String name, String crop, double size, String regionId, String seedId, int seedAmount, List<int> nutrients, int yieldAmount) async {
     return await plotCollection.add({
@@ -108,7 +124,6 @@ class DatabaseService {
       'nutrients': nutrients,
     });
   }
-
   // update plot
   Future updatePlotDetails(String plotId, String name, List<int> nutrients) async {
     return await plotCollection.doc(plotId).update({
@@ -124,14 +139,17 @@ class DatabaseService {
       'dateUpdated': DateTime.now(),
     });
   }
-
+  // delete plot
+  Future deletePlot(String plotId) async {
+    return await plotCollection.doc(plotId).delete();
+  }
+  // get plots by user
   Future getPlotsByUser() async {
     QuerySnapshot response = await plotCollection.where('user', isEqualTo: uid).get();
     List<PlotModel> plots = _plotListFromSnapshot(response);
     log("Response from the DB: ${plots.length} plots");
     return plots;
   }
-
   // plot list from snapshot
   List<PlotModel> _plotListFromSnapshot(QuerySnapshot snapshot) {
     return snapshot.docs.map((doc) {
@@ -153,7 +171,6 @@ class DatabaseService {
       );
     }).toList();
   }
-
   // get plots stream
   Stream<List<PlotModel>> get plotStream{
     // filter plots by user

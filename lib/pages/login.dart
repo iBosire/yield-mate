@@ -140,16 +140,16 @@ class LoginPageState extends State<LoginPage> {
             ),
             Column(
               children: [
-                OutlinedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context, 
-                      MaterialPageRoute(builder: (context) => const HomePage())
-                      );
-                  },
-                  child: const Text('Login as Admin'),
-                ),
-                const SizedBox(height: 15),
+                // OutlinedButton(
+                //   onPressed: () {
+                //     Navigator.push(
+                //       context, 
+                //       MaterialPageRoute(builder: (context) => const HomePage())
+                //       );
+                //   },
+                //   child: const Text('Login as Admin'),
+                // ),
+                // const SizedBox(height: 15),
                 OutlinedButton(
                   onPressed: () {
                     Navigator.push(
