@@ -397,7 +397,90 @@ class DetailsPageState extends State<DetailsPage> {
       appBar: appBar('Edit User', 1, ''),
       backgroundColor: Colors.white,
       body: Center(
-        child: Text('Details Page'),
+        child: userForm(),
+      ),
+    );
+  }
+
+  Form userForm(){
+    return Form(
+      key: _formKey,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextFormField(
+              decoration: InputDecoration(labelText: 'First Name'),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter your first name';
+                }
+                return null;
+              },
+              onSaved: (value) {
+                // Save the first name
+              },
+            ),
+            TextFormField(
+              decoration: InputDecoration(labelText: 'Last Name'),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter your last name';
+                }
+                return null;
+              },
+              onSaved: (value) {
+                // Save the last name
+              },
+            ),
+            TextFormField(
+              decoration: InputDecoration(labelText: 'Username'),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter a username';
+                }
+                return null;
+              },
+              onSaved: (value) {
+                // Save the username
+              },
+            ),
+            TextFormField(
+              decoration: InputDecoration(labelText: 'Email'),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter your email';
+                }
+                return null;
+              },
+              onSaved: (value) {
+                // Save the email
+              },
+            ),
+            TextFormField(
+              decoration: InputDecoration(labelText: 'Password'),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter a password';
+                }
+                return null;
+              },
+              onSaved: (value) {
+                // Save the password
+              },
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                if (_formKey.currentState!.validate()) {
+                  _formKey.currentState!.save();
+                  // Save user details
+                }
+              },
+              child: Text('Save User'),
+            ),
+          ],
+        ),
       ),
     );
   }

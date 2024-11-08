@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:yield_mate/models/plot_model.dart';
+import 'package:yield_mate/models/seed_model.dart';
 import 'package:yield_mate/models/user_model.dart';
 
 class DatabaseService {
@@ -181,5 +182,20 @@ class DatabaseService {
   // region functions
 
   // seed functions
-
+  Stream<List<SeedModel>> get seedStream{
+    return seedCollection.snapshots().map((QuerySnapshot snapshot) => _seedListFromSnapshot(snapshot));
+  }
+  List<SeedModel> _seedListFromSnapshot(QuerySnapshot snapshot) {
+    return snapshot.docs.map((doc) {
+      return SeedModel(
+        id: doc.id,
+        name: doc['name'] ?? '',
+        manufacturer: doc['manufacturer'] ?? '',
+        crop: doc['crop'] ?? '',
+        timeToMaturity: doc['timeToMaturity'] ?? '',
+        dateCreated: doc['dateCreated'] ?? '',
+        dateUpdated: doc['dateUpdated'] ?? '',
+      );
+    }).toList();
+  }
 }

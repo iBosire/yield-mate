@@ -1,7 +1,10 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'dart:developer';
+
 import 'package:provider/provider.dart';
 import 'package:yield_mate/models/plot_model.dart';
+import 'package:yield_mate/models/seed_model.dart';
 import 'package:yield_mate/models/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -20,21 +23,17 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final AuthService _auth = AuthService();
-  List<CategoryModel> categories = [];
+  late DatabaseService db;
   List<PlotModel> plots = [];
   List<UserModel> users = [];
   String currentUser = "";
-
-  void _getCategories() {
-    categories = CategoryModel.getCategories();
-  }
 
   // void _getUsers() async {
   //   users = UserModel.getUsers();
   // }
 
   void _initialData() {
-    _getCategories();
+    // _getCategories();
     // _getUsers();
   }
 
@@ -43,7 +42,8 @@ class _HomePageState extends State<HomePage> {
     _initialData();
     _auth.user.listen((user) {
       currentUser = user?.uid ?? 'No user';
-    }); // Ensure this is awaited if necessary
+    });
+    db = DatabaseService(uid: currentUser); // Ensure this is awaited if necessary
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -55,7 +55,7 @@ class _HomePageState extends State<HomePage> {
             ListView(
               children: [
                 // USERS
-                UsersSection(users: users, uid: currentUser),
+                UsersSection(users: users,db: db),
                 SizedBox(height: 40),
               ],
             ),
@@ -64,11 +64,7 @@ class _HomePageState extends State<HomePage> {
                 MySearchBar(),
                 SizedBox(height: 40),
                 // CATEGORIES
-                CategoriesSection(categories: categories),
-                SizedBox(height: 40),
-                // PLOTS
-                PlotsSection(plots: plots),
-                SizedBox(height: 40),
+                CategoriesWidget(db: db,),
               ]
             ),
           ],
@@ -163,19 +159,19 @@ class UsersSection extends StatelessWidget {
   const UsersSection({
     super.key,
     required this.users,
-    required this.uid,
+    required this.db,
   });
 
   final List<dynamic> users;
-  final String uid;
+  final DatabaseService db;
 
   @override
   Widget build(BuildContext context) {
     return StreamProvider<List<UserModel?>?>.value(
       initialData: null,
-      value: DatabaseService(uid: uid).userStream,
+      value: db.userStream,
       child: FutureBuilder(
-        future: DatabaseService(uid: uid).userStream.first,
+        future: db.userStream.first,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
@@ -278,6 +274,7 @@ class UsersSection extends StatelessWidget {
         )
       ],
     );
+
   }
 }
 
@@ -382,16 +379,33 @@ class PlotsSection extends StatelessWidget {
   }
 }
 
-class CategoriesSection extends StatelessWidget {
-  const CategoriesSection({
+class CategoriesWidget extends StatefulWidget {
+  const CategoriesWidget({
     super.key,
-    required this.categories,
+    required this.db,
   });
+  final DatabaseService db;
 
-  final List<CategoryModel> categories;
+  @override
+  State<CategoriesWidget> createState() => _CategoriesSectionState();
+}
+
+class _CategoriesSectionState extends State<CategoriesWidget> {
+  List<CategoryModel> categories = [];  
+
+  void _getCategories() {
+    categories = CategoryModel.getCategories();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getCategories();
+  }
 
   @override
   Widget build(BuildContext context) {
+    int currentCategory = 0;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -416,44 +430,172 @@ class CategoriesSection extends StatelessWidget {
             itemCount: categories.length,
             separatorBuilder: (context, index) => SizedBox(width: 25),
             itemBuilder: (context, index) {
-              return Container(
-                width: 100,
-                decoration: BoxDecoration(
-                  color: categories[index].boxColor.withOpacity(0.3),
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    categories[index].isSelected = !categories[index].isSelected;
+                    currentCategory = categories[index].isSelected ? index : 0;
+                    log("Current Category: $currentCategory");
+                  });
+                },
+                child: Container(
+                  width: 100,
+                  decoration: BoxDecoration(
+                    color: categories[index].boxColor.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(15),
+                    border: categories[index].isSelected ? categories[index].border2 : categories[index].border1,
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Container(
+                        width: 50,
+                        height: 50,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: SvgPicture.asset(categories[index].iconPath,),
+                        ),
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: SvgPicture.asset(categories[index].iconPath,),
-                      ),
-                    ),
-                    Text(
-                      categories[index].name,
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    )
-                  ],
+                      Text(
+                        categories[index].name,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               );
             },
           ),
-        )
+        ),
+        SizedBox(height: 20),
+        // RESULTS
+        resultsSection(currentCategory, widget.db),
       ],
     );
   }
+}
+
+Widget resultsSection(int index, DatabaseService db){
+  if (index == 0) {
+    log("Seeds Selected");
+    return StreamProvider<List<SeedModel?>?>.value(
+      initialData: null,
+      value: db.seedStream,
+      child: FutureBuilder(
+        future: db.seedStream.first,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (snapshot.hasData) {
+            return SeedsSection(seeds: snapshot.data!);
+          } else {
+            return Center(child: Text('No data'));
+          }
+        }
+      ),
+    );
+  } else {
+    return Container(
+      child: Text('Select a Category to Display Information'),
+    );
+  }
+}
+
+Widget SeedsSection({required List<SeedModel> seeds}) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Padding(
+        padding: const EdgeInsets.only(left: 20, top: 20),
+        child: Text(
+          'Seeds',
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+      SizedBox(height: 15),
+      ListView.separated(
+        itemCount: seeds.length,
+        shrinkWrap: true,
+        separatorBuilder: (context, index) => SizedBox(height: 20),
+        padding: EdgeInsets.only(left: 20, right: 20),
+        itemBuilder: (context, index) {
+          return Container(
+            height: 100,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(15),
+              boxShadow: [
+                BoxShadow(
+                  color: Color(0xff1D1617).withOpacity(0.11),
+                  offset: Offset(0, 10),
+                  blurRadius: 40,
+                  spreadRadius: 0,
+                )
+              ]
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Icon(Icons.person_outline, size: 40,),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${seeds[index].manufacturer ?? ''}',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      '${seeds[index].crop} | 5 Projects ',
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ],
+                ),
+                Container(
+                  margin: const EdgeInsets.all(10),
+                  alignment: Alignment.center,
+                  width: 37,
+                  height: 37,
+                  decoration: BoxDecoration(
+                    color: Color(0xffF7F8F8),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, '/seed', arguments: seeds[index]);
+                    },
+                    child: SvgPicture.asset('assets/icons/right-arrow.svg',)
+                    ),
+                ),
+              ],
+            ),
+          );
+        },
+      )
+    ],
+  );
 }
 
 class MySearchBar extends StatelessWidget {

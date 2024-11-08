@@ -4,6 +4,9 @@ class CategoryModel {
   String name;
   String iconPath;
   Color boxColor;
+  Border border1 = Border.all(color: Colors.transparent, width: 1);
+  Border border2 = Border.all(color: Colors.black, width: 1);
+  bool isSelected = false;
 
   CategoryModel({
     required this.name,
@@ -13,10 +16,9 @@ class CategoryModel {
 
   static List<CategoryModel> getCategories() {
     List<CategoryModel> categories = [];
-
     categories.add(
       CategoryModel(
-        name: 'Seed',
+        name: 'Seeds',
         iconPath: 'assets/icons/farmer.svg',
         boxColor: Colors.green,
       ),
