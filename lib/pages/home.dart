@@ -403,9 +403,11 @@ class _CategoriesSectionState extends State<CategoriesWidget> {
     _getCategories();
   }
 
+  String? currentCategory;
+
   @override
   Widget build(BuildContext context) {
-    int currentCategory = 0;
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -433,8 +435,10 @@ class _CategoriesSectionState extends State<CategoriesWidget> {
               return GestureDetector(
                 onTap: () {
                   setState(() {
-                    categories[index].isSelected = !categories[index].isSelected;
-                    currentCategory = index;
+                    categories[index].isSelected = true;
+                    if (categories[index].isSelected) {
+                      currentCategory = categories[index].name;
+                    }
                     for (var element in categories) {
                       if (element != categories[index]) {
                         element.isSelected = false;
@@ -488,8 +492,8 @@ class _CategoriesSectionState extends State<CategoriesWidget> {
   }
 }
 
-Widget resultsSection(int index, DatabaseService db){
-  if (index == 0) {
+Widget resultsSection(String? index, DatabaseService db){
+  if (index == "Seeds") {
     log("Seeds Selected");
     return StreamProvider<List<SeedModel?>?>.value(
       initialData: null,
