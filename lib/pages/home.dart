@@ -265,7 +265,9 @@ class UsersSection extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.pushNamed(context, '/user', arguments: users[index]);
+                      },
                       child: SvgPicture.asset('assets/icons/right-arrow.svg',)
                       ),
                   ),
@@ -295,7 +297,7 @@ class PlotsSection extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(left: 20),
           child: Text(
-            'Crop Performance',
+            'Results',
             style: TextStyle(
               color: Colors.black,
               fontSize: 24,

@@ -21,7 +21,8 @@ class DetailsPage extends StatefulWidget {
 }
 
 class DetailsPageState extends State<DetailsPage> {
-  late PlotModel? _plot;
+  late dynamic _plot;
+  late dynamic _user;
   final AuthService _auth = AuthService();
   late String currentUser;
   final _formKey = GlobalKey<FormState>();
@@ -35,7 +36,8 @@ class DetailsPageState extends State<DetailsPage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _plot = ModalRoute.of(context)!.settings.arguments as PlotModel?;
+    _plot = ModalRoute.of(context)!.settings.arguments;
+    _user = ModalRoute.of(context)!.settings.arguments;
   }
   
   @override
@@ -57,13 +59,29 @@ class DetailsPageState extends State<DetailsPage> {
       return newPlot();
     } else if(widget.type == 'editplot') {
       return editPlot();
+    } else if(widget.type == 'viewuser') {
+      return viewUser();
+    } else if(widget.type == 'edituser') {
+      return editUser();
+    } else if(widget.type == 'viewlocation') {
+      return viewLocation();
+    } else if(widget.type == 'newlocation') {
+      return newLocation();
+    } else if(widget.type == 'editlocation') {
+      return editLocation();
+    } else if(widget.type == 'viewseed') {
+      return viewSeed();
+    } else if(widget.type == 'newseed') {
+      return newSeed();
+    } else if(widget.type == 'editseed') {
+      return editSeed();
     } else {
       return Scaffold(
         appBar: AppBar(
           title: Text('Details'),
         ),
-        body: Center(
-          child: Text('Details Page'),
+        body: const Center(
+          child: CircularProgressIndicator(),
         ),
       );
     }
@@ -71,7 +89,7 @@ class DetailsPageState extends State<DetailsPage> {
 
   Scaffold editPlot() {
     return Scaffold(
-      appBar: appBar('Edit Plot', 1),
+      appBar: appBar('Edit Plot', 1, ''),
       backgroundColor: Colors.white,
       body: Center(
         child: Text('Details Page'),
@@ -82,7 +100,7 @@ class DetailsPageState extends State<DetailsPage> {
   Scaffold viewPlot() {
     log("Plot ID: ${_plot?.plotId}");
     return Scaffold(
-    appBar: appBar('Plot Details', 0),
+    appBar: appBar('Plot Details', 0, '/editplot'),
     backgroundColor: Colors.white,
     body: Center(
       child: Column(
@@ -226,7 +244,7 @@ class DetailsPageState extends State<DetailsPage> {
 
   Scaffold newPlot() {
     return Scaffold(
-    appBar: appBar('Create Plot', 1),
+    appBar: appBar('Create Plot', 1, ''),
     backgroundColor: Colors.white,
     body: Center(
       child: plotForm()
@@ -354,7 +372,97 @@ class DetailsPageState extends State<DetailsPage> {
     );
   }
 
-  AppBar appBar(String screenTitle, int type) {
+  Scaffold viewUser() {
+    return Scaffold(
+      appBar: appBar('User Details', 0, '/edituser'),
+      backgroundColor: Colors.white,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('User ID: ${_user?.uid}', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text('Email: ${_user?.email}'),
+            Text('Name: ${_user?.fName} ${_user?.lName}'),
+            Text('Username: ${_user?.username}'),
+            Text('Role: ${_user?.type}'),
+            Text('Date Created: ${_user?.createdAt?.toDate().day} | ${_user?.createdAt?.toDate().month} | ${_user?.createdAt?.toDate().year}'),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Scaffold editUser() {
+    return Scaffold(
+      appBar: appBar('Edit User', 1, ''),
+      backgroundColor: Colors.white,
+      body: Center(
+        child: Text('Details Page'),
+      ),
+    );
+  }
+
+  Scaffold viewLocation() {
+    return Scaffold(
+      appBar: appBar('Location Details', 0, '/editlocation'),
+      backgroundColor: Colors.white,
+      body: Center(
+        child: Text('Details Page'),
+      ),
+    );
+  }
+
+  Scaffold newLocation() {
+    return Scaffold(
+      appBar: appBar('Create Location', 1, ''),
+      backgroundColor: Colors.white,
+      body: Center(
+        child: Text('Details Page'),
+      ),
+    );
+  }
+
+  Scaffold editLocation() {
+    return Scaffold(
+      appBar: appBar('Edit Location', 1, ''),
+      backgroundColor: Colors.white,
+      body: Center(
+        child: Text('Details Page'),
+      ),
+    );
+  }
+
+  Scaffold viewSeed() {
+    return Scaffold(
+      appBar: appBar('Seed Details', 0, '/editseed'),
+      backgroundColor: Colors.white,
+      body: Center(
+        child: Text('Details Page'),
+      ),
+    );
+  }
+
+  Scaffold newSeed() {
+    return Scaffold(
+      appBar: appBar('Create Seed', 1, ''),
+      backgroundColor: Colors.white,
+      body: Center(
+        child: Text('Details Page'),
+      ),
+    );
+  }
+
+  Scaffold editSeed() {
+    return Scaffold(
+      appBar: appBar('Edit Seed', 1, ''),
+      backgroundColor: Colors.white,
+      body: Center(
+        child: Text('Details Page'),
+      ),
+    );
+  }
+
+  AppBar appBar(String screenTitle, int type, String route) {
     return AppBar(
       title: Text(
           screenTitle,
@@ -382,17 +490,17 @@ class DetailsPageState extends State<DetailsPage> {
           )
         ),
         actions: [
-          _setButton(type)
+          _setButton(type, route),
         ],
     );
   }
 
-  GestureDetector _setButton(int type) {
+  GestureDetector _setButton(int type, String route) {
     // edit button
     if(type == 0){
       return GestureDetector(
           onTap: () async {
-            Navigator.pushNamed(context, '/editplot', arguments: _plot);
+            Navigator.pushNamed(context, route, arguments: _plot);
           },
           child: Container(
             margin: const EdgeInsets.all(10),

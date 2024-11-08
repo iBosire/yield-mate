@@ -16,7 +16,7 @@ class CategoryModel {
 
     categories.add(
       CategoryModel(
-        name: 'Price',
+        name: 'Seed',
         iconPath: 'assets/icons/farmer.svg',
         boxColor: Colors.green,
       ),
@@ -24,7 +24,7 @@ class CategoryModel {
 
     categories.add(
       CategoryModel(
-        name: 'Parameters',
+        name: 'Model',
         iconPath: 'assets/icons/mlServer.svg',
         boxColor: Colors.blue,
       ),
