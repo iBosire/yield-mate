@@ -182,6 +182,19 @@ class DatabaseService {
   // region functions
 
   // seed functions
+  // add seed
+  Future addSeed(String name, String manufacturer, String crop, String timeToMaturity) async {
+    return await seedCollection.add({
+      'name': name,
+      'manufacturer': manufacturer,
+      'crop': crop,
+      'timeToMaturity': timeToMaturity,
+      'dateCreated': DateTime.now(),
+      'dateUpdated': DateTime.now(),
+    });
+  }
+
+  // seed stream
   Stream<List<SeedModel>> get seedStream{
     return seedCollection.snapshots().map((QuerySnapshot snapshot) => _seedListFromSnapshot(snapshot));
   }

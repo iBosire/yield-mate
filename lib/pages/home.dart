@@ -506,7 +506,7 @@ Widget resultsSection(String? index, DatabaseService db){
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (snapshot.hasData) {
-            return SeedsSection(seeds: snapshot.data!);
+            return SeedsSection(context, seeds: snapshot.data!);
           } else {
             return Center(child: Text('No data'));
           }
@@ -515,12 +515,13 @@ Widget resultsSection(String? index, DatabaseService db){
     );
   } else {
     return Container(
+      alignment: Alignment.center,
       child: Text('Select a Category to Display Information'),
     );
   }
 }
 
-Widget SeedsSection({required List<SeedModel> seeds}) {
+Widget SeedsSection(BuildContext context, {required List<SeedModel> seeds}) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
@@ -538,6 +539,7 @@ Widget SeedsSection({required List<SeedModel> seeds}) {
       SizedBox(height: 15),
       ListView.separated(
         itemCount: seeds.length,
+        controller: ScrollController(),
         shrinkWrap: true,
         separatorBuilder: (context, index) => SizedBox(height: 20),
         padding: EdgeInsets.only(left: 20, right: 20),
@@ -602,7 +604,20 @@ Widget SeedsSection({required List<SeedModel> seeds}) {
             ),
           );
         },
-      )
+      ),
+      SizedBox(height: 20),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pushNamed(context, '/addseed');
+            },
+            child: Text('Add Seed'),
+          ),
+        ],
+      ),
+      SizedBox(height: 40),
     ],
   );
 }

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:yield_mate/models/plot_model.dart';
 import 'package:yield_mate/models/user_model.dart';
 import 'package:yield_mate/services/auth.dart';
+import 'package:yield_mate/services/database.dart';
 
 class DetailsPage extends StatefulWidget {
   // use user type to handle what info is displayed (plot details, user details, or model details)
@@ -24,6 +25,7 @@ class DetailsPageState extends State<DetailsPage> {
   late dynamic _plot;
   late dynamic _user;
   final AuthService _auth = AuthService();
+  late DatabaseService _db;
   late String currentUser;
   final _formKey = GlobalKey<FormState>();
   late String _plotName;
@@ -47,6 +49,7 @@ class DetailsPageState extends State<DetailsPage> {
       _auth.user.listen((user) {
         setState(() {
           currentUser = user?.uid ?? 'No user';
+          _db = DatabaseService(uid: currentUser);
         });
       });
     });
@@ -515,6 +518,77 @@ class DetailsPageState extends State<DetailsPage> {
     );
   }
 
+  Form locationForm() {
+    return Form(
+      key: _formKey,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextFormField(
+              decoration: InputDecoration(labelText: 'Location Name'),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter a location name';
+                }
+                return null;
+              },
+              onSaved: (value) {
+                // Save the location name
+              },
+            ),
+            TextFormField(
+              decoration: InputDecoration(labelText: 'Region ID'),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter the region ID';
+                }
+                return null;
+              },
+              onSaved: (value) {
+                // Save the region ID
+              },
+            ),
+            TextFormField(
+              decoration: InputDecoration(labelText: 'Latitude'),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter the latitude';
+                }
+                return null;
+              },
+              onSaved: (value) {
+                // Save the latitude
+              },
+            ),
+            TextFormField(
+              decoration: InputDecoration(labelText: 'Longitude'),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter the longitude';
+                }
+                return null;
+              },
+              onSaved: (value) {
+                // Save the longitude
+              },
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                if (_formKey.currentState!.validate()) {
+                  _formKey.currentState!.save();
+                  // Save location details
+                }
+              },
+              child: Text('Save Location'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  
   Scaffold viewSeed() {
     return Scaffold(
       appBar: appBar('Seed Details', 0, '/editseed'),
@@ -530,7 +604,7 @@ class DetailsPageState extends State<DetailsPage> {
       appBar: appBar('Create Seed', 1, ''),
       backgroundColor: Colors.white,
       body: Center(
-        child: Text('Details Page'),
+        child: seedForm(),
       ),
     );
   }
@@ -541,6 +615,83 @@ class DetailsPageState extends State<DetailsPage> {
       backgroundColor: Colors.white,
       body: Center(
         child: Text('Details Page'),
+      ),
+    );
+  }
+
+  Form seedForm(){
+    String _seedName = '';
+    String _seedManufacturer = '';
+    String _seedCrop = '';
+    String _seedMaturity = '';
+
+    return Form(
+      key: _formKey,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextFormField(
+              decoration: InputDecoration(labelText: 'Seed Name'),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter a seed name';
+                }
+                return null;
+              },
+              onSaved: (value) {
+                _seedName = value!;
+              },
+            ),
+            TextFormField(
+              decoration: InputDecoration(labelText: 'Seed Manufacturer'),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter the seed type';
+                }
+                return null;
+              },
+              onSaved: (value) {
+                _seedManufacturer = value!;
+              },
+            ),
+            TextFormField(
+              decoration: InputDecoration(labelText: 'Seed Crop'),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter the seed amount';
+                }
+                return null;
+              },
+              onSaved: (value) {
+                _seedCrop = value!;
+              },
+            ),
+            TextFormField(
+              decoration: InputDecoration(labelText: 'Time to Maturity'),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter the seed price';
+                }
+                return null;
+              },
+              onSaved: (value) {
+                _seedMaturity = value!;
+              },
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () async {
+                if (_formKey.currentState!.validate()) {
+                  _formKey.currentState!.save();
+                  await _db.addSeed(_seedName, _seedManufacturer, _seedCrop, _seedMaturity);
+                  Navigator.pop(context);
+                }
+              },
+              child: Text('Save Seed'),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -597,6 +748,7 @@ class DetailsPageState extends State<DetailsPage> {
           ),
         );
     }
+    // info button
     return GestureDetector(
           onTap: () async {
             // 
