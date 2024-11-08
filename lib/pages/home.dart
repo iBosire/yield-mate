@@ -434,7 +434,12 @@ class _CategoriesSectionState extends State<CategoriesWidget> {
                 onTap: () {
                   setState(() {
                     categories[index].isSelected = !categories[index].isSelected;
-                    currentCategory = categories[index].isSelected ? index : 0;
+                    currentCategory = index;
+                    for (var element in categories) {
+                      if (element != categories[index]) {
+                        element.isSelected = false;
+                      }
+                    }
                     log("Current Category: $currentCategory");
                   });
                 },

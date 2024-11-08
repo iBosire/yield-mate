@@ -16,6 +16,7 @@ class CategoryModel {
 
   static List<CategoryModel> getCategories() {
     List<CategoryModel> categories = [];
+
     categories.add(
       CategoryModel(
         name: 'Seeds',
