@@ -534,7 +534,7 @@ Widget SeedsSection(BuildContext context, {required List<SeedModel> seeds}) {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Icon(Icons.person_outline, size: 40,),
+                Icon(Icons.grass_sharp, size: 40,),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -570,7 +570,7 @@ Widget SeedsSection(BuildContext context, {required List<SeedModel> seeds}) {
                     onTap: () {
                       Navigator.pushNamed(context, '/seed', arguments: seeds[index]);
                     },
-                    child: SvgPicture.asset('assets/icons/right-arrow.svg',)
+                    child: Icon(Icons.arrow_forward_ios, color: Colors.black,)
                     ),
                 ),
               ],
@@ -627,7 +627,7 @@ Widget ModelsSection(BuildContext context, {required List<MlModel> models}){
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Icon(Icons.person_outline, size: 40,),
+                Icon(Icons.smart_button, size: 40,),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -663,7 +663,7 @@ Widget ModelsSection(BuildContext context, {required List<MlModel> models}){
                     onTap: () {
                       Navigator.pushNamed(context, '/model', arguments: models[index]);
                     },
-                    child: SvgPicture.asset('assets/icons/right-arrow.svg',)
+                    child: Icon(Icons.arrow_forward_ios, color: Colors.black,)
                     ),
                 ),
               ],
