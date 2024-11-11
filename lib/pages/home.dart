@@ -89,8 +89,30 @@ class _HomePageState extends State<HomePage> {
         centerTitle: true,
         leading: GestureDetector(
           onTap: () async {
-            await _auth.signOut();
-            Navigator.push(context, MaterialPageRoute(builder: (context) => Wrapper()));
+            showDialog(
+              context: context, 
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text('Logout'),
+                  content: Text('Are you sure you want to logout?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Text('Cancel'),
+                    ),
+                    TextButton(
+                      onPressed: () async {
+                        await _auth.signOut();
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => Wrapper()));
+                      },
+                      child: Text('Logout'),
+                    ),
+                  ],
+                );
+              }
+            );
           },
           child: Container(
             margin: const EdgeInsets.all(10),
@@ -99,11 +121,7 @@ class _HomePageState extends State<HomePage> {
               color: Color(0xffF7F8F8),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: SvgPicture.asset(
-              'assets/icons/back.svg',
-              height: 20,
-              width: 20,
-            )
+            child: Icon(Icons.logout, color: Colors.grey,),
           )
         ),
         actions: [
@@ -156,6 +174,7 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
+//* Users Section
 class UsersSection extends StatelessWidget {
   const UsersSection({
     super.key,
@@ -279,6 +298,7 @@ class UsersSection extends StatelessWidget {
   }
 }
 
+//* Categories Widget
 class CategoriesWidget extends StatefulWidget {
   const CategoriesWidget({
     super.key,
@@ -397,6 +417,7 @@ class _CategoriesSectionState extends State<CategoriesWidget> {
   }
 }
 
+//* Process results from the selected category
 Widget resultsSection(String? index, DatabaseService db){
   if (index == "Seeds") {
     log("Seeds Selected");
@@ -725,7 +746,7 @@ class AddNew extends StatelessWidget {
     );
   }
 }
-
+//* Search Bar
 class MySearchBar extends StatelessWidget {
   const MySearchBar({super.key});
 
