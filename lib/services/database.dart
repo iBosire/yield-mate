@@ -2,6 +2,7 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:yield_mate/models/ml_model.dart';
 import 'package:yield_mate/models/plot_model.dart';
 import 'package:yield_mate/models/seed_model.dart';
 import 'package:yield_mate/models/user_model.dart';
@@ -18,8 +19,10 @@ class DatabaseService {
   final CollectionReference regionCollection = FirebaseFirestore.instance.collection('regions');
   final CollectionReference seedCollection = FirebaseFirestore.instance.collection('seeds');
   final CollectionReference cropCollection = FirebaseFirestore.instance.collection('crops');
+  final CollectionReference modelCollection = FirebaseFirestore.instance.collection('models');
 
-  // user functions
+  //? USER functions
+  // create new user
   Future createNewUser(String email, String username, String fName, String lName) async {
     await demoPlotData();
     return await userCollection.doc(uid).set({
@@ -40,6 +43,10 @@ class DatabaseService {
       'lName': lName,
       'updatedAt': DateTime.now(),
     });
+  }
+  // delete user
+  Future deleteUserAccount() async {
+    return await userCollection.doc(uid).delete();
   }
   // user stream
   Stream<List<UserModel>> get userStream{
@@ -87,7 +94,7 @@ class DatabaseService {
   }
 
 
-  // PLOT FUNCTIONS
+  //? PLOT FUNCTIONS
   Future demoPlotData() async {
     return await plotCollection.doc('demo').set({
       'user': uid,
@@ -181,7 +188,7 @@ class DatabaseService {
 
   // region functions
 
-  // seed functions
+  //? SEED functions
   // add seed
   Future addSeed(String name, String manufacturer, String crop, String timeToMaturity) async {
     return await seedCollection.add({
@@ -192,6 +199,20 @@ class DatabaseService {
       'dateCreated': DateTime.now(),
       'dateUpdated': DateTime.now(),
     });
+  }
+  // update seed
+  Future updateSeedDetails(String seedId, String name, String manufacturer, String crop, String timeToMaturity) async {
+    return await seedCollection.doc(seedId).update({
+      'name': name,
+      'manufacturer': manufacturer,
+      'crop': crop,
+      'timeToMaturity': timeToMaturity,
+      'dateUpdated': DateTime.now(),
+    });
+  }
+  // delete seed
+  Future deleteSeed(String seedId) async {
+    return await seedCollection.doc(seedId).delete();
   }
 
   // seed stream
@@ -208,6 +229,45 @@ class DatabaseService {
         timeToMaturity: doc['timeToMaturity'] ?? '',
         dateCreated: doc['dateCreated'] ?? '',
         dateUpdated: doc['dateUpdated'] ?? '',
+      );
+    }).toList();
+  }
+
+  //? MODEL functions
+  // add model
+  Future addModel(String url, String name, String description) async {
+    return await modelCollection.add({
+      'url': url,
+      'name': name,
+      'description': description,
+      'dateCreated': DateTime.now(),
+      'dateUpdated': DateTime.now(),
+    });
+  }
+  // update model
+  Future updateModelDetails(String modelId, String url, String name, String description) async {
+    return await modelCollection.doc(modelId).update({
+      'url': url,
+      'name': name,
+      'description': description,
+      'dateUpdated': DateTime.now(),
+    });
+  }
+  // delete model
+  Future deleteModel(String modelId) async {
+    return await modelCollection.doc(modelId).delete();
+  }
+  // model stream
+  Stream<List<MlModel>> get modelStream{
+    return modelCollection.snapshots().map((QuerySnapshot snapshot) => _modelListFromSnapshot(snapshot));
+  }
+  List<MlModel> _modelListFromSnapshot(QuerySnapshot snapshot) {
+    return snapshot.docs.map((doc) {
+      return MlModel(
+        id: doc.id,
+        name: doc['name'] ?? '',
+        url: doc['url'] ?? '',
+        description: doc['description'] ?? '',
       );
     }).toList();
   }

@@ -3,6 +3,7 @@
 import 'dart:developer';
 
 import 'package:provider/provider.dart';
+import 'package:yield_mate/models/ml_model.dart';
 import 'package:yield_mate/models/plot_model.dart';
 import 'package:yield_mate/models/seed_model.dart';
 import 'package:yield_mate/models/user_model.dart';
@@ -277,6 +278,7 @@ class UsersSection extends StatelessWidget {
 
   }
 }
+
 class CategoriesWidget extends StatefulWidget {
   const CategoriesWidget({
     super.key,
@@ -383,6 +385,11 @@ class _CategoriesSectionState extends State<CategoriesWidget> {
           ),
         ),
         SizedBox(height: 20),
+        Padding(
+          padding: const EdgeInsets.only(left: 20, right: 20),
+          child: AddNew(name: currentCategory ?? 'none'),
+        ),
+        SizedBox(height: 20),
         // RESULTS
         resultsSection(currentCategory, widget.db),
       ],
@@ -411,6 +418,50 @@ Widget resultsSection(String? index, DatabaseService db){
         }
       ),
     );
+  } else if (index == "Model") {
+    return StreamProvider<List<MlModel?>?>.value(
+      initialData: null,
+      value: db.modelStream,
+      child: FutureBuilder(
+        future: db.modelStream.first,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (snapshot.hasData) {
+            return Container(
+              alignment: Alignment.center,
+              child: ModelsSection(context, models: snapshot.data!),
+            );
+          } else {
+            return Center(child: Text('No data'));
+          }
+        }
+      ),
+    );
+  } else if (index == "Locations") {
+    return StreamProvider<List<PlotModel?>?>.value(
+      initialData: null,
+      value: db.plotStream,
+      child: FutureBuilder(
+        future: db.plotStream.first,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (snapshot.hasData) {
+            return Container(
+              alignment: Alignment.center,
+              child: Text('Location Information'),
+            );
+          } else {
+            return Center(child: Text('No data'));
+          }
+        }
+      ),
+    );
   } else {
     return Container(
       alignment: Alignment.center,
@@ -419,6 +470,7 @@ Widget resultsSection(String? index, DatabaseService db){
   }
 }
 
+//* Displays Seeds Section 
 Widget SeedsSection(BuildContext context, {required List<SeedModel> seeds}) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -435,10 +487,6 @@ Widget SeedsSection(BuildContext context, {required List<SeedModel> seeds}) {
         ),
       ),
       SizedBox(height: 15),
-      Padding(
-        padding: const EdgeInsets.only(left: 20, right: 20, bottom: 15),
-        child: AddSeed(),
-      ),
       ListView.separated(
         itemCount: seeds.length,
         controller: ScrollController(),
@@ -469,7 +517,7 @@ Widget SeedsSection(BuildContext context, {required List<SeedModel> seeds}) {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '${seeds[index].manufacturer ?? ''}',
+                      '${seeds[index].manufacturer}',
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 20,
@@ -477,7 +525,7 @@ Widget SeedsSection(BuildContext context, {required List<SeedModel> seeds}) {
                       ),
                     ),
                     Text(
-                      '${seeds[index].crop} | 5 Projects ',
+                      '${seeds[index].name} | ${seeds[index].crop}',
                       style: TextStyle(
                         color: Colors.grey,
                         fontSize: 16,
@@ -512,13 +560,109 @@ Widget SeedsSection(BuildContext context, {required List<SeedModel> seeds}) {
   );
 }
 
-class AddSeed extends StatelessWidget {
-  const AddSeed({
-    super.key
-  });
+//* Displays Models Section
+Widget ModelsSection(BuildContext context, {required List<MlModel> models}){
+  log("found ${models.length} models");
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Padding(
+        padding: const EdgeInsets.only(left: 20, top: 20),
+        child: Text(
+          'Models',
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+      SizedBox(height: 15),
+      ListView.separated(
+        itemCount: models.length,
+        controller: ScrollController(),
+        shrinkWrap: true,
+        separatorBuilder: (context, index) => SizedBox(height: 20),
+        padding: EdgeInsets.only(left: 20, right: 20),
+        itemBuilder: (context, index) {
+          return Container(
+            height: 100,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(15),
+              boxShadow: [
+                BoxShadow(
+                  color: Color(0xff1D1617).withOpacity(0.11),
+                  offset: Offset(0, 10),
+                  blurRadius: 40,
+                  spreadRadius: 0,
+                )
+              ]
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Icon(Icons.person_outline, size: 40,),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      models[index].name,
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      models[index].description,
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ],
+                ),
+                Container(
+                  margin: const EdgeInsets.all(10),
+                  alignment: Alignment.center,
+                  width: 37,
+                  height: 37,
+                  decoration: BoxDecoration(
+                    color: Color(0xffF7F8F8),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, '/model', arguments: models[index]);
+                    },
+                    child: SvgPicture.asset('assets/icons/right-arrow.svg',)
+                    ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+      SizedBox(height: 20),
+    ],
+  );
+}
 
+//* Add Button
+class AddNew extends StatelessWidget {
+  const AddNew({
+    super.key,
+    required this.name,
+  });
+  final String name;
   @override
   Widget build(BuildContext context) {
+    if(name == 'none') {
+      return Container();
+    }
     return GestureDetector(
       child: Container(
         height: 100,
@@ -545,7 +689,7 @@ class AddSeed extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Add Seed',
+                  'Add $name',
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 20,
@@ -553,7 +697,7 @@ class AddSeed extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  'add a new seed',
+                  'add new ${name.toLowerCase()}',
                   style: TextStyle(
                     color: Colors.grey,
                     fontSize: 16,
@@ -566,7 +710,13 @@ class AddSeed extends StatelessWidget {
         ),
       ),
       onTap: () {
-        Navigator.pushNamed(context, '/addseed');
+        if (name == 'Seeds') {
+          Navigator.pushNamed(context, '/addseed');
+        } else if (name == 'Model') {
+          Navigator.pushNamed(context, '/addmodel');
+        } else if (name == 'Locations') {
+          Navigator.pushNamed(context, '/addlocation');
+        }
       },
     );
   }

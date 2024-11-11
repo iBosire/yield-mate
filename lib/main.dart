@@ -41,6 +41,9 @@ class MyApp extends StatelessWidget {
           '/seed': (context) => DetailsPage(type: 'viewseed',),
           '/addseed': (context) => DetailsPage(type: 'newseed',),
           '/editseed': (context) => DetailsPage(type: 'editseed',),
+          '/model': (context) => DetailsPage(type: 'viewmodel',),
+          '/addmodel': (context) => DetailsPage(type: 'newmodel',),
+          '/editmodel': (context) => DetailsPage(type: 'editmodel',),
         },
       ),
     );

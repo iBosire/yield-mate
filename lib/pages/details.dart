@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:yield_mate/models/plot_model.dart';
 import 'package:yield_mate/models/user_model.dart';
@@ -24,22 +25,23 @@ class DetailsPage extends StatefulWidget {
 class DetailsPageState extends State<DetailsPage> {
   late dynamic _plot;
   late dynamic _user;
+  late dynamic _location;
+  late dynamic _seed;
+  late dynamic _model;
+
   final AuthService _auth = AuthService();
   late DatabaseService _db;
   late String currentUser;
   final _formKey = GlobalKey<FormState>();
-  late String _plotName;
-  late double _plotSize;
-  late String _crop;
-  late String _regionId;
-  late String _seedId;
-  late double _seedAmount;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _plot = ModalRoute.of(context)!.settings.arguments;
     _user = ModalRoute.of(context)!.settings.arguments;
+    _location = ModalRoute.of(context)!.settings.arguments;
+    _seed = ModalRoute.of(context)!.settings.arguments;
+    _model = ModalRoute.of(context)!.settings.arguments;
   }
   
   @override
@@ -54,6 +56,8 @@ class DetailsPageState extends State<DetailsPage> {
       });
     });
   }
+
+  //* Check type of page to display 
   @override
   Widget build(BuildContext context) {
     if(widget.type == 'viewplot') {
@@ -78,6 +82,12 @@ class DetailsPageState extends State<DetailsPage> {
       return newSeed();
     } else if(widget.type == 'editseed') {
       return editSeed();
+    } else if(widget.type == 'viewmodel') {
+      return viewModel();
+    } else if(widget.type == 'newmodel') {
+      return newModel();
+    } else if(widget.type == 'editmodel') {
+      return editModel();
     } else {
       return Scaffold(
         appBar: AppBar(
@@ -90,6 +100,8 @@ class DetailsPageState extends State<DetailsPage> {
     }
   }
 
+  //? PLOT Pages
+  //* Edit 
   Scaffold editPlot() {
     return Scaffold(
       appBar: appBar('Edit Plot', 1, ''),
@@ -99,7 +111,7 @@ class DetailsPageState extends State<DetailsPage> {
       ),
     );
   }
-
+  //* View
   Scaffold viewPlot() {
     log("Plot ID: ${_plot?.plotId}");
     return Scaffold(
@@ -127,6 +139,16 @@ class DetailsPageState extends State<DetailsPage> {
           ...?_plot?.nutrients.map((nutrient) => Text('• $nutrient')).toList() ?? [],
         ],
       ),
+    ),
+  );
+  }
+  //* Add
+ Scaffold newPlot() {
+    return Scaffold(
+    appBar: appBar('Create Plot', 1, ''),
+    backgroundColor: Colors.white,
+    body: Center(
+      child: plotForm()
     ),
   );
   }
@@ -244,18 +266,15 @@ class DetailsPageState extends State<DetailsPage> {
       ]
     );
   }
-
-  Scaffold newPlot() {
-    return Scaffold(
-    appBar: appBar('Create Plot', 1, ''),
-    backgroundColor: Colors.white,
-    body: Center(
-      child: plotForm()
-    ),
-  );
-  }
-
+  //* PlotForm
   Form plotForm() {
+
+  String _plotName;
+  double _plotSize;
+  String _crop;
+  String _regionId;
+  String _seedId;
+  double _seedAmount;
     return Form(
       key: _formKey,
       child: Padding(
@@ -375,6 +394,8 @@ class DetailsPageState extends State<DetailsPage> {
     );
   }
 
+  //? USER Pages
+  //* View 
   Scaffold viewUser() {
     return Scaffold(
       appBar: appBar('User Details', 0, '/edituser'),
@@ -394,7 +415,7 @@ class DetailsPageState extends State<DetailsPage> {
       ),
     );
   }
-
+  //* Edit
   Scaffold editUser() {
     return Scaffold(
       appBar: appBar('Edit User', 1, ''),
@@ -404,7 +425,7 @@ class DetailsPageState extends State<DetailsPage> {
       ),
     );
   }
-
+  //* UserForm
   Form userForm(){
     return Form(
       key: _formKey,
@@ -488,6 +509,8 @@ class DetailsPageState extends State<DetailsPage> {
     );
   }
 
+  //? LOCATION Pages
+  //* View 
   Scaffold viewLocation() {
     return Scaffold(
       appBar: appBar('Location Details', 0, '/editlocation'),
@@ -497,7 +520,7 @@ class DetailsPageState extends State<DetailsPage> {
       ),
     );
   }
-
+  //* Add 
   Scaffold newLocation() {
     return Scaffold(
       appBar: appBar('Create Location', 1, ''),
@@ -507,7 +530,7 @@ class DetailsPageState extends State<DetailsPage> {
       ),
     );
   }
-
+  //* Edit
   Scaffold editLocation() {
     return Scaffold(
       appBar: appBar('Edit Location', 1, ''),
@@ -517,7 +540,7 @@ class DetailsPageState extends State<DetailsPage> {
       ),
     );
   }
-
+  //* LocationForm
   Form locationForm() {
     return Form(
       key: _formKey,
@@ -589,6 +612,8 @@ class DetailsPageState extends State<DetailsPage> {
     );
   }
   
+  //? SEED Pages
+  //* View 
   Scaffold viewSeed() {
     return Scaffold(
       appBar: appBar('Seed Details', 0, '/editseed'),
@@ -598,7 +623,7 @@ class DetailsPageState extends State<DetailsPage> {
       ),
     );
   }
-
+  //* Add
   Scaffold newSeed() {
     return Scaffold(
       appBar: appBar('Create Seed', 1, ''),
@@ -608,7 +633,7 @@ class DetailsPageState extends State<DetailsPage> {
       ),
     );
   }
-
+  //* Edit
   Scaffold editSeed() {
     return Scaffold(
       appBar: appBar('Edit Seed', 1, ''),
@@ -618,7 +643,7 @@ class DetailsPageState extends State<DetailsPage> {
       ),
     );
   }
-
+  //* SeedForm
   Form seedForm(){
     String _seedName = '';
     String _seedManufacturer = '';
@@ -696,6 +721,120 @@ class DetailsPageState extends State<DetailsPage> {
     );
   }
 
+  //? MODEL Pages
+  //* View
+  Scaffold viewModel() {
+    return Scaffold(
+      appBar: appBar('Model Details', 0, '/editmodel'),
+      backgroundColor: Colors.white,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Model ID: ${_model?.id}', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text('Model Name: ${_model?.name}', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text('Description: ${_model?.description}'),
+            Text('URL: ${_model?.url}'),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+              ),
+              onPressed: () async {
+                await _db.deleteModel(_model?.id);
+                Navigator.pushNamed(context, '/');
+              },
+              child: Text("Delete"),
+            )
+            // Text('Date Created: ${_model?.dateCreated.toDate().day} | ${_model?.dateCreated.toDate().month} | ${_model?.dateCreated.toDate().year}'),
+          ],
+        ),
+      ),
+    );
+  }
+  //* Add
+  Scaffold newModel() {
+    return Scaffold(
+      appBar: appBar('Create Model', 1, ''),
+      backgroundColor: Colors.white,
+      body: modelForm(),
+    );
+  }
+  //* Edit
+  Scaffold editModel() {
+    return Scaffold(
+      appBar: appBar('Edit Model', 1, ''),
+      backgroundColor: Colors.white,
+      body: Center(
+        child: Text('Details Page'),
+      ),
+    );
+  }
+  //* ModelForm
+  Form modelForm() {
+    String _modelName = '';
+    String _modelDescription = '';
+    String _modelUrl = '';
+
+    return Form(
+      key: _formKey,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextFormField(
+              decoration: InputDecoration(labelText: 'Model Name'),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter a model name';
+                }
+                return null;
+              },
+              onSaved: (value) {
+                _modelName = value!;
+              },
+            ),
+            TextFormField(
+              decoration: InputDecoration(labelText: 'Model Description'),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter the model description';
+                }
+                return null;
+              },
+              onSaved: (value) {
+                _modelDescription = value!;
+              },
+            ),
+            TextFormField(
+              decoration: InputDecoration(labelText: 'Model URL'),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter the model URL';
+                }
+                return null;
+              },
+              onSaved: (value) {
+                _modelUrl = value!;
+              },
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () async {
+                if (_formKey.currentState!.validate()) {
+                  _formKey.currentState!.save();
+                  await _db.addModel(_modelUrl, _modelName, _modelDescription);
+                  Navigator.pushNamed(context, '/');
+                }
+              },
+              child: Text('Save Model'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  //? APPBAR 
   AppBar appBar(String screenTitle, int type, String route) {
     return AppBar(
       title: Text(
@@ -729,40 +868,41 @@ class DetailsPageState extends State<DetailsPage> {
     );
   }
 
+  //? AppBar Buttons
   GestureDetector _setButton(int type, String route) {
-    // edit button
+    //* edit button
     if(type == 0){
       return GestureDetector(
-          onTap: () async {
-            Navigator.pushNamed(context, route, arguments: _plot);
-          },
-          child: Container(
-            margin: const EdgeInsets.all(10),
-            width: 37,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: const Color(0xffF7F8F8),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(Icons.edit, color: Colors.grey, size: 20,),
+        onTap: () async {
+          Navigator.pushNamed(context, route, arguments: _plot);
+        },
+        child: Container(
+          margin: const EdgeInsets.all(10),
+          width: 37,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: const Color(0xffF7F8F8),
+            borderRadius: BorderRadius.circular(10),
           ),
-        );
+          child: Icon(Icons.edit, color: Colors.grey, size: 20,),
+        ),
+      );
     }
-    // info button
+    //* info button
     return GestureDetector(
-          onTap: () async {
-            // 
-          },
-          child: Container(
-            margin: const EdgeInsets.all(10),
-            width: 37,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: const Color(0xffF7F8F8),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(Icons.info, color: Colors.grey, size: 20,),
-          ),
-        );
+      onTap: () async {
+        // 
+      },
+      child: Container(
+        margin: const EdgeInsets.all(10),
+        width: 37,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: const Color(0xffF7F8F8),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Icon(Icons.info, color: Colors.grey, size: 20,),
+      ),
+    );
   }
 }
