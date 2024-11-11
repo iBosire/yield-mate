@@ -764,8 +764,31 @@ class DetailsPageState extends State<DetailsPage> {
                   ),
                 ),
                 onPressed: () async {
-                  await _db.deleteModel(_model?.id);
-                  Navigator.pushNamed(context, '/');
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text('Delete Model'),
+                        content: Text('Are you sure you want to delete this model?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('Cancel'),
+                          ),
+                          TextButton(
+                            onPressed: () async {
+                              Navigator.of(context).pop();
+                              await _db.deleteModel(_model?.id);
+                              Navigator.pushNamed(context, '/');
+                            },
+                            child: Text('Delete'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
                 },
                 child: const Text(
                   "Delete",
