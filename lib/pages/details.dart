@@ -782,7 +782,7 @@ class DetailsPageState extends State<DetailsPage> {
         child: Column(
           children: [
             TextFormField(
-              decoration: InputDecoration(labelText: 'Model Name'),
+              decoration: decorator('Model Name', "Yield Predictor", 'Enter the model name'),
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter a model name';
@@ -793,8 +793,9 @@ class DetailsPageState extends State<DetailsPage> {
                 _modelName = value!;
               },
             ),
+            SizedBox(height: 20),
             TextFormField(
-              decoration: InputDecoration(labelText: 'Model Description'),
+              decoration: decorator('Model Descryption', "predict crop yield", 'Enter a short description'),
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter the model description';
@@ -805,8 +806,9 @@ class DetailsPageState extends State<DetailsPage> {
                 _modelDescription = value!;
               },
             ),
+            SizedBox(height: 20),
             TextFormField(
-              decoration: InputDecoration(labelText: 'Model URL'),
+              decoration: decorator("Model URL", "www.model.com/yield", "enter the model URL"),
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter the model URL';
@@ -819,6 +821,12 @@ class DetailsPageState extends State<DetailsPage> {
             ),
             SizedBox(height: 20),
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                fixedSize: Size(200, 50),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
               onPressed: () async {
                 if (_formKey.currentState!.validate()) {
                   _formKey.currentState!.save();
@@ -834,6 +842,17 @@ class DetailsPageState extends State<DetailsPage> {
     );
   }
 
+  //? Form Input Decorations
+  InputDecoration decorator(String label, String hint, String helper) {
+    return InputDecoration(
+      helperText: helper,
+      hintText: hint,
+      labelText: label,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+    );
+  }
   //? APPBAR 
   AppBar appBar(String screenTitle, int type, String route) {
     return AppBar(

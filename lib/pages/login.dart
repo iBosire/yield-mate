@@ -1,7 +1,6 @@
 import 'dart:developer';
 
 import 'package:yield_mate/models/user_model.dart';
-import 'package:yield_mate/pages/home.dart';
 import 'package:yield_mate/pages/register.dart';
 import 'package:flutter/material.dart';
 import 'package:yield_mate/shared/loading.dart';

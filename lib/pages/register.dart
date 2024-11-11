@@ -59,7 +59,7 @@ class RegisterPageState extends State<RegisterPage> {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       ),
-                  ),
+                ),
                   onChanged: (value) => _firstName = value,
                   validator: (value) {
                     if (value!.isEmpty) {
