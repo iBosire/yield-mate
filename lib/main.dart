@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yield_mate/models/user_model.dart';
 import 'package:yield_mate/pages/details.dart';
+import 'package:yield_mate/pages/home.dart';
 import 'package:yield_mate/pages/wrapper.dart';
 import 'package:yield_mate/services/auth.dart';
 
@@ -30,6 +31,7 @@ class MyApp extends StatelessWidget {
         initialRoute: '/',
         routes: {
           '/': (context) => Wrapper(),
+          '/modeltab': (context) => HomePage(defIndex: 1,),
           '/plot': (context) => DetailsPage(type: 'viewplot',),
           '/addplot': (context) => DetailsPage(type: 'newplot',),
           '/editplot': (context) => DetailsPage(type: 'editplot',),

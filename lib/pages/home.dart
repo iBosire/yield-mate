@@ -16,8 +16,8 @@ import 'package:yield_mate/services/database.dart';
 import '../models/category_model.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
-
+  const HomePage({super.key, required this.defIndex});
+  final int defIndex;
   @override
   State<HomePage> createState() => _HomePageState();
 }
@@ -46,6 +46,7 @@ class _HomePageState extends State<HomePage> {
     });
     db = DatabaseService(uid: currentUser); // Ensure this is awaited if necessary
     return DefaultTabController(
+      initialIndex: widget.defIndex,
       length: 2,
       child: Scaffold(
         // NAVIGATION BAR

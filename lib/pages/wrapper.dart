@@ -31,7 +31,7 @@ class Wrapper extends StatelessWidget {
       return FieldPage();
     } else if(user.type == "admin") {
       log("admin found");
-      return HomePage();
+      return HomePage(defIndex: 0,);
     } else {
       return LoginPage();
     }

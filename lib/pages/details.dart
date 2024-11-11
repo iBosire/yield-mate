@@ -754,40 +754,7 @@ class DetailsPageState extends State<DetailsPage> {
                 ],
               ),
               SizedBox(height: 20),
-              Form(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    TextFormField(
-                      decoration: decorator("Model Name", "", ""),
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      initialValue: _model?.name,
-                      readOnly: true,
-                    ),
-                    TextFormField(
-                      decoration: decorator("Model Description", "", ""),
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      initialValue: _model?.description,
-                      readOnly: true,
-                    ),
-                    TextFormField(
-                      decoration: decorator("Model URL", "", ""),
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      initialValue: _model?.url,
-                      readOnly: true,
-                    ),
-                  ],
-                ),
-              ),
+              modelForm("view"),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
@@ -820,7 +787,7 @@ class DetailsPageState extends State<DetailsPage> {
     return Scaffold(
       appBar: appBar('Create Model', 1, ''),
       backgroundColor: Colors.white,
-      body: modelForm(),
+      body: modelForm('new'),
     );
   }
   //* Edit
@@ -829,24 +796,139 @@ class DetailsPageState extends State<DetailsPage> {
       appBar: appBar('Edit Model', 1, ''),
       backgroundColor: Colors.white,
       body: Center(
-        child: Text('Details Page'),
+        child: Padding(
+          padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text("Edit Model Details", style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
+              SizedBox(height: 20),
+              modelForm('edit'),
+            ],
+          ),
+        ),
       ),
     );
   }
   //* ModelForm
-  Form modelForm() {
+  Form modelForm(String type) {
     String _modelName = '';
     String _modelDescription = '';
     String _modelUrl = '';
 
-    return Form(
-      key: _formKey,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
+    if(type == 'new'){
+      return Form(
+        key: _formKey,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              TextFormField(
+                decoration: decorator('Model Name', "Yield Predictor", 'Enter the model name'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a model name';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _modelName = value!;
+                },
+              ),
+              SizedBox(height: 20),
+              TextFormField(
+                decoration: decorator('Model Descryption', "predict crop yield", 'Enter a short description'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the model description';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _modelDescription = value!;
+                },
+              ),
+              SizedBox(height: 20),
+              TextFormField(
+                decoration: decorator("Model URL", "www.model.com/yield", "enter the model URL"),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the model URL';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _modelUrl = value!;
+                },
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  fixedSize: Size(200, 50),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                onPressed: () async {
+                  if (_formKey.currentState!.validate()) {
+                    _formKey.currentState!.save();
+                    await _db.addModel(_modelUrl, _modelName, _modelDescription);
+                    Navigator.pushNamed(context, '/modeltab');
+                  }
+                },
+                child: Text('Save Model'),
+              ),
+            ],
+          ),
+        ),
+      );
+    } else if(type == "view"){
+      return Form(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             TextFormField(
-              decoration: decorator('Model Name', "Yield Predictor", 'Enter the model name'),
+              decoration: decorator("Model Name", "", ""),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+              initialValue: _model?.name,
+              readOnly: true,
+            ),
+            TextFormField(
+              decoration: decorator("Model Description", "", ""),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+              initialValue: _model?.description,
+              readOnly: true,
+            ),
+            TextFormField(
+              decoration: decorator("Model URL", "", ""),
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+              initialValue: _model?.url,
+              readOnly: true,
+            ),
+          ],
+        ),
+      );
+    } else if (type == 'edit'){
+      return Form(
+        key: _formKey,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            TextFormField(
+              decoration: decorator("Model Name", "", ""),
+              style: const TextStyle(
+                fontSize: 18,
+              ),
+              initialValue: _model?.name,
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter a model name';
@@ -857,9 +939,12 @@ class DetailsPageState extends State<DetailsPage> {
                 _modelName = value!;
               },
             ),
-            SizedBox(height: 20),
             TextFormField(
-              decoration: decorator('Model Descryption', "predict crop yield", 'Enter a short description'),
+              decoration: decorator("Model Description", "", ""),
+              style: const TextStyle(
+                fontSize: 18,
+              ),
+              initialValue: _model?.description,
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter the model description';
@@ -870,9 +955,12 @@ class DetailsPageState extends State<DetailsPage> {
                 _modelDescription = value!;
               },
             ),
-            SizedBox(height: 20),
             TextFormField(
-              decoration: decorator("Model URL", "www.model.com/yield", "enter the model URL"),
+              decoration: decorator("Model URL", "", ""),
+              style: const TextStyle(
+                fontSize: 18,
+              ),
+              initialValue: _model?.url,
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter the model URL';
@@ -883,27 +971,26 @@ class DetailsPageState extends State<DetailsPage> {
                 _modelUrl = value!;
               },
             ),
-            SizedBox(height: 20),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                fixedSize: Size(200, 50),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
               onPressed: () async {
                 if (_formKey.currentState!.validate()) {
                   _formKey.currentState!.save();
-                  await _db.addModel(_modelUrl, _modelName, _modelDescription);
-                  Navigator.pushNamed(context, '/');
+                  await _db.updateModelDetails(_model?.id, _modelUrl, _modelName, _modelDescription);
+                  Navigator.pushNamed(context, '/modeltab');
                 }
               },
-              child: Text('Save Model'),
+              child: const Text('Save Model'),
             ),
           ],
         ),
-      ),
-    );
+      );
+    } else {
+      return const Form(
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
   }
 
   //? Form Input Decorations
