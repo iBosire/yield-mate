@@ -1083,8 +1083,24 @@ class DetailsPageState extends State<DetailsPage> {
     }
     //* info button
     return GestureDetector(
-      onTap: () async {
-        // 
+      onTap: () {
+        // TODO: Add info page
+        showDialog(
+          context: context, 
+          builder: (BuildContext context) => Dialog.fullscreen(
+            child: Column(
+              children: [
+                const Text('Info Page'),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Close'),
+                ),
+              ],
+            ),
+          ),
+        );
       },
       child: Container(
         margin: const EdgeInsets.all(10),

@@ -24,6 +24,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final AuthService _auth = AuthService();
+  // TODO: make this private
   late DatabaseService db;
   List<PlotModel> plots = [];
   List<UserModel> users = [];
