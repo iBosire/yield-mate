@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:yield_mate/models/plot_model.dart';
 import 'package:yield_mate/models/user_model.dart';
 import 'package:yield_mate/services/auth.dart';
@@ -728,25 +729,88 @@ class DetailsPageState extends State<DetailsPage> {
       appBar: appBar('Model Details', 0, '/editmodel'),
       backgroundColor: Colors.white,
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('Model ID: ${_model?.id}', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            Text('Model Name: ${_model?.name}', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            Text('Description: ${_model?.description}'),
-            Text('URL: ${_model?.url}'),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
+        child: Padding(
+          padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("ID: ${_model?.id}", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  const SizedBox(width: 10),
+                  GestureDetector(
+                    onTap: () {
+                      Clipboard.setData(ClipboardData(text: _model?.id));
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('ID copied to clipboard'),
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                    },
+                    child: const Icon(Icons.copy, color: Colors.grey, size: 20,),
+                  )
+                ],
               ),
-              onPressed: () async {
-                await _db.deleteModel(_model?.id);
-                Navigator.pushNamed(context, '/');
-              },
-              child: Text("Delete"),
-            )
-            // Text('Date Created: ${_model?.dateCreated.toDate().day} | ${_model?.dateCreated.toDate().month} | ${_model?.dateCreated.toDate().year}'),
-          ],
+              SizedBox(height: 20),
+              Form(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    TextFormField(
+                      decoration: decorator("Model Name", "", ""),
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      initialValue: _model?.name,
+                      readOnly: true,
+                    ),
+                    TextFormField(
+                      decoration: decorator("Model Description", "", ""),
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      initialValue: _model?.description,
+                      readOnly: true,
+                    ),
+                    TextFormField(
+                      decoration: decorator("Model URL", "", ""),
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      initialValue: _model?.url,
+                      readOnly: true,
+                    ),
+                  ],
+                ),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  fixedSize: Size(200, 50),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                onPressed: () async {
+                  await _db.deleteModel(_model?.id);
+                  Navigator.pushNamed(context, '/');
+                },
+                child: const Text(
+                  "Delete",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                  ),
+                ),
+              )
+              // Text('Date Created: ${_model?.dateCreated.toDate().day} | ${_model?.dateCreated.toDate().month} | ${_model?.dateCreated.toDate().year}'),
+            ],
+          ),
         ),
       ),
     );
