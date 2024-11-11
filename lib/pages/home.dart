@@ -63,7 +63,6 @@ class _HomePageState extends State<HomePage> {
             ),
             ListView(
               children: [
-                MySearchBar(),
                 SizedBox(height: 40),
                 // CATEGORIES
                 CategoriesWidget(db: db,),
@@ -488,6 +487,8 @@ Widget SeedsSection(BuildContext context, {required List<SeedModel> seeds}) {
         ),
       ),
       SizedBox(height: 15),
+      MySearchBar(),
+      SizedBox(height: 15),
       ListView.separated(
         itemCount: seeds.length,
         controller: ScrollController(),
@@ -578,6 +579,8 @@ Widget ModelsSection(BuildContext context, {required List<MlModel> models}){
           ),
         ),
       ),
+      SizedBox(height: 15),
+      MySearchBar(),
       SizedBox(height: 15),
       ListView.separated(
         itemCount: models.length,
@@ -729,7 +732,7 @@ class MySearchBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(top: 40, left: 20, right: 20),
+      margin: EdgeInsets.only(left: 20, right: 20),
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
