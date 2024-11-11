@@ -685,7 +685,7 @@ class DetailsPageState extends State<DetailsPage> {
                 if (_formKey.currentState!.validate()) {
                   _formKey.currentState!.save();
                   await _db.addSeed(_seedName, _seedManufacturer, _seedCrop, _seedMaturity);
-                  Navigator.pop(context);
+                  Navigator.pushNamed(context, '/');
                 }
               },
               child: Text('Save Seed'),

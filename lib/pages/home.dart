@@ -277,108 +277,6 @@ class UsersSection extends StatelessWidget {
 
   }
 }
-
-class PlotsSection extends StatelessWidget {
-  const PlotsSection({
-    super.key,
-    required this.plots,
-  });
-
-  final List<PlotModel> plots;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 20),
-          child: Text(
-            'Results',
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-        SizedBox(height: 15),
-        // LIST OF PLOTS
-        SizedBox(
-          height: 240,
-          child: ListView.separated(
-            itemBuilder: (context, index) {
-              return Container(
-                width: 210,
-                decoration: BoxDecoration(
-                  color: Colors.grey.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    SvgPicture.asset('yield_mate/assets/icons/plot_icon.svg', height: 50, width: 50),
-                    Column(
-                      children: [
-                        Text(
-                          plots[index].name,
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          '${plots[index].size} | ${plots[index].status} | ${plots[index].score}%',
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ],
-                    ),
-                    // VIEW BUTtON
-                    Container(
-                      height: 45,
-                      width: 130,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(25),
-                        gradient: LinearGradient(
-                          colors: [
-                            plots[index].active ? Color.fromARGB(255, 39, 167, 156) : Colors.transparent,
-                            plots[index].active ? Color.fromARGB(255, 43, 124, 64) : Colors.transparent,
-                          ],
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
-                        ),
-                      ),
-                      child: Center(
-                        child: Text(
-                          'View',
-                          style: TextStyle(
-                            color: plots[index].active ? Colors.white : Colors.grey,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      )
-                      ),
-                  ],
-                ),
-              );
-            },
-            itemCount: plots.length,
-            separatorBuilder: (context, index) => SizedBox(width: 20),
-            scrollDirection: Axis.horizontal,
-            padding: EdgeInsets.only(left: 20, right: 20),
-          ),
-        )
-      ],
-    );
-  }
-}
-
 class CategoriesWidget extends StatefulWidget {
   const CategoriesWidget({
     super.key,
@@ -537,6 +435,10 @@ Widget SeedsSection(BuildContext context, {required List<SeedModel> seeds}) {
         ),
       ),
       SizedBox(height: 15),
+      Padding(
+        padding: const EdgeInsets.only(left: 20, right: 20, bottom: 15),
+        child: AddSeed(),
+      ),
       ListView.separated(
         itemCount: seeds.length,
         controller: ScrollController(),
@@ -606,20 +508,68 @@ Widget SeedsSection(BuildContext context, {required List<SeedModel> seeds}) {
         },
       ),
       SizedBox(height: 20),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/addseed');
-            },
-            child: Text('Add Seed'),
-          ),
-        ],
-      ),
-      SizedBox(height: 40),
     ],
   );
+}
+
+class AddSeed extends StatelessWidget {
+  const AddSeed({
+    super.key
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      child: Container(
+        height: 100,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(15),
+          boxShadow: [
+            BoxShadow(
+              color: Color(0xff1D1617).withOpacity(0.11),
+              offset: Offset(0, 10),
+              blurRadius: 40,
+              spreadRadius: 0,
+            )
+          ]
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            SizedBox(width: 30,),
+            Icon(Icons.add, size: 40,),
+            SizedBox(width: 20),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Add Seed',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  'add a new seed',
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+      onTap: () {
+        Navigator.pushNamed(context, '/addseed');
+      },
+    );
+  }
 }
 
 class MySearchBar extends StatelessWidget {
