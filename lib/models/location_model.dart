@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class LocationModel {
   String id;
   String name;
-  String temperture;
+  String temperature;
   int rainfall;
   String humidity;
   Timestamp dateCreated;
@@ -12,7 +12,7 @@ class LocationModel {
   LocationModel({
     required this.id,
     required this.name,
-    required this.temperture,
+    required this.temperature,
     required this.rainfall,
     required this.humidity,
     required this.dateCreated,

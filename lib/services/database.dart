@@ -2,6 +2,7 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:yield_mate/models/location_model.dart';
 import 'package:yield_mate/models/ml_model.dart';
 import 'package:yield_mate/models/plot_model.dart';
 import 'package:yield_mate/models/seed_model.dart';
@@ -268,6 +269,50 @@ class DatabaseService {
         name: doc['name'] ?? '',
         url: doc['url'] ?? '',
         description: doc['description'] ?? '',
+      );
+    }).toList();
+  }
+
+  //? REGION functions
+  // add region
+  Future addRegion(String name, String temperature, int rainfall, String humidity) async {
+    return await regionCollection.add({
+      'name': name,
+      'temperature': temperature,
+      'rainfall': rainfall,
+      'humidity': humidity,
+      'dateCreated': DateTime.now(),
+      'dateUpdated': DateTime.now(),
+    });
+  }
+  // update region
+  Future updateRegionDetails(String regionId, String name, String temperature, int rainfall, String humidity) async {
+    return await regionCollection.doc(regionId).update({
+      'name': name,
+      'temperature': temperature,
+      'rainfall': rainfall,
+      'humidity': humidity,
+      'dateUpdated': DateTime.now(),
+    });
+  }
+  // delete region
+  Future deleteRegion(String regionId) async {
+    return await regionCollection.doc(regionId).delete();
+  }
+  // region stream
+  Stream<List<LocationModel>> get regionStream{
+    return regionCollection.snapshots().map((QuerySnapshot snapshot) => _regionListFromSnapshot(snapshot));
+  }
+  List<LocationModel> _regionListFromSnapshot(QuerySnapshot snapshot) {
+    return snapshot.docs.map((doc) {
+      return LocationModel(
+        id: doc.id,
+        name: doc['name'] ?? '',
+        temperature: doc['temperature'] ?? '',
+        rainfall: doc['rainfall'] ?? 0,
+        humidity: doc['humidity'] ?? '',
+        dateCreated: doc['dateCreated'] ?? '',
+        dateUpdated: doc['dateUpdated'] ?? '',
       );
     }).toList();
   }

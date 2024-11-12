@@ -517,7 +517,83 @@ class DetailsPageState extends State<DetailsPage> {
       appBar: appBar('Location Details', 0, '/editlocation'),
       backgroundColor: Colors.white,
       body: Center(
-        child: Text('Details Page'),
+        child: Padding(
+          padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text("Location Details", style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
+              SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("ID: ${_location?.id}", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  const SizedBox(width: 10),
+                  GestureDetector(
+                    onTap: () {
+                      Clipboard.setData(ClipboardData(text: _location?.id));
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('ID copied to clipboard'),
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                    },
+                    child: const Icon(Icons.copy, color: Colors.grey, size: 20,),
+                  )
+                ],
+              ),
+              SizedBox(height: 20),
+              locationForm('view'),
+              SizedBox(height: 10),
+              Text('Date Created: ${_location?.dateCreated.toDate().day} | ${_location?.dateCreated.toDate().month} | ${_location?.dateCreated.toDate().year}'),
+              Text('Date Updated: ${_location?.dateUpdated.toDate().day} | ${_location?.dateUpdated.toDate().month} | ${_location?.dateUpdated.toDate().year}'),
+              SizedBox(height: 20),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  fixedSize: Size(200, 50),
+                ),
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text('Delete Location'),
+                        content: const Text('Are you sure you want to delete this location?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text('Cancel'),
+                          ),
+                          TextButton(
+                            onPressed: () async {
+                              await _db.deleteRegion(_location?.id);
+                              Navigator.pushNamed(context, '/modeltab');
+                            },
+                            child: const Text('Delete'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+                child: const Text(
+                  'Delete Location',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -527,7 +603,14 @@ class DetailsPageState extends State<DetailsPage> {
       appBar: appBar('Create Location', 1, ''),
       backgroundColor: Colors.white,
       body: Center(
-        child: Text('Details Page'),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Add New Location', style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w500)),
+            SizedBox(height: 20),
+            locationForm('new'),
+          ],
+        ),
       ),
     );
   }
@@ -537,80 +620,223 @@ class DetailsPageState extends State<DetailsPage> {
       appBar: appBar('Edit Location', 1, ''),
       backgroundColor: Colors.white,
       body: Center(
-        child: Text('Details Page'),
+        child: locationForm('edit'),
       ),
     );
   }
   //* LocationForm
-  Form locationForm() {
-    return Form(
-      key: _formKey,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
+  Form locationForm(String type) {
+    String _locationName = '';
+    String _locationTemperature = '';
+    String _locationHumidity = '';
+    int _locationRainfall = 0;
+
+    if(type == "new"){
+      return Form(
+        key: _formKey,
+        child: Padding(
+          padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+          child: Column(
+            children: [
+              TextFormField(
+                decoration: decorator('Location Name', 'Nairobi', 'Enter the location name'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the location name';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _locationName = value!;
+                },
+              ),
+              SizedBox(height: 20),
+              TextFormField(
+                decoration: decorator('Temperature', '25', 'Enter the average temperature in Celsius'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the temperature';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _locationTemperature = value!;
+                },
+              ),
+              SizedBox(height: 20),
+              TextFormField(
+                decoration: decorator('Humidity', '60%', 'Enter the humidity'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the humidity';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _locationHumidity = value!;
+                },
+              ),
+              SizedBox(height: 20),
+              TextFormField(
+                decoration: decorator('Rainfall', '100mm', 'Enter the rainfall'),
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the rainfall';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _locationRainfall = int.parse(value!);
+                },
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    _formKey.currentState!.save();
+                    _db.addRegion(_locationName, _locationTemperature, _locationRainfall, _locationHumidity);
+                    Navigator.pushNamed(context, '/modeltab');
+                  }
+                },
+                child: Text('Save Location'),
+              ),
+            ],
+          ),
+        ),
+      );
+    } else if(type == "view"){
+      return Form(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             TextFormField(
-              decoration: InputDecoration(labelText: 'Location Name'),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter a location name';
-                }
-                return null;
-              },
-              onSaved: (value) {
-                // Save the location name
-              },
+              decoration: decorator("Location Name", "", ""),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+              initialValue: _location?.name,
+              readOnly: true,
             ),
             TextFormField(
-              decoration: InputDecoration(labelText: 'Region ID'),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter the region ID';
-                }
-                return null;
-              },
-              onSaved: (value) {
-                // Save the region ID
-              },
+              decoration: decorator("Temperature", "", ""),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+              initialValue: _location?.temperature,
+              readOnly: true,
             ),
             TextFormField(
-              decoration: InputDecoration(labelText: 'Latitude'),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter the latitude';
-                }
-                return null;
-              },
-              onSaved: (value) {
-                // Save the latitude
-              },
+              decoration: decorator("Humidity", "", ""),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+              initialValue: _location?.humidity,
+              readOnly: true,
             ),
             TextFormField(
-              decoration: InputDecoration(labelText: 'Longitude'),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter the longitude';
-                }
-                return null;
-              },
-              onSaved: (value) {
-                // Save the longitude
-              },
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                if (_formKey.currentState!.validate()) {
-                  _formKey.currentState!.save();
-                  // Save location details
-                }
-              },
-              child: Text('Save Location'),
+              decoration: decorator("Rainfall", "", ""),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+              initialValue: _location?.rainfall.toString(),
+              readOnly: true,
             ),
           ],
         ),
-      ),
-    );
+      );
+    } else if(type == "edit"){
+      return Form(
+        key: _formKey,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('Edit Location Details', style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w400)),
+              SizedBox(height: 20),
+              TextFormField(
+                decoration: decorator('Location Name', _location?.name, 'Enter the location name'),
+                initialValue: _location?.name,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the location name';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _locationName = value!;
+                },
+              ),
+              SizedBox(height: 20),
+              TextFormField(
+                decoration: decorator('Temperature', _location?.temperature, 'Enter the temperature'),
+                initialValue: _location?.temperature,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the temperature';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _locationTemperature = value!;
+                },
+              ),
+              SizedBox(height: 20),
+              TextFormField(
+                decoration: decorator('Humidity', _location?.humidity, 'Enter the humidity'),
+                initialValue: _location?.humidity,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the humidity';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _locationHumidity = value!;
+                },
+              ),
+              SizedBox(height: 20),
+              TextFormField(
+                decoration: decorator('Rainfall', "", 'Enter the rainfall'),
+                initialValue: _location?.rainfall.toString(),
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the rainfall';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _locationRainfall = int.parse(value!);
+                },
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    _formKey.currentState!.save();
+                    _db.updateRegionDetails(_location?.id, _locationName, _locationTemperature, _locationRainfall, _locationHumidity);
+                    Navigator.pushNamed(context, '/modeltab');
+                  }
+                },
+                child: Text('Save Location'),
+              ),
+            ],
+          ),
+        ),
+      );
+    } else {
+      return const Form(
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
   }
   
   //? SEED Pages
