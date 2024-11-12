@@ -620,7 +620,83 @@ class DetailsPageState extends State<DetailsPage> {
       appBar: appBar('Seed Details', 0, '/editseed'),
       backgroundColor: Colors.white,
       body: Center(
-        child: Text('Details Page'),
+        child: Padding(
+          padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text("Seed Details", style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
+              SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("ID: ${_seed?.id}", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  const SizedBox(width: 10),
+                  GestureDetector(
+                    onTap: () {
+                      Clipboard.setData(ClipboardData(text: _seed?.id));
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('ID copied to clipboard'),
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                    },
+                    child: const Icon(Icons.copy, color: Colors.grey, size: 20,),
+                  )
+                ],
+              ),
+              SizedBox(height: 20),
+              seedForm('view'),
+              SizedBox(height: 10),
+              Text('Date Created: ${_seed?.dateCreated.toDate().day} | ${_seed?.dateCreated.toDate().month} | ${_seed?.dateCreated.toDate().year}'),
+              Text('Date Updated: ${_seed?.dateUpdated.toDate().day} | ${_seed?.dateUpdated.toDate().month} | ${_seed?.dateUpdated.toDate().year}'),
+              SizedBox(height: 20),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  fixedSize: Size(200, 50),
+                ),
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text('Delete Seed'),
+                        content: const Text('Are you sure you want to delete this seed?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text('Cancel'),
+                          ),
+                          TextButton(
+                            onPressed: () async {
+                              await _db.deleteSeed(_seed?.id);
+                              Navigator.pushNamed(context, '/modeltab');
+                            },
+                            child: const Text('Delete'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+                child: const Text(
+                  'Delete Seed',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -630,7 +706,13 @@ class DetailsPageState extends State<DetailsPage> {
       appBar: appBar('Create Seed', 1, ''),
       backgroundColor: Colors.white,
       body: Center(
-        child: seedForm(),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Add New Seed', style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w500)),
+            seedForm('new'),
+          ],
+        ),
       ),
     );
   }
@@ -640,86 +722,221 @@ class DetailsPageState extends State<DetailsPage> {
       appBar: appBar('Edit Seed', 1, ''),
       backgroundColor: Colors.white,
       body: Center(
-        child: Text('Details Page'),
+        child: seedForm('edit'),
       ),
     );
   }
   //* SeedForm
-  Form seedForm(){
+  Form seedForm(String type){
     String _seedName = '';
     String _seedManufacturer = '';
     String _seedCrop = '';
     String _seedMaturity = '';
 
-    return Form(
-      key: _formKey,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
+    if(type == "new"){
+      return Form(
+        key: _formKey,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              TextFormField(
+                decoration: decorator('Seed Name', 'Maize', 'Enter the seed name'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the seed name';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _seedName = value!;
+                },
+              ),
+              SizedBox(height: 20),
+              TextFormField(
+                decoration: decorator('Seed Manufacturer', 'Seed Co.', 'Enter the seed manufacturer'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the seed manufacturer';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _seedManufacturer = value!;
+                },
+              ),
+              SizedBox(height: 20),
+              TextFormField(
+                decoration: decorator('Seed Crop', 'Maize', 'Enter the seed crop'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the seed crop';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _seedCrop = value!;
+                },
+              ),
+              SizedBox(height: 20),
+              TextFormField(
+                decoration: decorator('Seed Maturity', '90 days', 'Enter the days to maturity'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the seed maturity';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _seedMaturity = value!;
+                },
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () async {
+                  if (_formKey.currentState!.validate()) {
+                    _formKey.currentState!.save();
+                    await _db.addSeed(_seedName, _seedManufacturer, _seedCrop, _seedMaturity);
+                    Navigator.pushNamed(context, '/modeltab');
+                  }
+                },
+                child: Text('Save Seed'),
+              ),
+            ],
+          ),
+        ),
+      );
+    } else if(type == "view"){
+      return Form(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             TextFormField(
-              decoration: InputDecoration(labelText: 'Seed Name'),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter a seed name';
-                }
-                return null;
-              },
-              onSaved: (value) {
-                _seedName = value!;
-              },
+              decoration: decorator("Seed Name", "", ""),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+              initialValue: _seed?.name,
+              readOnly: true,
             ),
             TextFormField(
-              decoration: InputDecoration(labelText: 'Seed Manufacturer'),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter the seed type';
-                }
-                return null;
-              },
-              onSaved: (value) {
-                _seedManufacturer = value!;
-              },
+              decoration: decorator("Seed Manufacturer", "", ""),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+              initialValue: _seed?.manufacturer,
+              readOnly: true,
             ),
             TextFormField(
-              decoration: InputDecoration(labelText: 'Seed Crop'),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter the seed amount';
-                }
-                return null;
-              },
-              onSaved: (value) {
-                _seedCrop = value!;
-              },
+              decoration: decorator("Seed Crop", "", ""),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+              initialValue: _seed?.crop,
+              readOnly: true,
             ),
             TextFormField(
-              decoration: InputDecoration(labelText: 'Time to Maturity'),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter the seed price';
-                }
-                return null;
-              },
-              onSaved: (value) {
-                _seedMaturity = value!;
-              },
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () async {
-                if (_formKey.currentState!.validate()) {
-                  _formKey.currentState!.save();
-                  await _db.addSeed(_seedName, _seedManufacturer, _seedCrop, _seedMaturity);
-                  Navigator.pushNamed(context, '/');
-                }
-              },
-              child: Text('Save Seed'),
+              decoration: decorator("Seed Maturity", "", ""),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+              initialValue: _seed?.timeToMaturity,
+              readOnly: true,
             ),
           ],
         ),
-      ),
-    );
+      );
+    } else if(type == "edit"){
+      return Form(
+        key: _formKey,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('Edit Seed Details', style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w400)),
+              SizedBox(height: 20),
+              TextFormField(
+                decoration: decorator('Seed Name', _seed?.name, 'Enter the seed name'),
+                initialValue: _seed?.name,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the seed name';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _seedName = value!;
+                },
+              ),
+              SizedBox(height: 20),
+              TextFormField(
+                decoration: decorator('Seed Manufacturer', _seed?.manufacturer, 'Enter the seed manufacturer'),
+                initialValue: _seed?.manufacturer,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the seed manufacturer';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _seedManufacturer = value!;
+                },
+              ),
+              SizedBox(height: 20),
+              TextFormField(
+                decoration: decorator('Seed Crop', _seed?.crop, 'Enter the seed crop'),
+                initialValue: _seed?.crop,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the seed crop';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _seedCrop = value!;
+                },
+              ),
+              SizedBox(height: 20),
+              TextFormField(
+                decoration: decorator('Seed Maturity', _seed?.timeToMaturity, 'Enter the seed maturity'),
+                initialValue: _seed?.timeToMaturity,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the seed maturity';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _seedMaturity = value!;
+                },
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    _formKey.currentState!.save();
+                    _db.updateSeedDetails(_seed?.id, _seedName, _seedManufacturer, _seedCrop, _seedMaturity);
+                    Navigator.pushNamed(context, '/modeltab');
+                  }
+                },
+                child: Text('Save Seed'),
+              ),
+            ],
+          ),
+        ),
+      );
+    } else {
+      return const Form(
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
   }
 
   //? MODEL Pages
@@ -810,7 +1027,13 @@ class DetailsPageState extends State<DetailsPage> {
     return Scaffold(
       appBar: appBar('Create Model', 1, ''),
       backgroundColor: Colors.white,
-      body: modelForm('new'),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text('Add New Model', style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w500)),
+          modelForm('new'),
+        ],
+      ),
     );
   }
   //* Edit
@@ -824,7 +1047,7 @@ class DetailsPageState extends State<DetailsPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text("Edit Model Details", style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
+              Text("Edit Model Details", style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w500)),
               SizedBox(height: 20),
               modelForm('edit'),
             ],
@@ -944,8 +1167,10 @@ class DetailsPageState extends State<DetailsPage> {
       return Form(
         key: _formKey,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Text('Edit Model Details', style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w400)),
+            SizedBox(height: 20),
             TextFormField(
               decoration: decorator("Model Name", "", ""),
               style: const TextStyle(
