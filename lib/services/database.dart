@@ -39,8 +39,8 @@ class DatabaseService {
     });
   }
   // update user details
-  Future updateUserDetails(String username, String fName, String lName) async {
-    return await userCollection.doc(uid).update({
+  Future updateUserDetails(String id, String username, String fName, String lName) async {
+    return await userCollection.doc(id).update({
       'username': username,
       'fName': fName,
       'lName': lName,
@@ -49,6 +49,11 @@ class DatabaseService {
   }
   // delete user
   Future deleteUserAccount() async {
+    await getPlotsByUser().then((value) {
+      value.forEach((plot) {
+        deletePlot(plot.plotId);
+      });
+    });
     return await userCollection.doc(uid).delete();
   }
   // user stream

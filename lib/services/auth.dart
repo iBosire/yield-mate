@@ -21,6 +21,17 @@ class AuthService {
     return UserModel(uid: user.uid);
   }
 
+  // delete user
+  Future deleteUser() async {
+    try {
+      User? user = _auth.currentUser;
+      await user!.delete();
+      return _userFromFirebaseUser(user);
+    } catch(e) {
+      log(e.toString());
+      return null;
+    }
+  }
 
   // Sign in anonymously
   Future<UserModel?> signInAnon() async {

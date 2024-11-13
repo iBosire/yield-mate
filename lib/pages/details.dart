@@ -161,7 +161,7 @@ class DetailsPageState extends State<DetailsPage> {
     ),
   );
   }
-
+  //* Crop Nutrition Table
   Table _detailsTable() {
     return Table(
       border: const TableBorder(
@@ -410,16 +410,82 @@ class DetailsPageState extends State<DetailsPage> {
       appBar: appBar('User Details', 0, '/edituser'),
       backgroundColor: Colors.white,
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('User ID: ${_user?.uid}', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            Text('Email: ${_user?.email}'),
-            Text('Name: ${_user?.fName} ${_user?.lName}'),
-            Text('Username: ${_user?.username}'),
-            Text('Role: ${_user?.type}'),
-            Text('Date Created: ${_user?.createdAt?.toDate().day} | ${_user?.createdAt?.toDate().month} | ${_user?.createdAt?.toDate().year}'),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('User Details', style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
+              SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('ID: ${_user?.uid}', style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                  const SizedBox(width: 10),
+                  GestureDetector(
+                    onTap: () {
+                      Clipboard.setData(ClipboardData(text: _user?.id));
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('ID copied to clipboard'),
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                    },
+                    child: const Icon(Icons.copy, color: Colors.grey, size: 20,),
+                  )
+                ],
+              ),
+              SizedBox(height: 20),
+              userForm('view'),
+              SizedBox(height: 10),
+              Text('Date Created: ${_user?.createdAt.toDate().day} | ${_user?.createdAt.toDate().month} | ${_user?.createdAt.toDate().year}'),
+              Text('Date Updated: ${_user?.updatedAt.toDate().day} | ${_user?.updatedAt.toDate().month} | ${_user?.updatedAt.toDate().year} | Time ${_user?.updatedAt.toDate().hour}:${_user?.updatedAt.toDate().minute}'),
+              SizedBox(height: 20),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  fixedSize: Size(200, 50),
+                ),
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text('Delete User'),
+                        content: const Text('Are you sure you want to delete this user?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text('Cancel'),
+                          ),
+                          TextButton(
+                            onPressed: () async {
+                              await _db.deleteUser(_user?.uid);
+                              Navigator.pushNamed(context, '/modeltab');
+                            },
+                            child: const Text('Delete'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+                child: const Text(
+                  'Delete User',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                  ),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -430,93 +496,131 @@ class DetailsPageState extends State<DetailsPage> {
       appBar: appBar('Edit User', 1, ''),
       backgroundColor: Colors.white,
       body: Center(
-        child: userForm(),
-      ),
-    );
-  }
-  //* UserForm
-  Form userForm(){
-    return Form(
-      key: _formKey,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            TextFormField(
-              decoration: InputDecoration(labelText: 'First Name'),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter your first name';
-                }
-                return null;
-              },
-              onSaved: (value) {
-                // Save the first name
-              },
-            ),
-            TextFormField(
-              decoration: InputDecoration(labelText: 'Last Name'),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter your last name';
-                }
-                return null;
-              },
-              onSaved: (value) {
-                // Save the last name
-              },
-            ),
-            TextFormField(
-              decoration: InputDecoration(labelText: 'Username'),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter a username';
-                }
-                return null;
-              },
-              onSaved: (value) {
-                // Save the username
-              },
-            ),
-            TextFormField(
-              decoration: InputDecoration(labelText: 'Email'),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter your email';
-                }
-                return null;
-              },
-              onSaved: (value) {
-                // Save the email
-              },
-            ),
-            TextFormField(
-              decoration: InputDecoration(labelText: 'Password'),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter a password';
-                }
-                return null;
-              },
-              onSaved: (value) {
-                // Save the password
-              },
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                if (_formKey.currentState!.validate()) {
-                  _formKey.currentState!.save();
-                  // Save user details
-                }
-              },
-              child: Text('Save User'),
-            ),
+            Text('Edit User Details', style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w400)),
+            userForm('edit'),
           ],
         ),
       ),
     );
   }
+  //* UserForm
+  Form userForm(String type){
+    if(type == 'view'){
+      return Form(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            TextFormField(
+              decoration: decorator("First Name", "", ""),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+              initialValue: _user?.fName,
+              readOnly: true,
+            ),
+            TextFormField(
+              decoration: decorator("Last Name", "", ""),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+              initialValue: _user?.lName,
+              readOnly: true,
+            ),
+            TextFormField(
+              decoration: decorator("Username", "", ""),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+              initialValue: _user?.username,
+              readOnly: true,
+            ),
+            TextFormField(
+              decoration: decorator("Email", "", ""),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+              initialValue: _user?.email,
+              readOnly: true,
+            ),
+          ],
+        ),
+      );
+    } else if(type == 'edit'){
+      return Form(
+        key: _formKey,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              TextFormField(
+                decoration: decorator('First Name', "", 'Enter first name'),
+                initialValue: _user?.fName,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter an first name';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _user.fName = value;
+                },
+              ),
+              TextFormField(
+                decoration: decorator('Last Name', "", 'Enter last name'),
+                initialValue: _user?.lName,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter an last name';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _user.lName = value;
+                },
+              ),
+              TextFormField(
+                decoration: decorator('Username', "", 'Enter new username'),
+                initialValue: _user?.username,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter an username';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _user.username = value;
+                },
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () async{
+                  if (_formKey.currentState!.validate()) {
+                    _formKey.currentState!.save();
+                    await _db.updateUserDetails(_user.uid, _user?.username, _user?.fName, _user?.lName);
+                    Navigator.pushNamed(context, '/modeltab');
+                  }
+                },
+                child: Text('Save User'),
+              ),
+            ],
+          ),
+        ),
+      );
+    } else {
+    return const Form(
+      child: Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
+  }
+}
 
   //? LOCATION Pages
   //* View 
