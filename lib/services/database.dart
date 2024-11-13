@@ -222,7 +222,13 @@ class DatabaseService {
   Future deleteSeed(String seedId) async {
     return await seedCollection.doc(seedId).delete();
   }
-
+  // get all seeds
+  Future<List<SeedModel>> getSeeds() async {
+    QuerySnapshot response = await seedCollection.get();
+    List<SeedModel> seeds = _seedListFromSnapshot(response);
+    log("Response from the DB: ${seeds.length} seeds");
+    return seeds;
+  }
   // seed stream
   Stream<List<SeedModel>> get seedStream{
     return seedCollection.snapshots().map((QuerySnapshot snapshot) => _seedListFromSnapshot(snapshot));
