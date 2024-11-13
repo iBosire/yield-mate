@@ -3,6 +3,7 @@
 import 'dart:developer';
 
 import 'package:provider/provider.dart';
+import 'package:yield_mate/models/crop_model.dart';
 import 'package:yield_mate/models/location_model.dart';
 import 'package:yield_mate/models/ml_model.dart';
 import 'package:yield_mate/models/plot_model.dart';
@@ -485,6 +486,28 @@ Widget resultsSection(String? index, DatabaseService db){
         }
       ),
     );
+  } else if (index == "Crops") {
+    return StreamProvider<List<CropModel?>?>.value(
+      initialData: null,
+      value: db.cropStream,
+      child: FutureBuilder(
+        future: db.cropStream.first,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (snapshot.hasData) {
+            return Container(
+              alignment: Alignment.center,
+              child: CropsSection(context, crops: snapshot.data!),
+            );
+          } else {
+            return Center(child: Text('No data'));
+          }
+        }
+      ),
+    );
   } else {
     return Container(
       alignment: Alignment.center,
@@ -769,6 +792,99 @@ Widget LocationsSection(BuildContext context, {required List<LocationModel> loca
     ],
   );
 } 
+
+//* Displays Crops Section
+Widget CropsSection(BuildContext context, {required List<CropModel> crops}){
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Padding(
+        padding: const EdgeInsets.only(left: 20, top: 20),
+        child: Text(
+          'Crops',
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+      SizedBox(height: 15),
+      MySearchBar(),
+      SizedBox(height: 15),
+      ListView.separated(
+        itemCount: crops.length,
+        controller: ScrollController(),
+        shrinkWrap: true,
+        separatorBuilder: (context, index) => SizedBox(height: 20),
+        padding: EdgeInsets.only(left: 20, right: 20),
+        itemBuilder: (context, index) {
+          return Container(
+            height: 100,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(15),
+              boxShadow: [
+                BoxShadow(
+                  color: Color(0xff1D1617).withOpacity(0.11),
+                  offset: Offset(0, 10),
+                  blurRadius: 40,
+                  spreadRadius: 0,
+                )
+              ]
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Icon(Icons.grass, size: 40,),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      crops[index].name,
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      'Market Price: ${crops[index].marketPrice}',
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ],
+                ),
+                Container(
+                  margin: const EdgeInsets.all(10),
+                  alignment: Alignment.center,
+                  width: 37,
+                  height: 37,
+                  decoration: BoxDecoration(
+                    color: Color(0xffF7F8F8),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, '/crop', arguments: crops[index]);
+                    },
+                    child: Icon(Icons.arrow_forward_ios, color: Colors.black,)
+                    ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+      SizedBox(height: 20),
+    ],
+  );
+}
+
 //* Add Button
 class AddNew extends StatelessWidget {
   const AddNew({
@@ -834,6 +950,8 @@ class AddNew extends StatelessWidget {
           Navigator.pushNamed(context, '/addmodel');
         } else if (name == 'Locations') {
           Navigator.pushNamed(context, '/addlocation');
+        } else if (name == 'Crops') {
+          Navigator.pushNamed(context, '/addcrop');
         }
       },
     );

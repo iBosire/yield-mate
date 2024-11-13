@@ -29,6 +29,7 @@ class DetailsPageState extends State<DetailsPage> {
   late dynamic _location;
   late dynamic _seed;
   late dynamic _model;
+  late dynamic _crop;
 
   final AuthService _auth = AuthService();
   late DatabaseService _db;
@@ -43,6 +44,7 @@ class DetailsPageState extends State<DetailsPage> {
     _location = ModalRoute.of(context)!.settings.arguments;
     _seed = ModalRoute.of(context)!.settings.arguments;
     _model = ModalRoute.of(context)!.settings.arguments;
+    _crop = ModalRoute.of(context)!.settings.arguments;
   }
   
   @override
@@ -89,6 +91,12 @@ class DetailsPageState extends State<DetailsPage> {
       return newModel();
     } else if(widget.type == 'editmodel') {
       return editModel();
+    } else if(widget.type == 'viewcrop') {
+      return viewCrop();
+    } else if(widget.type == 'newcrop') {
+      return newCrop();
+    } else if(widget.type == 'editcrop') {
+      return editCrop();
     } else {
       return Scaffold(
         appBar: AppBar(
@@ -1456,6 +1464,255 @@ class DetailsPageState extends State<DetailsPage> {
               child: const Text('Save Model'),
             ),
           ],
+        ),
+      );
+    } else {
+      return const Form(
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+  }
+
+  //? CROP Pages
+  //* View
+  Scaffold viewCrop() {
+    return Scaffold(
+      appBar: appBar('Crop Details', 0, '/editcrop'),
+      backgroundColor: Colors.white,
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("ID: ${_crop?.id}", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  const SizedBox(width: 10),
+                  GestureDetector(
+                    onTap: () {
+                      Clipboard.setData(ClipboardData(text: _crop?.id));
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('ID copied to clipboard'),
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                    },
+                    child: const Icon(Icons.copy, color: Colors.grey, size: 20,),
+                  )
+                ],
+              ),
+              SizedBox(height: 20),
+              cropForm('view'),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  fixedSize: Size(200, 50),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text('Delete Crop'),
+                        content: const Text('Are you sure you want to delete this crop?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text('Cancel'),
+                          ),
+                          TextButton(
+                            onPressed: () async {
+                              await _db.deleteCrop(_crop?.id);
+                              Navigator.pushNamed(context, '/modeltab');
+                            },
+                            child: const Text('Delete'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+                child: const Text(
+                  'Delete Crop',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+  //* Add
+  Scaffold newCrop() {
+    return Scaffold(
+      appBar: appBar('Create Crop', 1, ''),
+      backgroundColor: Colors.white,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Add New Crop', style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w500)),
+            cropForm('new'),
+          ],
+        ),
+      ),
+    );
+  }
+  //* Edit
+  Scaffold editCrop() {
+    return Scaffold(
+      appBar: appBar('Edit Crop', 1, ''),
+      backgroundColor: Colors.white,
+      body: Center(
+        child: cropForm('edit'),
+      ),
+    );
+  }
+  //* CropForm
+  Form cropForm(String type) {
+    String _cropName = '';
+    String _cropMarketPrice = '';
+
+    if(type == "new"){
+      return Form(
+        key: _formKey,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              TextFormField(
+                decoration: decorator('Crop Name', 'Maize', 'Enter the crop name'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the crop name';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _cropName = value!;
+                },
+              ),
+              SizedBox(height: 20),
+              TextFormField(
+                decoration: decorator('Crop Market Price', '20', 'Enter the market price in ksh per kg.'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the crop variety';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _cropMarketPrice = value!;
+                },
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () async {
+                  if (_formKey.currentState!.validate()) {
+                    _formKey.currentState!.save();
+                    await _db.addCrop(_cropName, _cropMarketPrice);
+                    Navigator.pushNamed(context, '/modeltab');
+                  }
+                },
+                child: Text('Save Crop'),
+              ),
+            ],
+          ),
+        ),
+      );
+    } else if(type == "view"){
+      return Form(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            TextFormField(
+              decoration: decorator("Crop Name", "", ""),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+              initialValue: _crop?.name,
+              readOnly: true,
+            ),
+            TextFormField(
+              decoration: decorator("Crop Market Price", "", ""),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+              initialValue: _crop?.marketPrice,
+              readOnly: true,
+            ),
+          ],
+        ),
+      );
+    } else if(type == "edit"){
+      return Form(
+        key: _formKey,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('Edit Crop Details', style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w400)),
+              SizedBox(height: 20),
+              TextFormField(
+                decoration: decorator('Crop Name', _crop?.name, 'Enter the crop name'),
+                initialValue: _crop?.name,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the crop name';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _cropName = value!;
+                },
+              ),
+              SizedBox(height: 20),
+              TextFormField(
+                decoration: decorator('Crop Market Price', _crop?.marketPrice, 'Enter the crop market price in ksh per kg.'),
+                initialValue: _crop?.marketPrice,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the crop description';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _cropMarketPrice = value!;
+                },
+              ), 
+              SizedBox(height: 20),
+              Text('Date Created: ${_crop?.dateCreated.toDate().day} | ${_crop?.dateCreated.toDate().month} | ${_crop?.dateCreated.toDate().year}'),
+              Text('Date Updated: ${_crop?.dateUpdated.toDate().day} | ${_crop?.dateUpdated.toDate().month} | ${_crop?.dateUpdated.toDate().year} | Time: ${_crop?.dateUpdated.toDate().hour} : ${_crop?.dateUpdated.toDate().minute}'),
+              SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    _formKey.currentState!.save();
+                    _db.updateCropDetails(_crop?.id, _cropName, _cropMarketPrice);
+                    Navigator.pushNamed(context, '/modeltab');
+                  }
+                },
+                child: Text('Save Crop'),
+              ),
+            ],
+          ),
         ),
       );
     } else {

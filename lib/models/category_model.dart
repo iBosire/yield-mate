@@ -40,6 +40,14 @@ class CategoryModel {
         boxColor: Colors.orange,
       ),
     );
+
+    categories.add(
+      CategoryModel(
+        name: 'Crops',
+        iconPath: 'assets/icons/plant.svg',
+        boxColor: Colors.purple,
+      ),
+    );
     return categories;
   }
 }

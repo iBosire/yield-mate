@@ -46,6 +46,9 @@ class MyApp extends StatelessWidget {
           '/model': (context) => DetailsPage(type: 'viewmodel',),
           '/addmodel': (context) => DetailsPage(type: 'newmodel',),
           '/editmodel': (context) => DetailsPage(type: 'editmodel',),
+          '/crop': (context) => DetailsPage(type: 'viewcrop',),
+          '/addcrop': (context) => DetailsPage(type: "newcrop",),
+          '/editcrop': (context) => DetailsPage(type: "editcrop",)
         },
       ),
     );

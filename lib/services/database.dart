@@ -2,6 +2,7 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:yield_mate/models/crop_model.dart';
 import 'package:yield_mate/models/location_model.dart';
 import 'package:yield_mate/models/ml_model.dart';
 import 'package:yield_mate/models/plot_model.dart';
@@ -21,6 +22,7 @@ class DatabaseService {
   final CollectionReference seedCollection = FirebaseFirestore.instance.collection('seeds');
   final CollectionReference cropCollection = FirebaseFirestore.instance.collection('crops');
   final CollectionReference modelCollection = FirebaseFirestore.instance.collection('models');
+  final CollectionReference reportCollection = FirebaseFirestore.instance.collection('reports');
 
   //? USER functions
   // create new user
@@ -311,6 +313,52 @@ class DatabaseService {
         temperature: doc['temperature'] ?? '',
         rainfall: doc['rainfall'] ?? 0,
         humidity: doc['humidity'] ?? '',
+        dateCreated: doc['dateCreated'] ?? '',
+        dateUpdated: doc['dateUpdated'] ?? '',
+      );
+    }).toList();
+  }
+
+  //? CROP functions
+  // add crop
+  Future addCrop(String name, String marketPrice) async {
+    return await cropCollection.add({
+      'name': name,
+      'marketPrice': marketPrice,
+      'dateCreated': DateTime.now(),
+      'dateUpdated': DateTime.now(),
+    });
+  }
+  // update crop
+  Future updateCropDetails(String cropId, String name, String marketPrice) async {
+    return await cropCollection.doc(cropId).update({
+      'name': name,
+      'marketPrice': marketPrice,
+      'dateUpdated': DateTime.now(),
+    });
+  }
+  // delete crop
+  Future deleteCrop(String cropId) async {
+    return await cropCollection.doc(cropId).delete();
+  }
+  // get all crops
+  Future<List<CropModel>> getCrops() async {
+    QuerySnapshot response = await cropCollection.get();
+    List<CropModel> crops = _cropListFromSnapshot(response);
+    log("Response from the DB: ${crops.length} crops");
+    return crops;
+  }
+  // crop stream
+  Stream<List<CropModel>> get cropStream{
+    return cropCollection.snapshots().map((QuerySnapshot snapshot) => _cropListFromSnapshot(snapshot));
+  }
+  // crop list from snapshot
+  List<CropModel> _cropListFromSnapshot(QuerySnapshot snapshot) {
+    return snapshot.docs.map((doc) {
+      return CropModel(
+        id: doc.id,
+        name: doc['name'] ?? '',
+        marketPrice: doc['marketPrice'] ?? '',
         dateCreated: doc['dateCreated'] ?? '',
         dateUpdated: doc['dateUpdated'] ?? '',
       );
