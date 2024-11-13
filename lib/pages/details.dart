@@ -541,6 +541,15 @@ class DetailsPageState extends State<DetailsPage> {
               readOnly: true,
             ),
             TextFormField(
+              decoration: decorator("Type", "", ""),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+              initialValue: _user?.type,
+              readOnly: true,
+            ),
+            TextFormField(
               decoration: decorator("Email", "", ""),
               style: const TextStyle(
                 fontSize: 18,
@@ -585,6 +594,22 @@ class DetailsPageState extends State<DetailsPage> {
                   _user.lName = value;
                 },
               ),
+              DropdownButtonFormField(
+                decoration: decorator('Type', "", 'Select user type'),
+                dropdownColor: Colors.white,
+                items: ['admin', 'farmer'].map((String type) {
+                  return DropdownMenuItem(
+                    alignment: Alignment.center,
+                    value: type,
+                    child: Text(type),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _user.type = value.toString();
+                  });
+                },
+              ),
               TextFormField(
                 decoration: decorator('Username', "", 'Enter new username'),
                 initialValue: _user?.username,
@@ -603,8 +628,8 @@ class DetailsPageState extends State<DetailsPage> {
                 onPressed: () async{
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
-                    await _db.updateUserDetails(_user.uid, _user?.username, _user?.fName, _user?.lName);
-                    Navigator.pushNamed(context, '/modeltab');
+                    await _db.updateUserDetails(_user.uid, _user?.username, _user?.fName, _user?.lName, _user?.type);
+                    Navigator.pushNamed(context, '/');
                   }
                 },
                 child: Text('Save User'),

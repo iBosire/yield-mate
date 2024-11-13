@@ -39,11 +39,12 @@ class DatabaseService {
     });
   }
   // update user details
-  Future updateUserDetails(String id, String username, String fName, String lName) async {
+  Future updateUserDetails(String id, String username, String fName, String lName, String type) async {
     return await userCollection.doc(id).update({
       'username': username,
       'fName': fName,
       'lName': lName,
+      'type': type,
       'updatedAt': DateTime.now(),
     });
   }
