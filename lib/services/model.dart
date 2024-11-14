@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:http/http.dart' as http;
 
 class PlotAnalysisService {
@@ -17,6 +18,21 @@ class PlotAnalysisService {
       return jsonDecode(response.body);
     } else {
       throw Exception('Failed to analyze plot');
+    }
+  }
+
+  // ping the server to check if it's alive
+  Future<Map<String, dynamic>> ping() async {
+    try {
+      final response = await http.get(Uri.parse('$apiUrl/ping'));
+      log('Response status: ${response.statusCode}');
+      if (response.statusCode != 200) {
+        throw Exception('Failed to ping server');
+      }
+      return jsonDecode(response.body);
+    } catch (e) {
+      log('Error: $e');
+      return {'status': 'error', 'message': e.toString()};
     }
   }
 }

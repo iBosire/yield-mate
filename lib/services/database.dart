@@ -313,6 +313,13 @@ class DatabaseService {
   Future deleteRegion(String regionId) async {
     return await regionCollection.doc(regionId).delete();
   }
+  // get all regions
+  Future<List<LocationModel>> getRegions() async {
+    QuerySnapshot response = await regionCollection.get();
+    List<LocationModel> regions = _regionListFromSnapshot(response);
+    log("Response from the DB: ${regions.length} regions");
+    return regions;
+  }
   // region stream
   Stream<List<LocationModel>> get regionStream{
     return regionCollection.snapshots().map((QuerySnapshot snapshot) => _regionListFromSnapshot(snapshot));

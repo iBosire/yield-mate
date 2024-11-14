@@ -1,12 +1,15 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart';
 import 'package:yield_mate/models/plot_model.dart';
 import 'package:yield_mate/models/user_model.dart';
 import 'package:yield_mate/services/auth.dart';
 import 'package:yield_mate/services/database.dart';
+import 'package:yield_mate/services/model.dart';
 
 class DetailsPage extends StatefulWidget {
   // use user type to handle what info is displayed (plot details, user details, or model details)
@@ -33,6 +36,7 @@ class DetailsPageState extends State<DetailsPage> {
 
   final AuthService _auth = AuthService();
   late DatabaseService _db;
+  late PlotAnalysisService _plotModels;
   late String currentUser;
   final _formKey = GlobalKey<FormState>();
 
@@ -55,6 +59,7 @@ class DetailsPageState extends State<DetailsPage> {
         setState(() {
           currentUser = user?.uid ?? 'No user';
           _db = DatabaseService(uid: currentUser);
+          _plotModels = PlotAnalysisService('http://10.0.2.2:5000');
         });
       });
     });
@@ -110,7 +115,7 @@ class DetailsPageState extends State<DetailsPage> {
   }
 
   //? PLOT Pages
-  //* Edit 
+  //* Edit
   Scaffold editPlot() {
     return Scaffold(
       appBar: appBar('Edit Plot', 1, ''),
@@ -127,26 +132,14 @@ class DetailsPageState extends State<DetailsPage> {
     appBar: appBar('Plot Details', 0, '/editplot'),
     backgroundColor: Colors.white,
     body: Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // Padding(
-          //   padding: const EdgeInsets.all(8.0),
-          //   child: _detailsTable(),
-          // )
-          Text('Plot Name: ${_plot?.name}', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          Text('Size: ${_plot?.size.toStringAsFixed(2)} acres'),
-          Text('Crop: ${_plot?.crop}'),
-          Text('Score: ${_plot?.score}'),
-          Text('Region: ${_plot?.regionId}'),
-          Text('Seed ID: ${_plot?.seedId}'),
-          Text('Seed Amount: ${_plot?.seedAmount} kg'),
-          Text('Active: ${_plot?.active}'),
-          Text('Date Created: ${_plot?.dateCreated.toDate().day} | ${_plot?.dateCreated.toDate().month} | ${_plot?.dateCreated.toDate().year}'),
-          SizedBox(height: 8.0),
-          Text('Nutrients:', style: TextStyle(fontWeight: FontWeight.bold)),
-          ...?_plot?.nutrients.map((nutrient) => Text('• $nutrient')).toList() ?? [],
-        ],
+      child: Padding(
+        padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            plotForm('view'),
+          ],
+        ),
       ),
     ),
   );
@@ -157,12 +150,13 @@ class DetailsPageState extends State<DetailsPage> {
     appBar: appBar('Create Plot', 1, ''),
     backgroundColor: Colors.white,
     body: Center(
-      child: plotForm()
+      child: plotForm('new'),
     ),
   );
   }
-  //* Crop Nutrition Table
-  Table _detailsTable() {
+  // TODO: add to viewPlot
+  //* Soil Nutrition Table
+  Table _detailsTable(dynamic nutrients) {
     return Table(
       border: const TableBorder(
         verticalInside: BorderSide(
@@ -188,7 +182,7 @@ class DetailsPageState extends State<DetailsPage> {
               child: Text('Size', textAlign: TextAlign.center,),
             ),
             TableCell(
-              child: Text('${_plot?.size} acres' ?? 'No Size', textAlign: TextAlign.center,),
+              child: Text('${_plot?.size} acres', textAlign: TextAlign.center,),
             ),
           ],
         ),
@@ -248,7 +242,7 @@ class DetailsPageState extends State<DetailsPage> {
               child: Text('Seed Amount', textAlign: TextAlign.center,),
             ),
             TableCell(
-              child: Text('${_plot?.seedAmount}' ?? 'No Seed Amount', textAlign: TextAlign.center,),
+              child: Text('${_plot?.seedAmount}', textAlign: TextAlign.center,),
             ),
           ],
         ),
@@ -258,7 +252,7 @@ class DetailsPageState extends State<DetailsPage> {
               child: Text('Active', textAlign: TextAlign.center,),
             ),
             TableCell(
-              child: Text('${_plot?.active}' ?? 'No Active', textAlign: TextAlign.center,),
+              child: Text('${_plot?.active}', textAlign: TextAlign.center,),
             ),
           ],
         ),
@@ -276,133 +270,313 @@ class DetailsPageState extends State<DetailsPage> {
     );
   }
   //* PlotForm
-  Form plotForm() {
+  Form plotForm(String type) {
+    dynamic seeds = _db.getSeeds();
+    dynamic regions = _db.getRegions();
+    dynamic crops = _db.getCrops();
+    String _plotName = '';
+    double _plotSize = 0.0;
+    String _crop = '';
+    String _regionId = '';
+    String _seedId = '';
+    int _seedAmount = 0;
+    int _nitrogen = 0;
+    int _phosphorus = 0;
+    int _potassium = 0;
+    int _ph = 0;
 
-  String _plotName;
-  double _plotSize;
-  String _crop;
-  String _regionId;
-  String _seedId;
-  double _seedAmount;
-    return Form(
-      key: _formKey,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
+    if(type == 'view'){
+      return Form(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             TextFormField(
-              decoration: InputDecoration(labelText: 'Plot Name'),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter a plot name';
-                }
-                return null;
-              },
-              onSaved: (value) {
-                _plotName = value!;
-              },
+              decoration: decorator("Plot Name", "", ""),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+              initialValue: _plot?.name,
+              readOnly: true,
             ),
             TextFormField(
-              decoration: InputDecoration(labelText: 'Size (acres)'),
-              keyboardType: TextInputType.number,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter the size of the plot';
-                }
-                return null;
-              },
-              onSaved: (value) {
-                _plotSize = double.parse(value!);
-              },
-            ),
-            DropdownButtonFormField<String>(
-              decoration: InputDecoration(labelText: 'Plot Type'),
-              items: ['Type 1', 'Type 2', 'Type 3'].map((String type) {
-                return DropdownMenuItem<String>(
-                  value: type,
-                  child: Text(type),
-                );
-              }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  // Handle change
-                });
-              },
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please select a plot type';
-                }
-                return null;
-              },
-              onSaved: (value) {
-                // Save the selected value
-              },
+              decoration: decorator("Size", "", ""),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+              initialValue: _plot?.size.toString(),
+              readOnly: true,
             ),
             TextFormField(
-              decoration: InputDecoration(labelText: 'Crop'),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter the crop type';
-                }
-                return null;
-              },
-              onSaved: (value) {
-                _crop = value!;
-              },
+              decoration: decorator("Crop", "", ""),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+              initialValue: _plot?.crop,
+              readOnly: true,
             ),
             TextFormField(
-              decoration: InputDecoration(labelText: 'Region ID'),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter the region ID';
-                }
-                return null;
-              },
-              onSaved: (value) {
-                _regionId = value!;
-              },
+              decoration: decorator("Status", "", ""),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+              initialValue: _plot?.status,
+              readOnly: true,
             ),
             TextFormField(
-              decoration: InputDecoration(labelText: 'Seed ID'),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter the seed ID';
-                }
-                return null;
-              },
-              onSaved: (value) {
-                _seedId = value!;
-              },
+              decoration: decorator("Score", "", ""),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+              initialValue: _plot?.score.toString(),
+              readOnly: true,
             ),
             TextFormField(
-              decoration: InputDecoration(labelText: 'Seed Amount (kg)'),
-              keyboardType: TextInputType.number,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter the seed amount';
-                }
-                return null;
-              },
-              onSaved: (value) {
-                _seedAmount = double.parse(value!);
-              },
+              decoration: decorator("Region ID", "", ""),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+              initialValue: _plot?.regionId,
+              readOnly: true,
             ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                if (_formKey.currentState!.validate()) {
-                  _formKey.currentState!.save();
-                  // Save plot details
-                }
-              },
-              child: Text('Save Plot'),
+            TextFormField(
+              decoration: decorator("Seed ID", "", ""),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+              initialValue: _plot?.seedId,
+              readOnly: true,
+            ),
+            TextFormField(
+              decoration: decorator("Seed Amount", "", ""),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+              initialValue: _plot?.seedAmount.toString(),
+              readOnly: true,
+            ),
+            TextFormField(
+              decoration: decorator("Active", "", ""),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+              initialValue: _plot?.active.toString(),
+              readOnly: true,
+            ),
+            TextFormField(
+              decoration: decorator("Date Created", "", ""),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+              initialValue: '${_plot?.dateCreated.toDate().day} | ${_plot?.dateCreated.toDate().month} | ${_plot?.dateCreated.toDate().year}',
+              readOnly: true,
             ),
           ],
         ),
-      ),
-    );
+      );
+    } else if(type == 'new'){
+      return Form(
+        key: _formKey,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              TextFormField(
+                decoration: decorator('Plot Name', '', 'Enter the plot name'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the plot name';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _plotName = value!;
+                },
+              ),
+              SizedBox(height: 20),
+              TextFormField(
+                decoration: decorator('Size', '', 'Enter the plot size'),
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the plot size';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _plotSize = double.parse(value!);
+                },
+              ),
+              SizedBox(height: 20),
+              DropdownButtonFormField(
+                decoration: decorator('Crop', '', 'Select the crop'),
+                dropdownColor: Colors.white,
+                items: crops.map((crop) {
+                  return DropdownMenuItem(
+                    alignment: Alignment.center,
+                    value: crop['name'],
+                    child: Text(crop['name']),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _crop = value.toString();
+                  });
+                },
+              ),
+              SizedBox(height: 20),
+              DropdownButtonFormField(
+                decoration: decorator('Region ID', '', 'Select the region'),
+                dropdownColor: Colors.white,
+                items: regions.map((region) {
+                  return DropdownMenuItem(
+                    alignment: Alignment.center,
+                    value: region['id'],
+                    child: Text(region['name']),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _regionId = value.toString();
+                  });
+                },
+              ),
+              SizedBox(height: 20),
+              DropdownButtonFormField(
+                decoration: decorator('Seed ID', '', 'Select the seed'),
+                dropdownColor: Colors.white,
+                items: seeds.map((seed) {
+                  return DropdownMenuItem(
+                    alignment: Alignment.center,
+                    value: seed['id'],
+                    child: Text(seed['name']),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _seedId = value.toString();
+                  });
+                },
+              ),
+              SizedBox(height: 20),
+              TextFormField(
+                decoration: decorator('Seed Amount', '', 'Enter the seed amount'),
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the seed amount';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _seedAmount = int.parse(value!);
+                },
+              ),
+              SizedBox(height: 20),
+              //* nutrition details
+              TextFormField(
+                decoration: decorator('Nitrogen', '', 'Enter the nitrogen amount'),
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the nitrogen amount';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _nitrogen = int.parse(value!);
+                },
+              ),
+              SizedBox(height: 20),
+              TextFormField(
+                decoration: decorator('Phosphorus', '', 'Enter the phosphorus amount'),
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the phosphorus amount';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _phosphorus = int.parse(value!);
+                },
+              ),
+              SizedBox(height: 20),
+              TextFormField(
+                decoration: decorator('Potassium', '', 'Enter the potassium amount'),
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the potassium amount';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _potassium = int.parse(value!);
+                },
+              ),
+              SizedBox(height: 20),
+              TextFormField(
+                decoration: decorator('pH', '', 'Enter the pH'),
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the pH';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _ph = int.parse(value!);
+                },
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    _formKey.currentState!.save();
+                    List<int> _nutrition = [_nitrogen, _phosphorus, _potassium, _ph];
+                    _db.addPlot(_plotName, _crop, _plotSize, _regionId, _seedId, _seedAmount.toInt(), _nutrition, 0);
+                    Navigator.pushNamed(context, '/modeltab');
+                  }
+                },
+                child: Text('Save Plot'),
+              ),
+            ],
+          ),
+        ),
+      );
+    } else {
+      return const Form(
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
   }
+  // TODO: Implement editPlot
 
+  // TODO: run plot analysis on new plot
+  void _analyzePlot(String n, String p, String k, String temp, String hum, String r, String ph) async {
+    final plotData = {
+      'Nitrogen': n,
+      'Phosphorus': p,
+      'Potassium': k,
+      'Temperature': temp,
+      'Humidity': hum,
+      'Rainfall': r,
+      'pH': ph,
+    };
+    final result = await _plotModels.analyzePlot(jsonEncode(plotData));
+    log('Result: $result');
+  }
   //? USER Pages
   //* View 
   Scaffold viewUser() {
@@ -1377,6 +1551,33 @@ class DetailsPageState extends State<DetailsPage> {
                     fontSize: 18,
                   ),
                 ),
+              ),
+              SizedBox(height: 20),
+              OutlinedButton.icon(
+                onPressed: () async {
+                  // ping model
+                  dynamic res = await _plotModels.ping();
+                  log("Response Message: $res");
+                  if (res['response'] == 'pong') {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        backgroundColor: Colors.green,
+                        content: Text('Model is online'),
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        backgroundColor: Colors.red,
+                        content: Text('Model is offline'),
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
+                  }
+                },
+                label: const Text('Ping Model'),
+                icon: const Icon(Icons.send),
               )
               // Text('Date Created: ${_model?.dateCreated.toDate().day} | ${_model?.dateCreated.toDate().month} | ${_model?.dateCreated.toDate().year}'),
             ],
