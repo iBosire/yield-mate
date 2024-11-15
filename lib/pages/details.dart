@@ -5,7 +5,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart';
+import 'package:yield_mate/models/crop_model.dart';
+import 'package:yield_mate/models/location_model.dart';
 import 'package:yield_mate/models/plot_model.dart';
+import 'package:yield_mate/models/seed_model.dart';
 import 'package:yield_mate/models/user_model.dart';
 import 'package:yield_mate/services/auth.dart';
 import 'package:yield_mate/services/database.dart';
@@ -35,7 +38,7 @@ class DetailsPageState extends State<DetailsPage> {
   late dynamic _crop;
 
   final AuthService _auth = AuthService();
-  late DatabaseService _db;
+  late DatabaseService _db = DatabaseService(uid: '');
   late PlotAnalysisService _plotModels;
   late String currentUser;
   final _formKey = GlobalKey<FormState>();
@@ -50,10 +53,8 @@ class DetailsPageState extends State<DetailsPage> {
     _model = ModalRoute.of(context)!.settings.arguments;
     _crop = ModalRoute.of(context)!.settings.arguments;
   }
-  
-  @override
-  void initState() {
-    super.initState();
+
+  void setup(){
     _auth.user.first.then((user) {
       _auth.user.listen((user) {
         setState(() {
@@ -68,6 +69,7 @@ class DetailsPageState extends State<DetailsPage> {
   //* Check type of page to display 
   @override
   Widget build(BuildContext context) {
+    setup();
     if(widget.type == 'viewplot') {
       return viewPlot();
     } else if(widget.type == 'newplot') {
@@ -131,14 +133,69 @@ class DetailsPageState extends State<DetailsPage> {
     return Scaffold(
     appBar: appBar('Plot Details', 0, '/editplot'),
     backgroundColor: Colors.white,
-    body: Center(
-      child: Padding(
-        padding: const EdgeInsets.only(left: 16.0, right: 16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            plotForm('view'),
-          ],
+    body: SingleChildScrollView(
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              plotForm('view'),
+              SizedBox(height: 20),
+              ElevatedButton.icon(
+                icon: const Icon(Icons.analytics),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(255, 154, 211, 155),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  fixedSize: const Size(200, 50),
+                ),
+                onPressed: () {
+                  _analyzePlot(
+                    _plot.nutrients[0].toString(),
+                    _plot.nutrients[1].toString(),
+                    _plot.nutrients[2].toString(),
+                    _plot.nutrients[3].toString(),
+                    _plot.size.toString(),
+                    _plot.plotId,
+                    _plot.crop,
+                    _plot.regionId,
+                  );
+                },
+                label: const Text('Analyze Plot'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text('Delete Plot'),
+                        content: const Text('Are you sure you want to delete this plot?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text('Cancel'),
+                          ),
+                          TextButton(
+                            onPressed: () async {
+                              await _db.deletePlot(_plot.plotId);
+                              Navigator.pushNamed(context, '/');
+                            },
+                            child: const Text('Delete'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                }, 
+                child: const Text('Delete Plot'),
+              )
+            ],
+          ),
         ),
       ),
     ),
@@ -149,8 +206,10 @@ class DetailsPageState extends State<DetailsPage> {
     return Scaffold(
     appBar: appBar('Create Plot', 1, ''),
     backgroundColor: Colors.white,
-    body: Center(
-      child: plotForm('new'),
+    body: SingleChildScrollView(
+      child: Center(
+        child: plotForm('new'),
+      ),
     ),
   );
   }
@@ -166,119 +225,103 @@ class DetailsPageState extends State<DetailsPage> {
         )
       ),
       children: [
-        TableRow(
+        const TableRow(
           children: [
             TableCell(
-              child: Text('Plot Name', textAlign: TextAlign.center,),
+              child: Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Text('Nutrient', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+              )
             ),
             TableCell(
-              child: Text(_plot?.name ?? 'No Name', textAlign: TextAlign.center,),
+              child: Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Text('Level', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+              )
             ),
-          ],
+          ]
         ),
         TableRow(
           children: [
-            TableCell(
-              child: Text('Size', textAlign: TextAlign.center,),
+            const TableCell(
+              child: Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Text('Nitrogen', style: TextStyle(fontSize: 16)),
+              )
             ),
             TableCell(
-              child: Text('${_plot?.size} acres', textAlign: TextAlign.center,),
+              verticalAlignment: TableCellVerticalAlignment.middle,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(nutrients[0].toString(), style: const TextStyle(fontSize: 16)),
+              )
             ),
-          ],
+          ]
         ),
         TableRow(
           children: [
-            TableCell(
-              child: Text('Crop', textAlign: TextAlign.center,),
+            const TableCell(
+              child: Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Text('Phosphorus', style: TextStyle(fontSize: 16)),
+              )
             ),
             TableCell(
-              child: Text(_plot?.crop ?? 'No Crop', textAlign: TextAlign.center,),
+              verticalAlignment: TableCellVerticalAlignment.middle,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(nutrients[1].toString(), style: const TextStyle(fontSize: 16)),
+              )
             ),
-          ],
+          ]
         ),
         TableRow(
           children: [
-            TableCell(
-              child: Text('Status', textAlign: TextAlign.center,),
+            const TableCell(
+              child: Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Text('Potassium', style: TextStyle(fontSize: 16)),
+              )
             ),
             TableCell(
-              child: Text('${_plot?.status}' ?? 'No Status', textAlign: TextAlign.center,),
+              verticalAlignment: TableCellVerticalAlignment.middle,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(nutrients[2].toString(), style: const TextStyle(fontSize: 16)),
+              )
             ),
-          ],
+          ]
         ),
         TableRow(
           children: [
-            TableCell(
-              child: Text('Score', textAlign: TextAlign.center,),
+            const TableCell(
+              child: Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Text('pH', style: TextStyle(fontSize: 16)),
+              )
             ),
             TableCell(
-              child: Text('${_plot?.score}' ?? 'No Score', textAlign: TextAlign.center,),
+              verticalAlignment: TableCellVerticalAlignment.middle,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(nutrients[3].toString(), style: const TextStyle(fontSize: 16)),
+              )
             ),
-          ],
-        ),
-        TableRow(
-          children: [
-            TableCell(
-              child: Text('Region ID', textAlign: TextAlign.center,),
-            ),
-            TableCell(
-              child: Text(_plot?.regionId ?? 'No Region', textAlign: TextAlign.center,),
-            ),
-          ],
-        ),
-        TableRow(
-          children: [
-            TableCell(
-              child: Text('Seed ID', textAlign: TextAlign.center,),
-            ),
-            TableCell(
-              child: Text(_plot?.seedId ?? 'No Seed', textAlign: TextAlign.center,),
-            ),
-          ],
-        ),
-        TableRow(
-          children: [
-            TableCell(
-              child: Text('Seed Amount', textAlign: TextAlign.center,),
-            ),
-            TableCell(
-              child: Text('${_plot?.seedAmount}', textAlign: TextAlign.center,),
-            ),
-          ],
-        ),
-        TableRow(
-          children: [
-            TableCell(
-              child: Text('Active', textAlign: TextAlign.center,),
-            ),
-            TableCell(
-              child: Text('${_plot?.active}', textAlign: TextAlign.center,),
-            ),
-          ],
-        ),
-        TableRow(
-          children: [
-            TableCell(
-              child: Text('Date Created', textAlign: TextAlign.center,),
-            ),
-            TableCell(
-              child: Text('${_plot?.dateCreated.toDate().day} | ${_plot?.dateCreated.toDate().month} | ${_plot?.dateCreated.toDate().year}' ?? 'No Date Created', textAlign: TextAlign.center,),
-            ),
-          ],
+          ]
         ),
       ]
     );
   }
   //* PlotForm
+
+  // String seedId = '';
+  dynamic seed = '';
+  String region = '';
+  String crop = '';
+
   Form plotForm(String type) {
-    dynamic seeds = _db.getSeeds();
-    dynamic regions = _db.getRegions();
-    dynamic crops = _db.getCrops();
     String _plotName = '';
     double _plotSize = 0.0;
-    String _crop = '';
-    String _regionId = '';
-    String _seedId = '';
     int _seedAmount = 0;
     int _nitrogen = 0;
     int _phosphorus = 0;
@@ -290,6 +333,7 @@ class DetailsPageState extends State<DetailsPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
+            SizedBox(height: 20),
             TextFormField(
               decoration: decorator("Plot Name", "", ""),
               style: const TextStyle(
@@ -300,57 +344,21 @@ class DetailsPageState extends State<DetailsPage> {
               readOnly: true,
             ),
             TextFormField(
-              decoration: decorator("Size", "", ""),
+              decoration: decorator("Region | Size", "", ""),
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
-              initialValue: _plot?.size.toString(),
+              initialValue: _plot?.regionId + ' | ' + '${_plot?.size} acres',
               readOnly: true,
             ),
             TextFormField(
-              decoration: decorator("Crop", "", ""),
+              decoration: decorator("Seed | Crop", "", ""),
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
-              initialValue: _plot?.crop,
-              readOnly: true,
-            ),
-            TextFormField(
-              decoration: decorator("Status", "", ""),
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-              initialValue: _plot?.status,
-              readOnly: true,
-            ),
-            TextFormField(
-              decoration: decorator("Score", "", ""),
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-              initialValue: _plot?.score.toString(),
-              readOnly: true,
-            ),
-            TextFormField(
-              decoration: decorator("Region ID", "", ""),
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-              initialValue: _plot?.regionId,
-              readOnly: true,
-            ),
-            TextFormField(
-              decoration: decorator("Seed ID", "", ""),
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-              initialValue: _plot?.seedId,
+              initialValue: _plot?.seedId + ' | ' + _plot?.crop,
               readOnly: true,
             ),
             TextFormField(
@@ -363,23 +371,15 @@ class DetailsPageState extends State<DetailsPage> {
               readOnly: true,
             ),
             TextFormField(
-              decoration: decorator("Active", "", ""),
+              decoration: decorator("Score", "", ""),
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
-              initialValue: _plot?.active.toString(),
+              initialValue: _plot?.score.toString(),
               readOnly: true,
             ),
-            TextFormField(
-              decoration: decorator("Date Created", "", ""),
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-              initialValue: '${_plot?.dateCreated.toDate().day} | ${_plot?.dateCreated.toDate().month} | ${_plot?.dateCreated.toDate().year}',
-              readOnly: true,
-            ),
+            _detailsTable(_plot.nutrients),
           ],
         ),
       );
@@ -417,56 +417,11 @@ class DetailsPageState extends State<DetailsPage> {
                 },
               ),
               SizedBox(height: 20),
-              DropdownButtonFormField(
-                decoration: decorator('Crop', '', 'Select the crop'),
-                dropdownColor: Colors.white,
-                items: crops.map((crop) {
-                  return DropdownMenuItem(
-                    alignment: Alignment.center,
-                    value: crop['name'],
-                    child: Text(crop['name']),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _crop = value.toString();
-                  });
-                },
-              ),
+              _cropList(),
               SizedBox(height: 20),
-              DropdownButtonFormField(
-                decoration: decorator('Region ID', '', 'Select the region'),
-                dropdownColor: Colors.white,
-                items: regions.map((region) {
-                  return DropdownMenuItem(
-                    alignment: Alignment.center,
-                    value: region['id'],
-                    child: Text(region['name']),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _regionId = value.toString();
-                  });
-                },
-              ),
+              _regionList(),
               SizedBox(height: 20),
-              DropdownButtonFormField(
-                decoration: decorator('Seed ID', '', 'Select the seed'),
-                dropdownColor: Colors.white,
-                items: seeds.map((seed) {
-                  return DropdownMenuItem(
-                    alignment: Alignment.center,
-                    value: seed['id'],
-                    child: Text(seed['name']),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _seedId = value.toString();
-                  });
-                },
-              ),
+              _seedList(),
               SizedBox(height: 20),
               TextFormField(
                 decoration: decorator('Seed Amount', '', 'Enter the seed amount'),
@@ -542,13 +497,14 @@ class DetailsPageState extends State<DetailsPage> {
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
-                    List<int> _nutrition = [_nitrogen, _phosphorus, _potassium, _ph];
-                    _db.addPlot(_plotName, _crop, _plotSize, _regionId, _seedId, _seedAmount.toInt(), _nutrition, 0);
-                    Navigator.pushNamed(context, '/modeltab');
+                    List<int> nutrition = [_nitrogen, _phosphorus, _potassium, _ph];
+                    _db.addPlot(_plotName, crop, _plotSize, region, seed, _seedAmount.toInt(), nutrition, 0);
+                    Navigator.pushNamed(context, '/');
                   }
                 },
                 child: Text('Save Plot'),
               ),
+              SizedBox(height: 20),
             ],
           ),
         ),
@@ -561,20 +517,107 @@ class DetailsPageState extends State<DetailsPage> {
       );
     }
   }
-  // TODO: Implement editPlot
-
+  //* Form dropdowns 
+  Widget _cropList(){
+    return FutureBuilder<List<CropModel>>(
+      future: _db.getCrops(),
+      builder: (context, snapshot) {
+        if(snapshot.hasData){
+          return DropdownButtonFormField(
+            decoration: decorator('Crop', '', 'Select the crop'),
+            dropdownColor: Colors.white,
+            items: snapshot.data!.map((crop) {
+              return DropdownMenuItem(
+                alignment: Alignment.center,
+                value: crop.name,
+                child: Text(crop.name),
+              );
+            }).toList(),
+            onChanged: (value) {
+              setState(() {
+                crop = value.toString();
+              });
+            },
+          );
+        } else {
+          return const CircularProgressIndicator();
+        }
+      },
+    );
+  }
+  Widget _seedList(){
+    return FutureBuilder<List<SeedModel>>(
+      future: _db.getSeeds(),
+      builder: (context, snapshot) {
+        if(snapshot.hasData){
+          return DropdownButtonFormField(
+            decoration: decorator('Seed ID', '', 'Select the seed'),
+            dropdownColor: Colors.white,
+            items: snapshot.data!.map((seed) {
+              return DropdownMenuItem(
+                alignment: Alignment.center,
+                value: seed.name,
+                child: Text(seed.name),
+              );
+            }).toList(),
+            onChanged: (value) {
+              setState(() {
+                seed = value.toString();
+              });
+            },
+          );
+        } else {
+          return const CircularProgressIndicator();
+        }
+      },
+    );
+  }
+  Widget _regionList(){
+    return FutureBuilder<List<LocationModel>>(
+      future: _db.getRegions(),
+      builder: (context, snapshot) {
+        if(snapshot.hasData){
+          return DropdownButtonFormField(
+            decoration: decorator('Region', '', 'Select the region'),
+            dropdownColor: Colors.white,
+            items: snapshot.data!.map((region) {
+              return DropdownMenuItem(
+                alignment: Alignment.center,
+                value: region.name,
+                child: Text(region.name),
+              );
+            }).toList(),
+            onChanged: (value) {
+              setState(() {
+                region = value.toString();
+              });
+            },
+          );
+        } else {
+          return const CircularProgressIndicator();
+        }
+      },
+    );
+  }
   // TODO: run plot analysis on new plot
-  void _analyzePlot(String n, String p, String k, String temp, String hum, String r, String ph) async {
+  void _analyzePlot(String n, String p, String k, String ph, String size, String id, String crop, String region) async {
+    // route expects: 'Rainfall', 'Temperature', 'Nitrogen', 'Phosphorus', 'Potassium', 'pH', 'Humidity', 'plot_size', 'crop', 'price', 'plot_id'
+    dynamic loc = await _db.getRegionDetails(region);
+    String price = await _db.getCropPrice(crop);
     final plotData = {
-      'Nitrogen': n,
-      'Phosphorus': p,
-      'Potassium': k,
-      'Temperature': temp,
-      'Humidity': hum,
-      'Rainfall': r,
-      'pH': ph,
+      'Nitrogen': int.parse(n),
+      'Phosphorus': int.parse(p),
+      'Potassium': int.parse(k),
+      'Temperature': int.parse(loc[0]),
+      'Humidity': int.parse(loc[2]),
+      'Rainfall': int.parse(loc[1]),
+      'pH': int.parse(ph),
+      'plot_size': double.parse(size),
+      'crop': crop,
+      'price': int.parse(price),
+      'plot_id': id,
     };
-    final result = await _plotModels.analyzePlot(jsonEncode(plotData));
+    final result = await _plotModels.analyzePlot(plotData);
     log('Result: $result');
   }
   //? USER Pages
@@ -640,8 +683,8 @@ class DetailsPageState extends State<DetailsPage> {
                           ),
                           TextButton(
                             onPressed: () async {
-                              await _db.deleteUser(_user?.uid);
-                              Navigator.pushNamed(context, '/modeltab');
+                              await _db.deleteUserAccount(_user?.uid);
+                              Navigator.pushNamed(context, '/');
                             },
                             child: const Text('Delete'),
                           ),

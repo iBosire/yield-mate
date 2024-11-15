@@ -7,7 +7,7 @@ class PlotModel {
   double size;
   int status;
   String crop;
-  int score;
+  double score;
   String regionId;
   String seedId;
   int seedAmount;

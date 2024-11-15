@@ -85,16 +85,6 @@ class FieldPageState extends State<FieldPage> {
             }
           ),
           const SizedBox(height: 20),
-          Center(
-            child: Builder(
-              builder: (context) => ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/addplot');
-                },
-                child: const Text('Add Plot'),
-              ),
-            ),
-          ),
         ],
       ),
       ListView(
@@ -225,6 +215,72 @@ void _showSettings(BuildContext context, AuthService _auth) {
       );
     }
 
+class AddNew extends StatelessWidget {
+  const AddNew({
+    super.key,
+    required this.name,
+  });
+  final String name;
+  @override
+  Widget build(BuildContext context) {
+    if(name == 'none') {
+      return Container();
+    }
+    return GestureDetector(
+      child: Container(
+        height: 100,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(15),
+          boxShadow: [
+            BoxShadow(
+              color: Color(0xff1D1617).withOpacity(0.11),
+              offset: Offset(0, 10),
+              blurRadius: 40,
+              spreadRadius: 0,
+            )
+          ]
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            SizedBox(width: 30,),
+            Icon(Icons.add, size: 40,),
+            SizedBox(width: 20),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Add $name',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  'add new ${name.toLowerCase()}',
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+      onTap: () {
+        if (name == 'Plots') {
+          Navigator.pushNamed(context, '/addplot');
+        }
+      },
+    );
+  }
+}
+
 class AllPlotsSection extends StatelessWidget {
   const AllPlotsSection({
     super.key,
@@ -255,6 +311,12 @@ class AllPlotsSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 15),
+        // Add Button
+        const Padding(
+          padding: EdgeInsets.only(left: 20, right: 20),
+          child: AddNew(name: 'Plots'),
+        ),
+        const SizedBox(height: 20),
         ListView.separated(
           itemCount: plots.length,
           shrinkWrap: true,
@@ -292,7 +354,7 @@ class AllPlotsSection extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        '${plots[index].size} Acres | Score: ${plots[index].score} | Crop: ${plots[index].crop}',
+                        '${plots[index].size} Acres | ${plots[index].crop} | Score: ${plots[index].score}',
                         style: const TextStyle(
                           color: Colors.grey,
                           fontSize: 16,

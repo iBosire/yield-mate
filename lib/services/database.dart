@@ -1,4 +1,5 @@
 
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -8,6 +9,7 @@ import 'package:yield_mate/models/ml_model.dart';
 import 'package:yield_mate/models/plot_model.dart';
 import 'package:yield_mate/models/seed_model.dart';
 import 'package:yield_mate/models/user_model.dart';
+import 'package:http/http.dart' as http;
 
 class DatabaseService {
 
@@ -49,13 +51,14 @@ class DatabaseService {
     });
   }
   // delete user
-  Future deleteUserAccount() async {
-    await getPlotsByUser().then((value) {
-      value.forEach((plot) {
-        deletePlot(plot.plotId);
-      });
-    });
-    return await userCollection.doc(uid).delete();
+  Future deleteUserAccount(String userId) async {
+    final res = await http.post(
+      Uri.parse('http://10.0.2.2:5000/delete_user'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'uid': userId}),
+    );
+    log('Response status: ${res.statusCode}');
+    return await userCollection.doc(userId).delete();
   }
   // user stream
   Stream<List<UserModel>> get userStream{
@@ -119,7 +122,7 @@ class DatabaseService {
       'yieldAmount': 1,
       'dateCreated': DateTime.now(),
       'dateUpdated': DateTime.now(),
-      'nutrients': [1, 2, 3],
+      'nutrients': [1, 2, 3, 4],
     });
   }
   // create plot
@@ -337,6 +340,11 @@ class DatabaseService {
       );
     }).toList();
   }
+  Future<List<String>> getRegionDetails(String region) async {
+    log("Received Region ID: $region");
+    DocumentSnapshot doc = await regionCollection.where('name', isEqualTo: region).get().then((value) => value.docs.first);
+    return [doc['temperature'], doc['rainfall'].toString(), doc['humidity']];
+  } 
 
   //? CROP functions
   // add crop
@@ -382,5 +390,9 @@ class DatabaseService {
         dateUpdated: doc['dateUpdated'] ?? '',
       );
     }).toList();
+  }
+  Future<String> getCropPrice(String crop) async {
+    DocumentSnapshot doc = await cropCollection.where('name', isEqualTo: crop).get().then((value) => value.docs.first);
+    return doc['marketPrice'];
   }
 }

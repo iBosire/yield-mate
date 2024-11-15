@@ -7,17 +7,18 @@ class PlotAnalysisService {
 
   PlotAnalysisService(this.apiUrl);
 
-  Future<Map<String, dynamic>> analyzePlot(String plotData) async {
+  Future<String> analyzePlot(Map<String, dynamic> plotData) async {
+    // route expects: 'Rainfall', 'Temperature', 'Nitrogen', 'Phosphorus', 'Potassium', 'pH', 'Humidity', 'plot_size', 'crop', 'price', 'plot_id'
     final response = await http.post(
-      Uri.parse('$apiUrl/analyze'),
+      Uri.parse('$apiUrl/predict'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'plotData': plotData}),
     );
 
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      return "Predicted yield: ${jsonDecode(response.body)['linear_prediction']}";
     } else {
-      throw Exception('Failed to analyze plot');
+      return "Failed to analyze plot";
     }
   }
 
