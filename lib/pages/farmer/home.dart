@@ -102,32 +102,42 @@ class FieldPageState extends State<FieldPage> {
     return StreamProvider<List<PlotModel?>?>.value(
       initialData: null,
       value: DatabaseService(uid: currentUser).plotStream,
-      child: Scaffold(
-        appBar: appBar('Field Page'),
-        backgroundColor: Colors.white,
-        body: Center(
-            child: navPages[_selectedTabIndex],
-          ),
-        bottomNavigationBar: BottomNavigationBar(
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'All Plots',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.play_arrow_rounded),
-              label: 'Ongoing',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.stop_circle_rounded),
-              label: 'Completed',
-            ),
-          ],
-          selectedItemColor: Colors.black,
-          unselectedItemColor: Colors.grey,
+      child: DefaultTabController(
+        length: 2,
+        child: Scaffold(
+          appBar: appBar('View'),
           backgroundColor: Colors.white,
-          currentIndex: _selectedTabIndex,
-          onTap: onItemTapped,
+          body: TabBarView(
+            children: [
+              Center(
+                child: navPages[_selectedTabIndex],
+              ),
+              Center(
+                child: CircularProgressIndicator(),
+              )
+            ]
+          ),
+          bottomNavigationBar: BottomNavigationBar(
+            items: const <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                icon: Icon(Icons.home),
+                label: 'All Plots',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.play_arrow_rounded),
+                label: 'Ongoing',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.stop_circle_rounded),
+                label: 'Completed',
+              ),
+            ],
+            selectedItemColor: Colors.black,
+            unselectedItemColor: Colors.grey,
+            backgroundColor: Colors.white,
+            currentIndex: _selectedTabIndex,
+            onTap: onItemTapped,
+          ),
         ),
       )
     );
@@ -181,6 +191,16 @@ class FieldPageState extends State<FieldPage> {
             ),
           )
         ],
+        bottom: const TabBar(
+          tabs: [
+            Tab(
+              child: Text('Plots', style: TextStyle(color: Colors.black),),
+            ),
+            Tab(
+              child: Text('Reports', style: TextStyle(color: Colors.black),),
+            ),
+          ],
+        ),
     );
   }
 }
