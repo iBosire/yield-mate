@@ -18,11 +18,12 @@ class FieldPage extends StatefulWidget {
   State<FieldPage> createState() => FieldPageState();
 }
 
-class FieldPageState extends State<FieldPage> {
+class FieldPageState extends State<FieldPage> with SingleTickerProviderStateMixin {
   final AuthService _auth = AuthService();
   List<PlotModel?> plots = [];
   int _selectedTabIndex = 0;
   String currentUser = "";
+  int currentTabIndex = 0;
 
   Future<List<PlotModel?>?> _getPlots(String uid) async {
     log("UID passed to _getPlots: $uid");
@@ -104,43 +105,64 @@ class FieldPageState extends State<FieldPage> {
       value: DatabaseService(uid: currentUser).plotStream,
       child: DefaultTabController(
         length: 2,
-        child: Scaffold(
-          appBar: appBar('View'),
-          backgroundColor: Colors.white,
-          body: TabBarView(
-            children: [
-              Center(
-                child: navPages[_selectedTabIndex],
+        child: Builder(
+          builder: (BuildContext context) {
+            final TabController tabController = DefaultTabController.of(context);
+            tabController.addListener(() {
+              if (!tabController.indexIsChanging) {
+                setState(() {
+                  currentTabIndex = tabController.index;
+                });
+              }
+            });
+            return Scaffold(
+              appBar: appBar('View'),
+              backgroundColor: Colors.white,
+              body: TabBarView(
+                children: [
+                  Center(
+                    child: navPages[_selectedTabIndex],
+                  ),
+                  Center(
+                    child: CircularProgressIndicator(),
+                  )
+                ]
               ),
-              Center(
-                child: CircularProgressIndicator(),
-              )
-            ]
-          ),
-          bottomNavigationBar: BottomNavigationBar(
-            items: const <BottomNavigationBarItem>[
-              BottomNavigationBarItem(
-                icon: Icon(Icons.home),
-                label: 'All Plots',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.play_arrow_rounded),
-                label: 'Ongoing',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.stop_circle_rounded),
-                label: 'Completed',
-              ),
-            ],
-            selectedItemColor: Colors.black,
-            unselectedItemColor: Colors.grey,
-            backgroundColor: Colors.white,
-            currentIndex: _selectedTabIndex,
-            onTap: onItemTapped,
-          ),
+              bottomNavigationBar: tabController.index == 1? null : plotsBottomNavbar(0),
+            );
+          }
         ),
       )
     );
+  }
+
+  BottomNavigationBar? plotsBottomNavbar(int index) {
+    log("Index: $index");
+    if(index == 0) {
+      return BottomNavigationBar(
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'All Plots',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.play_arrow_rounded),
+              label: 'Ongoing',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.stop_circle_rounded),
+              label: 'Completed',
+            ),
+          ],
+          selectedItemColor: Colors.black,
+          unselectedItemColor: Colors.grey,
+          backgroundColor: Colors.white,
+          currentIndex: _selectedTabIndex,
+          onTap: onItemTapped,
+        );
+    } else {
+      return null;
+    }
   }
 
   AppBar appBar(String screenTitle) {
