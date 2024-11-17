@@ -60,7 +60,7 @@ class DetailsPageState extends State<DetailsPage> {
         setState(() {
           currentUser = user?.uid ?? 'No user';
           _db = DatabaseService(uid: currentUser);
-          _plotModels = PlotAnalysisService('http://10.0.2.2:5000');
+          _plotModels = PlotAnalysisService('http://10.0.2.2:5000'); //TODO: get url from model object
         });
       });
     });
@@ -120,7 +120,7 @@ class DetailsPageState extends State<DetailsPage> {
   //* Edit
   Scaffold editPlot() {
     return Scaffold(
-      appBar: appBar('Edit Plot', 1, ''),
+      appBar: appBar('Edit Plot', 1, '', null),
       backgroundColor: Colors.white,
       body: Center(
         child: Text('Details Page'),
@@ -128,83 +128,86 @@ class DetailsPageState extends State<DetailsPage> {
     );
   }
   //* View
-  Scaffold viewPlot() {
+  DefaultTabController viewPlot() {
     log("Plot ID: ${_plot?.plotId}");
-    return Scaffold(
-    appBar: appBar('Plot Details', 0, '/editplot'),
-    backgroundColor: Colors.white,
-    body: SingleChildScrollView(
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.only(left: 16.0, right: 16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              plotForm('view'),
-              SizedBox(height: 20),
-              ElevatedButton.icon(
-                icon: const Icon(Icons.analytics),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 154, 211, 155),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+      appBar: appBar('Plot Details', 0, '/editplot', plotTabs()),
+      backgroundColor: Colors.white,
+      body: SingleChildScrollView(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                plotForm('view'),
+                SizedBox(height: 20),
+                ElevatedButton.icon(
+                  icon: const Icon(Icons.analytics),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(255, 154, 211, 155),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    fixedSize: const Size(200, 50),
                   ),
-                  fixedSize: const Size(200, 50),
+                  onPressed: () {
+                    _analyzePlot(
+                      _plot.nutrients[0].toString(),
+                      _plot.nutrients[1].toString(),
+                      _plot.nutrients[2].toString(),
+                      _plot.nutrients[3].toString(),
+                      _plot.size.toString(),
+                      _plot.plotId,
+                      _plot.crop,
+                      _plot.regionId,
+                    );
+                  },
+                  label: const Text('Analyze Plot'),
                 ),
-                onPressed: () {
-                  _analyzePlot(
-                    _plot.nutrients[0].toString(),
-                    _plot.nutrients[1].toString(),
-                    _plot.nutrients[2].toString(),
-                    _plot.nutrients[3].toString(),
-                    _plot.size.toString(),
-                    _plot.plotId,
-                    _plot.crop,
-                    _plot.regionId,
-                  );
-                },
-                label: const Text('Analyze Plot'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: const Text('Delete Plot'),
-                        content: const Text('Are you sure you want to delete this plot?'),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: const Text('Cancel'),
-                          ),
-                          TextButton(
-                            onPressed: () async {
-                              await _db.deletePlot(_plot.plotId);
-                              Navigator.pushNamed(context, '/');
-                            },
-                            child: const Text('Delete'),
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                }, 
-                child: const Text('Delete Plot'),
-              )
-            ],
+                ElevatedButton(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Delete Plot'),
+                          content: const Text('Are you sure you want to delete this plot?'),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text('Cancel'),
+                            ),
+                            TextButton(
+                              onPressed: () async {
+                                await _db.deletePlot(_plot.plotId);
+                                Navigator.pushNamed(context, '/');
+                              },
+                              child: const Text('Delete'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  }, 
+                  child: const Text('Delete Plot'),
+                )
+              ],
+            ),
           ),
         ),
       ),
-    ),
-  );
+        ),
+    );
   }
   //* Add
  Scaffold newPlot() {
     return Scaffold(
-    appBar: appBar('Create Plot', 1, ''),
+    appBar: appBar('Create Plot', 1, '', null),
     backgroundColor: Colors.white,
     body: SingleChildScrollView(
       child: Center(
@@ -213,7 +216,6 @@ class DetailsPageState extends State<DetailsPage> {
     ),
   );
   }
-  // TODO: add to viewPlot
   //* Soil Nutrition Table
   Table _detailsTable(dynamic nutrients) {
     return Table(
@@ -313,12 +315,9 @@ class DetailsPageState extends State<DetailsPage> {
     );
   }
   //* PlotForm
-
-  // String seedId = '';
   dynamic seed = '';
   String region = '';
   String crop = '';
-
   Form plotForm(String type) {
     String _plotName = '';
     double _plotSize = 0.0;
@@ -599,6 +598,22 @@ class DetailsPageState extends State<DetailsPage> {
       },
     );
   }
+  //* Plot Tabs 
+  TabBar plotTabs() {
+    return const TabBar(
+      tabs: [
+        Tab(
+          icon: Icon(Icons.note),
+          text: 'Details',
+        ),
+        Tab(
+          icon: Icon(Icons.show_chart),
+          text: 'Analytics',
+        ),
+      ],
+    );
+  }
+
   // TODO: run plot analysis on new plot
   void _analyzePlot(String n, String p, String k, String ph, String size, String id, String crop, String region) async {
     // route expects: 'Rainfall', 'Temperature', 'Nitrogen', 'Phosphorus', 'Potassium', 'pH', 'Humidity', 'plot_size', 'crop', 'price', 'plot_id'
@@ -624,7 +639,7 @@ class DetailsPageState extends State<DetailsPage> {
   //* View 
   Scaffold viewUser() {
     return Scaffold(
-      appBar: appBar('User Details', 0, '/edituser'),
+      appBar: appBar('User Details', 0, '/edituser', null),
       backgroundColor: Colors.white,
       body: Center(
         child: Padding(
@@ -710,7 +725,7 @@ class DetailsPageState extends State<DetailsPage> {
   //* Edit
   Scaffold editUser() {
     return Scaffold(
-      appBar: appBar('Edit User', 1, ''),
+      appBar: appBar('Edit User', 1, '', null),
       backgroundColor: Colors.white,
       body: Center(
         child: Column(
@@ -868,7 +883,7 @@ class DetailsPageState extends State<DetailsPage> {
   //* View 
   Scaffold viewLocation() {
     return Scaffold(
-      appBar: appBar('Location Details', 0, '/editlocation'),
+      appBar: appBar('Location Details', 0, '/editlocation', null),
       backgroundColor: Colors.white,
       body: Center(
         child: Padding(
@@ -954,7 +969,7 @@ class DetailsPageState extends State<DetailsPage> {
   //* Add 
   Scaffold newLocation() {
     return Scaffold(
-      appBar: appBar('Create Location', 1, ''),
+      appBar: appBar('Create Location', 1, '', null),
       backgroundColor: Colors.white,
       body: Center(
         child: Column(
@@ -971,7 +986,7 @@ class DetailsPageState extends State<DetailsPage> {
   //* Edit
   Scaffold editLocation() {
     return Scaffold(
-      appBar: appBar('Edit Location', 1, ''),
+      appBar: appBar('Edit Location', 1, '', null),
       backgroundColor: Colors.white,
       body: Center(
         child: locationForm('edit'),
@@ -1197,7 +1212,7 @@ class DetailsPageState extends State<DetailsPage> {
   //* View 
   Scaffold viewSeed() {
     return Scaffold(
-      appBar: appBar('Seed Details', 0, '/editseed'),
+      appBar: appBar('Seed Details', 0, '/editseed', null),
       backgroundColor: Colors.white,
       body: Center(
         child: Padding(
@@ -1283,7 +1298,7 @@ class DetailsPageState extends State<DetailsPage> {
   //* Add
   Scaffold newSeed() {
     return Scaffold(
-      appBar: appBar('Create Seed', 1, ''),
+      appBar: appBar('Create Seed', 1, '', null),
       backgroundColor: Colors.white,
       body: Center(
         child: Column(
@@ -1299,7 +1314,7 @@ class DetailsPageState extends State<DetailsPage> {
   //* Edit
   Scaffold editSeed() {
     return Scaffold(
-      appBar: appBar('Edit Seed', 1, ''),
+      appBar: appBar('Edit Seed', 1, '', null),
       backgroundColor: Colors.white,
       body: Center(
         child: seedForm('edit'),
@@ -1523,7 +1538,7 @@ class DetailsPageState extends State<DetailsPage> {
   //* View
   Scaffold viewModel() {
     return Scaffold(
-      appBar: appBar('Model Details', 0, '/editmodel'),
+      appBar: appBar('Model Details', 0, '/editmodel', null),
       backgroundColor: Colors.white,
       body: Center(
         child: Padding(
@@ -1632,7 +1647,7 @@ class DetailsPageState extends State<DetailsPage> {
   //* Add
   Scaffold newModel() {
     return Scaffold(
-      appBar: appBar('Create Model', 1, ''),
+      appBar: appBar('Create Model', 1, '', null),
       backgroundColor: Colors.white,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -1646,7 +1661,7 @@ class DetailsPageState extends State<DetailsPage> {
   //* Edit
   Scaffold editModel() {
     return Scaffold(
-      appBar: appBar('Edit Model', 1, ''),
+      appBar: appBar('Edit Model', 1, '', null),
       backgroundColor: Colors.white,
       body: Center(
         child: Padding(
@@ -1852,7 +1867,7 @@ class DetailsPageState extends State<DetailsPage> {
   //* View
   Scaffold viewCrop() {
     return Scaffold(
-      appBar: appBar('Crop Details', 0, '/editcrop'),
+      appBar: appBar('Crop Details', 0, '/editcrop', null),
       backgroundColor: Colors.white,
       body: Center(
         child: Padding(
@@ -1932,7 +1947,7 @@ class DetailsPageState extends State<DetailsPage> {
   //* Add
   Scaffold newCrop() {
     return Scaffold(
-      appBar: appBar('Create Crop', 1, ''),
+      appBar: appBar('Create Crop', 1, '', null),
       backgroundColor: Colors.white,
       body: Center(
         child: Column(
@@ -1948,7 +1963,7 @@ class DetailsPageState extends State<DetailsPage> {
   //* Edit
   Scaffold editCrop() {
     return Scaffold(
-      appBar: appBar('Edit Crop', 1, ''),
+      appBar: appBar('Edit Crop', 1, '', null),
       backgroundColor: Colors.white,
       body: Center(
         child: cropForm('edit'),
@@ -2109,7 +2124,7 @@ class DetailsPageState extends State<DetailsPage> {
     );
   }
   //? APPBAR 
-  AppBar appBar(String screenTitle, int type, String route) {
+  AppBar appBar(String screenTitle, int type, String route, TabBar? tabBar) {
     return AppBar(
       title: Text(
           screenTitle,
@@ -2139,6 +2154,7 @@ class DetailsPageState extends State<DetailsPage> {
         actions: [
           _setButton(type, route),
         ],
+        bottom: tabBar,
     );
   }
 
