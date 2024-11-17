@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class ReportModel {
+class PlotReportModel {
   String id;
   String userId;
   String plotId;
@@ -9,7 +9,7 @@ class ReportModel {
   Timestamp dateCreated;
   Timestamp dateUpdated;
 
-  ReportModel({
+  PlotReportModel({
     required this.id,
     required this.userId,
     required this.plotId,
