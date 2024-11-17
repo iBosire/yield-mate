@@ -210,92 +210,94 @@ class UsersSection extends StatelessWidget {
     );
   }
 
-  Column allUsers(List<UserModel> user) {
+  SingleChildScrollView allUsers(List<UserModel> user) {
     final users = user;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 20, top: 20),
-          child: Text(
-            'Users',
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 20, top: 20),
+            child: Text(
+              'Users',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
-        ),
-        SizedBox(height: 15),
-        ListView.separated(
-          itemCount: users.length,
-          shrinkWrap: true,
-          separatorBuilder: (context, index) => SizedBox(height: 20),
-          padding: EdgeInsets.only(left: 20, right: 20),
-          itemBuilder: (context, index) {
-            return Container(
-              height: 100,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(15),
-                boxShadow: [
-                  BoxShadow(
-                    color: Color(0xff1D1617).withOpacity(0.11),
-                    offset: Offset(0, 10),
-                    blurRadius: 40,
-                    spreadRadius: 0,
-                  )
-                ]
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Icon(Icons.person_outline, size: 40,),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '${users[index].fName ?? ''} ${users[index].lName ?? ''}',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+          SizedBox(height: 15),
+          ListView.separated(
+            itemCount: users.length,
+            shrinkWrap: true,
+            separatorBuilder: (context, index) => SizedBox(height: 20),
+            padding: EdgeInsets.only(left: 20, right: 20),
+            itemBuilder: (context, index) {
+              return Container(
+                height: 100,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(15),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color(0xff1D1617).withOpacity(0.11),
+                      offset: Offset(0, 10),
+                      blurRadius: 40,
+                      spreadRadius: 0,
+                    )
+                  ]
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Icon(Icons.person_outline, size: 40,),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${users[index].fName ?? ''} ${users[index].lName ?? ''}',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      Text(
-                        '${users[index].type} | 5 Projects ',
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
+                        Text(
+                          '${users[index].type} | 5 Projects ',
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  Container(
-                    margin: const EdgeInsets.all(10),
-                    alignment: Alignment.center,
-                    width: 37,
-                    height: 37,
-                    decoration: BoxDecoration(
-                      color: Color(0xffF7F8F8),
-                      borderRadius: BorderRadius.circular(10),
+                      ],
                     ),
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.pushNamed(context, '/user', arguments: users[index]);
-                      },
-                      child: SvgPicture.asset('assets/icons/right-arrow.svg',)
+                    Container(
+                      margin: const EdgeInsets.all(10),
+                      alignment: Alignment.center,
+                      width: 37,
+                      height: 37,
+                      decoration: BoxDecoration(
+                        color: Color(0xffF7F8F8),
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                  ),
-                ],
-              ),
-            );
-          },
-        )
-      ],
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(context, '/user', arguments: users[index]);
+                        },
+                        child: SvgPicture.asset('assets/icons/right-arrow.svg',)
+                        ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          )
+        ],
+      ),
     );
 
   }
@@ -518,370 +520,378 @@ Widget resultsSection(String? index, DatabaseService db){
 
 //* Displays Seeds Section 
 Widget SeedsSection(BuildContext context, {required List<SeedModel> seeds}) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Padding(
-        padding: const EdgeInsets.only(left: 20, top: 20),
-        child: Text(
-          'Seeds',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
+  return SingleChildScrollView(
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 20, top: 20),
+          child: Text(
+            'Seeds',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
-      ),
-      SizedBox(height: 15),
-      MySearchBar(),
-      SizedBox(height: 15),
-      ListView.separated(
-        itemCount: seeds.length,
-        controller: ScrollController(),
-        shrinkWrap: true,
-        separatorBuilder: (context, index) => SizedBox(height: 20),
-        padding: EdgeInsets.only(left: 20, right: 20),
-        itemBuilder: (context, index) {
-          return Container(
-            height: 100,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(15),
-              boxShadow: [
-                BoxShadow(
-                  color: Color(0xff1D1617).withOpacity(0.11),
-                  offset: Offset(0, 10),
-                  blurRadius: 40,
-                  spreadRadius: 0,
-                )
-              ]
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Icon(Icons.grass_sharp, size: 40,),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '${seeds[index].manufacturer}',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+        SizedBox(height: 15),
+        MySearchBar(),
+        SizedBox(height: 15),
+        ListView.separated(
+          itemCount: seeds.length,
+          controller: ScrollController(),
+          shrinkWrap: true,
+          separatorBuilder: (context, index) => SizedBox(height: 20),
+          padding: EdgeInsets.only(left: 20, right: 20),
+          itemBuilder: (context, index) {
+            return Container(
+              height: 100,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(15),
+                boxShadow: [
+                  BoxShadow(
+                    color: Color(0xff1D1617).withOpacity(0.11),
+                    offset: Offset(0, 10),
+                    blurRadius: 40,
+                    spreadRadius: 0,
+                  )
+                ]
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Icon(Icons.grass_sharp, size: 40,),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${seeds[index].manufacturer}',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    Text(
-                      '${seeds[index].name} | ${seeds[index].crop}',
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
+                      Text(
+                        '${seeds[index].name} | ${seeds[index].crop}',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                Container(
-                  margin: const EdgeInsets.all(10),
-                  alignment: Alignment.center,
-                  width: 37,
-                  height: 37,
-                  decoration: BoxDecoration(
-                    color: Color(0xffF7F8F8),
-                    borderRadius: BorderRadius.circular(10),
+                    ],
                   ),
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.pushNamed(context, '/seed', arguments: seeds[index]);
-                    },
-                    child: Icon(Icons.arrow_forward_ios, color: Colors.black,)
+                  Container(
+                    margin: const EdgeInsets.all(10),
+                    alignment: Alignment.center,
+                    width: 37,
+                    height: 37,
+                    decoration: BoxDecoration(
+                      color: Color(0xffF7F8F8),
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-      SizedBox(height: 20),
-    ],
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(context, '/seed', arguments: seeds[index]);
+                      },
+                      child: Icon(Icons.arrow_forward_ios, color: Colors.black,)
+                      ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+        SizedBox(height: 20),
+      ],
+    ),
   );
 }
 
 //* Displays Models Section
 Widget ModelsSection(BuildContext context, {required List<MlModel> models}){
   log("found ${models.length} models");
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Padding(
-        padding: const EdgeInsets.only(left: 20, top: 20),
-        child: Text(
-          'Models',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
+  return SingleChildScrollView(
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 20, top: 20),
+          child: Text(
+            'Models',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
-      ),
-      SizedBox(height: 15),
-      MySearchBar(),
-      SizedBox(height: 15),
-      ListView.separated(
-        itemCount: models.length,
-        controller: ScrollController(),
-        shrinkWrap: true,
-        separatorBuilder: (context, index) => SizedBox(height: 20),
-        padding: EdgeInsets.only(left: 20, right: 20),
-        itemBuilder: (context, index) {
-          return Container(
-            height: 100,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(15),
-              boxShadow: [
-                BoxShadow(
-                  color: Color(0xff1D1617).withOpacity(0.11),
-                  offset: Offset(0, 10),
-                  blurRadius: 40,
-                  spreadRadius: 0,
-                )
-              ]
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Icon(Icons.smart_button, size: 40,),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      models[index].name,
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+        SizedBox(height: 15),
+        MySearchBar(),
+        SizedBox(height: 15),
+        ListView.separated(
+          itemCount: models.length,
+          controller: ScrollController(),
+          shrinkWrap: true,
+          separatorBuilder: (context, index) => SizedBox(height: 20),
+          padding: EdgeInsets.only(left: 20, right: 20),
+          itemBuilder: (context, index) {
+            return Container(
+              height: 100,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(15),
+                boxShadow: [
+                  BoxShadow(
+                    color: Color(0xff1D1617).withOpacity(0.11),
+                    offset: Offset(0, 10),
+                    blurRadius: 40,
+                    spreadRadius: 0,
+                  )
+                ]
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Icon(Icons.smart_button, size: 40,),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        models[index].name,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    Text(
-                      models[index].description,
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
+                      Text(
+                        models[index].description,
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                Container(
-                  margin: const EdgeInsets.all(10),
-                  alignment: Alignment.center,
-                  width: 37,
-                  height: 37,
-                  decoration: BoxDecoration(
-                    color: Color(0xffF7F8F8),
-                    borderRadius: BorderRadius.circular(10),
+                    ],
                   ),
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.pushNamed(context, '/model', arguments: models[index]);
-                    },
-                    child: Icon(Icons.arrow_forward_ios, color: Colors.black,)
+                  Container(
+                    margin: const EdgeInsets.all(10),
+                    alignment: Alignment.center,
+                    width: 37,
+                    height: 37,
+                    decoration: BoxDecoration(
+                      color: Color(0xffF7F8F8),
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-      SizedBox(height: 20),
-    ],
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(context, '/model', arguments: models[index]);
+                      },
+                      child: Icon(Icons.arrow_forward_ios, color: Colors.black,)
+                      ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+        SizedBox(height: 20),
+      ],
+    ),
   );
 }
 
 //* Displays Locations Section
 Widget LocationsSection(BuildContext context, {required List<LocationModel> locations}){
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Padding(
-        padding: const EdgeInsets.only(left: 20, top: 20),
-        child: Text(
-          'Locations',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
+  return SingleChildScrollView(
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 20, top: 20),
+          child: Text(
+            'Locations',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
-      ),
-      SizedBox(height: 15),
-      MySearchBar(),
-      SizedBox(height: 15),
-      ListView.separated(
-        itemCount: locations.length,
-        controller: ScrollController(),
-        shrinkWrap: true,
-        separatorBuilder: (context, index) => SizedBox(height: 20),
-        padding: EdgeInsets.only(left: 20, right: 20),
-        itemBuilder: (context, index) {
-          return Container(
-            height: 100,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(15),
-              boxShadow: [
-                BoxShadow(
-                  color: Color(0xff1D1617).withOpacity(0.11),
-                  offset: Offset(0, 10),
-                  blurRadius: 40,
-                  spreadRadius: 0,
-                )
-              ]
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Icon(Icons.location_on, size: 40,),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      locations[index].name,
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+        SizedBox(height: 15),
+        MySearchBar(),
+        SizedBox(height: 15),
+        ListView.separated(
+          itemCount: locations.length,
+          controller: ScrollController(),
+          shrinkWrap: true,
+          separatorBuilder: (context, index) => SizedBox(height: 20),
+          padding: EdgeInsets.only(left: 20, right: 20),
+          itemBuilder: (context, index) {
+            return Container(
+              height: 100,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(15),
+                boxShadow: [
+                  BoxShadow(
+                    color: Color(0xff1D1617).withOpacity(0.11),
+                    offset: Offset(0, 10),
+                    blurRadius: 40,
+                    spreadRadius: 0,
+                  )
+                ]
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Icon(Icons.location_on, size: 40,),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        locations[index].name,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    Text(
-                      'Temperature: ${locations[index].temperature} | Rainfall: ${locations[index].rainfall}',
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
+                      Text(
+                        'Temperature: ${locations[index].temperature} | Rainfall: ${locations[index].rainfall}',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                Container(
-                  margin: const EdgeInsets.all(10),
-                  alignment: Alignment.center,
-                  width: 37,
-                  height: 37,
-                  decoration: BoxDecoration(
-                    color: Color(0xffF7F8F8),
-                    borderRadius: BorderRadius.circular(10),
+                    ],
                   ),
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.pushNamed(context, '/location', arguments: locations[index]);
-                    },
-                    child: Icon(Icons.arrow_forward_ios, color: Colors.black,)
+                  Container(
+                    margin: const EdgeInsets.all(10),
+                    alignment: Alignment.center,
+                    width: 37,
+                    height: 37,
+                    decoration: BoxDecoration(
+                      color: Color(0xffF7F8F8),
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-      SizedBox(height: 20),
-    ],
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(context, '/location', arguments: locations[index]);
+                      },
+                      child: Icon(Icons.arrow_forward_ios, color: Colors.black,)
+                      ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+        SizedBox(height: 20),
+      ],
+    ),
   );
 } 
 
 //* Displays Crops Section
 Widget CropsSection(BuildContext context, {required List<CropModel> crops}){
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Padding(
-        padding: const EdgeInsets.only(left: 20, top: 20),
-        child: Text(
-          'Crops',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
+  return SingleChildScrollView(
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 20, top: 20),
+          child: Text(
+            'Crops',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
-      ),
-      SizedBox(height: 15),
-      MySearchBar(),
-      SizedBox(height: 15),
-      ListView.separated(
-        itemCount: crops.length,
-        controller: ScrollController(),
-        shrinkWrap: true,
-        separatorBuilder: (context, index) => SizedBox(height: 20),
-        padding: EdgeInsets.only(left: 20, right: 20),
-        itemBuilder: (context, index) {
-          return Container(
-            height: 100,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(15),
-              boxShadow: [
-                BoxShadow(
-                  color: Color(0xff1D1617).withOpacity(0.11),
-                  offset: Offset(0, 10),
-                  blurRadius: 40,
-                  spreadRadius: 0,
-                )
-              ]
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Icon(Icons.grass, size: 40,),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      crops[index].name,
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+        SizedBox(height: 15),
+        MySearchBar(),
+        SizedBox(height: 15),
+        ListView.separated(
+          itemCount: crops.length,
+          controller: ScrollController(),
+          shrinkWrap: true,
+          separatorBuilder: (context, index) => SizedBox(height: 20),
+          padding: EdgeInsets.only(left: 20, right: 20),
+          itemBuilder: (context, index) {
+            return Container(
+              height: 100,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(15),
+                boxShadow: [
+                  BoxShadow(
+                    color: Color(0xff1D1617).withOpacity(0.11),
+                    offset: Offset(0, 10),
+                    blurRadius: 40,
+                    spreadRadius: 0,
+                  )
+                ]
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Icon(Icons.grass, size: 40,),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        crops[index].name,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    Text(
-                      'Market Price: ${crops[index].marketPrice}',
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
+                      Text(
+                        'Market Price: ${crops[index].marketPrice}',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                Container(
-                  margin: const EdgeInsets.all(10),
-                  alignment: Alignment.center,
-                  width: 37,
-                  height: 37,
-                  decoration: BoxDecoration(
-                    color: Color(0xffF7F8F8),
-                    borderRadius: BorderRadius.circular(10),
+                    ],
                   ),
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.pushNamed(context, '/crop', arguments: crops[index]);
-                    },
-                    child: Icon(Icons.arrow_forward_ios, color: Colors.black,)
+                  Container(
+                    margin: const EdgeInsets.all(10),
+                    alignment: Alignment.center,
+                    width: 37,
+                    height: 37,
+                    decoration: BoxDecoration(
+                      color: Color(0xffF7F8F8),
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-      SizedBox(height: 20),
-    ],
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(context, '/crop', arguments: crops[index]);
+                      },
+                      child: Icon(Icons.arrow_forward_ios, color: Colors.black,)
+                      ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+        SizedBox(height: 20),
+      ],
+    ),
   );
 }
 

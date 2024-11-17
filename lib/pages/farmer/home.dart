@@ -316,95 +316,97 @@ class AllPlotsSection extends StatelessWidget {
         child: Text('No plots found'),
       );
     }
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Padding(
-          padding: EdgeInsets.only(left: 20, top: 20),
-          child: Text(
-            'Plots',
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.only(left: 20, top: 20),
+            child: Text(
+              'Plots',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
-        ),
-        const SizedBox(height: 15),
-        // Add Button
-        const Padding(
-          padding: EdgeInsets.only(left: 20, right: 20),
-          child: AddNew(name: 'Plots'),
-        ),
-        const SizedBox(height: 20),
-        ListView.separated(
-          itemCount: plots.length,
-          shrinkWrap: true,
-          separatorBuilder: (context, index) => const SizedBox(height: 20),
-          padding: const EdgeInsets.only(left: 20, right: 20),
-          itemBuilder: (context, index) {
-            return Container(
-              height: 100,
-              decoration: BoxDecoration(
-                color:Colors.white,
-                borderRadius: BorderRadius.circular(15),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xff1D1617).withOpacity(0.11),
-                    offset: const Offset(0, 10),
-                    blurRadius: 40,
-                    spreadRadius: 0,
-                  )
-                ]
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Icon(Icons.grass, size: 50,),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        plots[index].name,
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+          const SizedBox(height: 15),
+          // Add Button
+          const Padding(
+            padding: EdgeInsets.only(left: 20, right: 20),
+            child: AddNew(name: 'Plots'),
+          ),
+          const SizedBox(height: 20),
+          ListView.separated(
+            itemCount: plots.length,
+            shrinkWrap: true,
+            separatorBuilder: (context, index) => const SizedBox(height: 20),
+            padding: const EdgeInsets.only(left: 20, right: 20),
+            itemBuilder: (context, index) {
+              return Container(
+                height: 100,
+                decoration: BoxDecoration(
+                  color:Colors.white,
+                  borderRadius: BorderRadius.circular(15),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xff1D1617).withOpacity(0.11),
+                      offset: const Offset(0, 10),
+                      blurRadius: 40,
+                      spreadRadius: 0,
+                    )
+                  ]
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Icon(Icons.grass, size: 50,),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          plots[index].name,
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      Text(
-                        '${plots[index].size} Acres | ${plots[index].crop} | Score: ${plots[index].score}',
-                        style: const TextStyle(
-                          color: Colors.grey,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
+                        Text(
+                          '${plots[index].size} Acres | ${plots[index].crop} | Score: ${plots[index].score}',
+                          style: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  Container(
-                    margin: const EdgeInsets.all(10),
-                    alignment: Alignment.center,
-                    width: 37,
-                    height: 37,
-                    decoration: BoxDecoration(
-                      color: const Color(0xffF7F8F8),
-                      borderRadius: BorderRadius.circular(10),
+                      ],
                     ),
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.pushNamed(context, '/plot', arguments: plots[index]);
-                      },
-                      child: Icon(Icons.arrow_forward_ios_rounded, size: 30, color: Colors.grey,),
+                    Container(
+                      margin: const EdgeInsets.all(10),
+                      alignment: Alignment.center,
+                      width: 37,
+                      height: 37,
+                      decoration: BoxDecoration(
+                        color: const Color(0xffF7F8F8),
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                  ),
-                ],
-              ),
-            );
-          },
-        )
-      ],
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(context, '/plot', arguments: plots[index]);
+                        },
+                        child: Icon(Icons.arrow_forward_ios_rounded, size: 30, color: Colors.grey,),
+                        ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          )
+        ],
+      ),
     );
   }
 }
