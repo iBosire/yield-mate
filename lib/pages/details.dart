@@ -133,75 +133,84 @@ class DetailsPageState extends State<DetailsPage> {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-      appBar: appBar('Plot Details', 0, '/editplot', plotTabs()),
-      backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.only(left: 16.0, right: 16.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                plotForm('view'),
-                SizedBox(height: 20),
-                ElevatedButton.icon(
-                  icon: const Icon(Icons.analytics),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 154, 211, 155),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    fixedSize: const Size(200, 50),
+        appBar: appBar('Plot Details', 0, '/editplot', plotTabs()),
+        backgroundColor: Colors.white,
+        body: TabBarView(
+          children: [
+            SingleChildScrollView(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      plotForm('view'),
+                      SizedBox(height: 20),
+                      ElevatedButton.icon(
+                        icon: const Icon(Icons.analytics),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color.fromARGB(255, 154, 211, 155),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          fixedSize: const Size(200, 50),
+                        ),
+                        onPressed: () {
+                          _analyzePlot(
+                            _plot.nutrients[0].toString(),
+                            _plot.nutrients[1].toString(),
+                            _plot.nutrients[2].toString(),
+                            _plot.nutrients[3].toString(),
+                            _plot.size.toString(),
+                            _plot.plotId,
+                            _plot.crop,
+                            _plot.regionId,
+                          );
+                        },
+                        label: const Text('Analyze Plot'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text('Delete Plot'),
+                                content: const Text('Are you sure you want to delete this plot?'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text('Cancel'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () async {
+                                      await _db.deletePlot(_plot.plotId);
+                                      Navigator.pushNamed(context, '/');
+                                    },
+                                    child: const Text('Delete'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        }, 
+                        child: const Text('Delete Plot'),
+                      )
+                    ],
                   ),
-                  onPressed: () {
-                    _analyzePlot(
-                      _plot.nutrients[0].toString(),
-                      _plot.nutrients[1].toString(),
-                      _plot.nutrients[2].toString(),
-                      _plot.nutrients[3].toString(),
-                      _plot.size.toString(),
-                      _plot.plotId,
-                      _plot.crop,
-                      _plot.regionId,
-                    );
-                  },
-                  label: const Text('Analyze Plot'),
                 ),
-                ElevatedButton(
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: const Text('Delete Plot'),
-                          content: const Text('Are you sure you want to delete this plot?'),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: const Text('Cancel'),
-                            ),
-                            TextButton(
-                              onPressed: () async {
-                                await _db.deletePlot(_plot.plotId);
-                                Navigator.pushNamed(context, '/');
-                              },
-                              child: const Text('Delete'),
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  }, 
-                  child: const Text('Delete Plot'),
-                )
-              ],
+              ),
             ),
-          ),
+            SingleChildScrollView(
+              child: Center(
+                child: Text('Analytics Page'),
+              ),
+            ),
+          ]
         ),
       ),
-        ),
     );
   }
   //* Add
