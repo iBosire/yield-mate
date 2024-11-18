@@ -18,6 +18,7 @@ class PlotAnalysisService {
     if (response.statusCode == 200) {
       return "Predicted yield: ${jsonDecode(response.body)['linear_prediction']}";
     } else {
+      log('Failed to analyze plot: ${response.statusCode}: ${response.reasonPhrase}');
       return "Failed to analyze plot";
     }
   }

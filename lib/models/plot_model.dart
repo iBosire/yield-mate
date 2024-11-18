@@ -17,10 +17,10 @@ class PlotModel {
   Timestamp dateCreated;
   Timestamp? dateUpdated;
   List<dynamic> nutrients;
-  double? predictedYield;
-  double? predictedRevenue;
-  double? actualRevenue;
-  String? recommendedCrop;
+  double predictedYield;
+  double predictedRevenue;
+  double actualRevenue;
+  String recommendedCrop;
   int? yieldAmount;
 
   PlotModel({
@@ -41,9 +41,9 @@ class PlotModel {
     this.dateUpdated,
     required this.region,
     required this.seed,
-    this.predictedYield,
-    this.actualRevenue,
-    this.predictedRevenue,
-    this.recommendedCrop,
+    required this.predictedYield,
+    required this.actualRevenue,
+    required this.predictedRevenue,
+    required this.recommendedCrop,
   });
 }

@@ -102,12 +102,12 @@ class FieldPageState extends State<FieldPage> with SingleTickerProviderStateMixi
       ),
       ListView(
         children: [
-          AllPlotsSection(plots: plots.where((plot) => plot?.status == 0).toList().cast<PlotModel>()),
+          AllPlotsSection(plots: plots.where((plot) => plot?.active == true).toList().cast<PlotModel>()),
         ],
       ),
       ListView(
         children: [
-          AllPlotsSection(plots: plots.where((plot) => plot?.status == 1).toList().cast<PlotModel>()),
+          AllPlotsSection(plots: plots.where((plot) => plot?.active == false).toList().cast<PlotModel>()),
         ]
       )
     ];

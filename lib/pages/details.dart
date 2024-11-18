@@ -132,6 +132,7 @@ class DetailsPageState extends State<DetailsPage> {
   //* View
   DefaultTabController viewPlot() {
     log("Plot ID: ${_plot?.plotId}");
+    log("Plot Status: ${_plot?.status}");
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -687,7 +688,7 @@ class DetailsPageState extends State<DetailsPage> {
                   ),
                   const SizedBox(width: 5,),
                   Text(
-                    "${plot.yieldAmount}",
+                    "${plot.predictedYield.toStringAsFixed(2)} /Acre",
                     style: const TextStyle(
                       fontSize: 18,
                     ),
@@ -707,7 +708,7 @@ class DetailsPageState extends State<DetailsPage> {
                   ),
                   const SizedBox(width: 5,),
                   Text(
-                    "${plot.predictedRevenue}",
+                    plot.predictedRevenue.toStringAsFixed(2),
                     style: const TextStyle(
                       fontSize: 18,
                     ),
@@ -747,7 +748,7 @@ class DetailsPageState extends State<DetailsPage> {
                   ),
                   const SizedBox(width: 5,),
                   Text(
-                    "${plot.recommendedCrop}",
+                    plot.recommendedCrop,
                     style: const TextStyle(
                       fontSize: 18
                     ),

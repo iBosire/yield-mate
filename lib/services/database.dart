@@ -203,6 +203,7 @@ class DatabaseService {
         predictedYield: (doc['predictedYield'] as num).toDouble() ?? 0.0,
         actualRevenue: (doc['actualRevenue'] as num).toDouble() ?? 0.0,
         predictedRevenue: (doc['predictedRevenue'] as num).toDouble() ?? 0.0,
+        recommendedCrop: doc['recommendedCrop'] ?? '',
         dateCreated: doc['dateCreated'] ?? '',
         nutrients: doc['nutrients'] ?? [],
         dateUpdated: doc['dateUpdated'] ?? '',
@@ -358,9 +359,9 @@ class DatabaseService {
       );
     }).toList();
   }
-  Future<List<String>> getRegionDetails(String region) async {
-    log("Received Region ID: $region");
-    DocumentSnapshot doc = await regionCollection.where('name', isEqualTo: region).get().then((value) => value.docs.first);
+  Future<List<String>> getRegionDetails(String regionId) async {
+    log("Received Region ID: $regionId");
+    DocumentSnapshot doc = await regionCollection.doc(regionId).get();
     return [doc['temperature'], doc['rainfall'].toString(), doc['humidity']];
   } 
 
