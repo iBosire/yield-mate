@@ -38,10 +38,6 @@ class FieldPageState extends State<FieldPage> with SingleTickerProviderStateMixi
     });
   }
 
-  void setData() async {
-    await DatabaseService(uid: currentUser).addPlot("Plot 2", "Beans", 1.3, "2", "3", 30, [12, 13, 14, 15, 16], 0);
-  }
-
   @override
   void initState() {
     super.initState();
@@ -77,10 +73,26 @@ class FieldPageState extends State<FieldPage> with SingleTickerProviderStateMixi
               } else if(snapshot.hasData) {
                 log("Data: ${snapshot.data}");
                 plots = snapshot.data!;
-                return AllPlotsSection(plots: snapshot.data!.cast<PlotModel>());
+                if(plots.isNotEmpty) {
+                  return AllPlotsSection(plots: snapshot.data!.cast<PlotModel>());
+                } else {
+                  return const Column(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(left: 20, right: 20, top: 20),
+                        child: AddNew(name: 'Plots'),
+                      ),
+                    ],
+                  );
+                }
               } else {
-                return const Center(
-                  child: Text('No plots found'),
+                return const Column(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(left: 20, right: 20, top: 20),
+                      child: AddNew(name: 'Plots'),
+                    ),
+                  ],
                 );
               }
             }

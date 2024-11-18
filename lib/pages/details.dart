@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart';
 import 'package:yield_mate/models/crop_model.dart';
 import 'package:yield_mate/models/location_model.dart';
@@ -13,6 +14,7 @@ import 'package:yield_mate/models/user_model.dart';
 import 'package:yield_mate/services/auth.dart';
 import 'package:yield_mate/services/database.dart';
 import 'package:yield_mate/services/model.dart';
+import 'package:yield_mate/shared/loading.dart';
 
 class DetailsPage extends StatefulWidget {
   // use user type to handle what info is displayed (plot details, user details, or model details)
@@ -204,9 +206,9 @@ class DetailsPageState extends State<DetailsPage> {
               ),
             ),
             SingleChildScrollView(
-              child: Center(
-                child: Text('Analytics Page'),
-              ),
+              child: _plot.status == 1 ? Center(
+                child: plotAnalytics(_plot),
+              ) : const Loading(),
             ),
           ]
         ),
@@ -327,6 +329,8 @@ class DetailsPageState extends State<DetailsPage> {
   dynamic seed = '';
   String region = '';
   String crop = '';
+  String _regionId = '';
+  String _seedId = '';
   Form plotForm(String type) {
     String _plotName = '';
     double _plotSize = 0.0;
@@ -357,7 +361,7 @@ class DetailsPageState extends State<DetailsPage> {
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
-              initialValue: _plot?.regionId + ' | ' + '${_plot?.size} acres',
+              initialValue: _plot?.region + ' | ' + '${_plot?.size} acres',
               readOnly: true,
             ),
             TextFormField(
@@ -366,7 +370,7 @@ class DetailsPageState extends State<DetailsPage> {
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
-              initialValue: _plot?.seedId + ' | ' + _plot?.crop,
+              initialValue: _plot?.seed + ' | ' + _plot?.crop,
               readOnly: true,
             ),
             TextFormField(
@@ -506,7 +510,7 @@ class DetailsPageState extends State<DetailsPage> {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
                     List<int> nutrition = [_nitrogen, _phosphorus, _potassium, _ph];
-                    _db.addPlot(_plotName, crop, _plotSize, region, seed, _seedAmount.toInt(), nutrition, 0);
+                    _db.addPlot(_plotName, crop, _plotSize, _regionId, region, _seedId, seed, _seedAmount.toInt(), nutrition);
                     Navigator.pushNamed(context, '/');
                   }
                 },
@@ -559,13 +563,18 @@ class DetailsPageState extends State<DetailsPage> {
       builder: (context, snapshot) {
         if(snapshot.hasData){
           return DropdownButtonFormField(
-            decoration: decorator('Seed ID', '', 'Select the seed'),
+            decoration: decorator('Seed', '', 'Select the seed'),
             dropdownColor: Colors.white,
             items: snapshot.data!.map((seed) {
               return DropdownMenuItem(
                 alignment: Alignment.center,
                 value: seed.name,
                 child: Text(seed.name),
+                onTap: () {
+                  setState(() {
+                    _seedId = seed.id;
+                  });
+                },
               );
             }).toList(),
             onChanged: (value) {
@@ -593,6 +602,11 @@ class DetailsPageState extends State<DetailsPage> {
                 alignment: Alignment.center,
                 value: region.name,
                 child: Text(region.name),
+                onTap: () {
+                  setState(() {
+                    _regionId = region.id;
+                  });
+                },
               );
             }).toList(),
             onChanged: (value) {
@@ -619,6 +633,130 @@ class DetailsPageState extends State<DetailsPage> {
           icon: Icon(Icons.show_chart),
           text: 'Analytics',
         ),
+      ],
+    );
+  }
+  //* Analytics Container
+  Column plotAnalytics(PlotModel plot) {
+    return Column(
+      children: [
+        const SizedBox(height: 20,),
+        Container(
+          padding: const EdgeInsets.all(50),
+          height: 320,
+          width: 320,
+          decoration: BoxDecoration(
+            color: Color.fromARGB(255, 248, 217, 125),
+            borderRadius: BorderRadius.circular(20)
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 150,
+                height: 150,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: SvgPicture.asset('assets/icons/plot_icon.svg'),
+                ),
+              ),
+              const SizedBox(height: 20,),
+            ],
+          ),
+        ),
+        const SizedBox(height: 30,),
+        Container(
+          padding: const EdgeInsets.only(left: 50, right: 50),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Text(
+                    "Predicted Yield: ",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold
+                    ),
+                  ),
+                  const SizedBox(width: 5,),
+                  Text(
+                    "${plot.yieldAmount}",
+                    style: const TextStyle(
+                      fontSize: 18,
+                    ),
+                  )
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Text(
+                    "Predicted Revenue: ",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(width: 5,),
+                  Text(
+                    "${plot.predictedRevenue}",
+                    style: const TextStyle(
+                      fontSize: 18,
+                    ),
+                  )
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Text(
+                    "Crop Suitability Score: ",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(width: 5,),
+                  Text(
+                    "${plot.score}",
+                    style: const TextStyle(
+                      fontSize: 18,
+                    ),
+                  )
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Text(
+                    "Recommended Crop: ",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(width: 5,),
+                  Text(
+                    "${plot.recommendedCrop}",
+                    style: const TextStyle(
+                      fontSize: 18
+                    ),
+                  )
+                ],
+              )
+            ],
+          ),
+        )
       ],
     );
   }

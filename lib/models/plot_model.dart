@@ -9,12 +9,18 @@ class PlotModel {
   String crop;
   double score;
   String regionId;
+  String region;
   String seedId;
+  String seed;
   int seedAmount;
   bool active;
   Timestamp dateCreated;
   Timestamp? dateUpdated;
   List<dynamic> nutrients;
+  double? predictedYield;
+  double? predictedRevenue;
+  double? actualRevenue;
+  String? recommendedCrop;
   int? yieldAmount;
 
   PlotModel({
@@ -33,5 +39,11 @@ class PlotModel {
     required this.nutrients,
     this.yieldAmount,
     this.dateUpdated,
+    required this.region,
+    required this.seed,
+    this.predictedYield,
+    this.actualRevenue,
+    this.predictedRevenue,
+    this.recommendedCrop,
   });
 }
