@@ -137,7 +137,7 @@ class DetailsPageState extends State<DetailsPage> {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        appBar: appBar('Plot Details', 0, '/editplot', plotTabs()),
+        appBar: appBar('Plot Details', _plot.active ? 0 : 1, '/editplot', plotTabs()),
         backgroundColor: Colors.white,
         body: TabBarView(
           children: [
