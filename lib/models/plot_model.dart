@@ -21,7 +21,7 @@ class PlotModel {
   double predictedRevenue;
   double actualRevenue;
   String recommendedCrop;
-  int? yieldAmount;
+  double? yieldAmount;
 
   PlotModel({
     required this.plotId,

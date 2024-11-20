@@ -130,6 +130,7 @@ class DetailsPageState extends State<DetailsPage> {
     );
   }
   //* View
+  double plotHarvest = 0.0;
   DefaultTabController viewPlot() {
     log("Plot ID: ${_plot?.plotId}");
     log("Plot Status: ${_plot?.status}");
@@ -171,6 +172,47 @@ class DetailsPageState extends State<DetailsPage> {
                           );
                         },
                         label: const Text('Analyze Plot'),
+                      ),
+                      TextButton.icon(
+                        onPressed: () async {
+                          showDialog(
+                            context: context, 
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text('Harvest Plot'),
+                                content: TextField(
+                                  decoration: const InputDecoration(
+                                    labelText: 'Enter the amount harvested',
+                                  ),
+                                  keyboardType: TextInputType.number,
+                                  maxLength: 5,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      plotHarvest = double.parse(value);
+                                    });
+                                  },
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text('Cancel'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () async {
+                                      await _db.updatePlotStatus(_plot.plotId, false, plotHarvest);
+                                      Navigator.pushNamed(context, '/');
+                                    },
+                                    child: const Text('Finish'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        }, 
+                        label: const Text('Finish Plot'),
+                        icon: const Icon(Icons.done),
                       ),
                       ElevatedButton(
                         onPressed: () {

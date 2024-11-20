@@ -121,7 +121,7 @@ class DatabaseService {
       'seed': 'Demo Seed',
       'seedAmount': 50,
       'active': true,
-      'yieldAmount': 1,
+      'yieldAmount': 150,
       'predictedYield': 0.0,
       'actualRevenue': 0.0,
       'predictedRevenue': 0.0,
@@ -146,7 +146,7 @@ class DatabaseService {
       'seed': seed,
       'seedAmount': seedAmount,
       'active': true,
-      'yieldAmount': 0,
+      'yieldAmount': 0.0,
       'predictedYield': 0.0,
       'actualRevenue': 0.0,
       'predictedRevenue': 0.0,
@@ -164,9 +164,9 @@ class DatabaseService {
       'dateUpdated': DateTime.now(),
     });
   }
-  Future updatePlotStatus(String plotId, int status, int yieldAmount) async {
+  Future updatePlotStatus(String plotId, bool active, double yieldAmount) async {
     return await plotCollection.doc(plotId).update({
-      'status': status,
+      'active': active,
       'yieldAmount': yieldAmount,
       'dateUpdated': DateTime.now(),
     });
@@ -199,7 +199,7 @@ class DatabaseService {
         seed: doc['seed'] ?? '',
         seedAmount: (doc['seedAmount'] as num).toInt(),
         active: doc['active'] ?? false,
-        yieldAmount: (doc['yieldAmount'] as num).toInt(),
+        yieldAmount: (doc['yieldAmount'] as num).toDouble() ?? 0.0,
         predictedYield: (doc['predictedYield'] as num).toDouble() ?? 0.0,
         actualRevenue: (doc['actualRevenue'] as num).toDouble() ?? 0.0,
         predictedRevenue: (doc['predictedRevenue'] as num).toDouble() ?? 0.0,
