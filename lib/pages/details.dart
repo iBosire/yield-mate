@@ -109,7 +109,7 @@ class DetailsPageState extends State<DetailsPage> {
     } else {
       return Scaffold(
         appBar: AppBar(
-          title: Text('Details'),
+          title: const Text('Details'),
         ),
         body: const Center(
           child: CircularProgressIndicator(),
@@ -124,7 +124,7 @@ class DetailsPageState extends State<DetailsPage> {
     return Scaffold(
       appBar: appBar('Edit Plot', 1, '', null),
       backgroundColor: Colors.white,
-      body: Center(
+      body: const Center(
         child: Text('Details Page'),
       ),
     );
@@ -148,7 +148,7 @@ class DetailsPageState extends State<DetailsPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       plotForm('view'),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       ElevatedButton.icon(
                         icon: const Icon(Icons.analytics),
                         style: ElevatedButton.styleFrom(
@@ -346,7 +346,7 @@ class DetailsPageState extends State<DetailsPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             TextFormField(
               decoration: decorator("Plot Name", "", ""),
               style: const TextStyle(
@@ -415,7 +415,7 @@ class DetailsPageState extends State<DetailsPage> {
                   _plotName = value!;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               TextFormField(
                 decoration: decorator('Size', '', 'Enter the plot size'),
                 keyboardType: TextInputType.number,
@@ -429,13 +429,13 @@ class DetailsPageState extends State<DetailsPage> {
                   _plotSize = double.parse(value!);
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               _cropList(),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               _regionList(),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               _seedList(),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               TextFormField(
                 decoration: decorator('Seed Amount', '', 'Enter the seed amount'),
                 keyboardType: TextInputType.number,
@@ -449,7 +449,7 @@ class DetailsPageState extends State<DetailsPage> {
                   _seedAmount = int.parse(value!);
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               //* nutrition details
               TextFormField(
                 decoration: decorator('Nitrogen', '', 'Enter the nitrogen amount'),
@@ -464,7 +464,7 @@ class DetailsPageState extends State<DetailsPage> {
                   _nitrogen = int.parse(value!);
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               TextFormField(
                 decoration: decorator('Phosphorus', '', 'Enter the phosphorus amount'),
                 keyboardType: TextInputType.number,
@@ -478,7 +478,7 @@ class DetailsPageState extends State<DetailsPage> {
                   _phosphorus = int.parse(value!);
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               TextFormField(
                 decoration: decorator('Potassium', '', 'Enter the potassium amount'),
                 keyboardType: TextInputType.number,
@@ -492,7 +492,7 @@ class DetailsPageState extends State<DetailsPage> {
                   _potassium = int.parse(value!);
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               TextFormField(
                 decoration: decorator('pH', '', 'Enter the pH'),
                 keyboardType: TextInputType.number,
@@ -515,9 +515,9 @@ class DetailsPageState extends State<DetailsPage> {
                     Navigator.pushNamed(context, '/');
                   }
                 },
-                child: Text('Save Plot'),
+                child: const Text('Save Plot'),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
             ],
           ),
         ),
@@ -647,7 +647,7 @@ class DetailsPageState extends State<DetailsPage> {
           height: 320,
           width: 320,
           decoration: BoxDecoration(
-            color: Color.fromARGB(255, 248, 217, 125),
+            color: const Color.fromARGB(255, 248, 217, 125),
             borderRadius: BorderRadius.circular(20)
           ),
           child: Column(
@@ -795,8 +795,8 @@ class DetailsPageState extends State<DetailsPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('User Details', style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
-              SizedBox(height: 20),
+              const Text('User Details', style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -816,19 +816,19 @@ class DetailsPageState extends State<DetailsPage> {
                   )
                 ],
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               userForm('view'),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Text('Date Created: ${_user?.createdAt.toDate().day} | ${_user?.createdAt.toDate().month} | ${_user?.createdAt.toDate().year}'),
               Text('Date Updated: ${_user?.updatedAt.toDate().day} | ${_user?.updatedAt.toDate().month} | ${_user?.updatedAt.toDate().year} | Time ${_user?.updatedAt.toDate().hour}:${_user?.updatedAt.toDate().minute}'),
-              SizedBox(height: 20),
-              ElevatedButton(
+              const SizedBox(height: 20),
+              _user.type == "farmer" ? ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  fixedSize: Size(200, 50),
+                  fixedSize: const Size(200, 50),
                 ),
                 onPressed: () {
                   showDialog(
@@ -863,7 +863,7 @@ class DetailsPageState extends State<DetailsPage> {
                     fontSize: 18,
                   ),
                 ),
-              )
+              ) : const SizedBox(),
             ],
           ),
         ),
@@ -879,7 +879,7 @@ class DetailsPageState extends State<DetailsPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Edit User Details', style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w400)),
+            const Text('Edit User Details', style: TextStyle(fontSize: 26, fontWeight: FontWeight.w400)),
             userForm('edit'),
           ],
         ),
@@ -1003,7 +1003,7 @@ class DetailsPageState extends State<DetailsPage> {
                   _user.username = value;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () async{
                   if (_formKey.currentState!.validate()) {
@@ -1012,7 +1012,7 @@ class DetailsPageState extends State<DetailsPage> {
                     Navigator.pushNamed(context, '/');
                   }
                 },
-                child: Text('Save User'),
+                child: const Text('Save User'),
               ),
             ],
           ),
@@ -1039,8 +1039,8 @@ class DetailsPageState extends State<DetailsPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text("Location Details", style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
-              SizedBox(height: 20),
+              const Text("Location Details", style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -1060,19 +1060,19 @@ class DetailsPageState extends State<DetailsPage> {
                   )
                 ],
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               locationForm('view'),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Text('Date Created: ${_location?.dateCreated.toDate().day} | ${_location?.dateCreated.toDate().month} | ${_location?.dateCreated.toDate().year}'),
               Text('Date Updated: ${_location?.dateUpdated.toDate().day} | ${_location?.dateUpdated.toDate().month} | ${_location?.dateUpdated.toDate().year}'),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  fixedSize: Size(200, 50),
+                  fixedSize: const Size(200, 50),
                 ),
                 onPressed: () {
                   showDialog(
@@ -1123,8 +1123,8 @@ class DetailsPageState extends State<DetailsPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Add New Location', style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w500)),
-            SizedBox(height: 20),
+            const Text('Add New Location', style: TextStyle(fontSize: 26, fontWeight: FontWeight.w500)),
+            const SizedBox(height: 20),
             locationForm('new'),
           ],
         ),
@@ -1167,7 +1167,7 @@ class DetailsPageState extends State<DetailsPage> {
                   _locationName = value!;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               TextFormField(
                 decoration: decorator('Temperature', '25', 'Enter the average temperature in Celsius'),
                 validator: (value) {
@@ -1180,7 +1180,7 @@ class DetailsPageState extends State<DetailsPage> {
                   _locationTemperature = value!;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               TextFormField(
                 decoration: decorator('Humidity', '60%', 'Enter the humidity'),
                 validator: (value) {
@@ -1193,7 +1193,7 @@ class DetailsPageState extends State<DetailsPage> {
                   _locationHumidity = value!;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               TextFormField(
                 decoration: decorator('Rainfall', '100mm', 'Enter the rainfall'),
                 keyboardType: TextInputType.number,
@@ -1207,7 +1207,7 @@ class DetailsPageState extends State<DetailsPage> {
                   _locationRainfall = int.parse(value!);
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
@@ -1216,7 +1216,7 @@ class DetailsPageState extends State<DetailsPage> {
                     Navigator.pushNamed(context, '/modeltab');
                   }
                 },
-                child: Text('Save Location'),
+                child: const Text('Save Location'),
               ),
             ],
           ),
@@ -1274,8 +1274,8 @@ class DetailsPageState extends State<DetailsPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('Edit Location Details', style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w400)),
-              SizedBox(height: 20),
+              const Text('Edit Location Details', style: TextStyle(fontSize: 26, fontWeight: FontWeight.w400)),
+              const SizedBox(height: 20),
               TextFormField(
                 decoration: decorator('Location Name', _location?.name, 'Enter the location name'),
                 initialValue: _location?.name,
@@ -1289,7 +1289,7 @@ class DetailsPageState extends State<DetailsPage> {
                   _locationName = value!;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               TextFormField(
                 decoration: decorator('Temperature', _location?.temperature, 'Enter the temperature'),
                 initialValue: _location?.temperature,
@@ -1303,7 +1303,7 @@ class DetailsPageState extends State<DetailsPage> {
                   _locationTemperature = value!;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               TextFormField(
                 decoration: decorator('Humidity', _location?.humidity, 'Enter the humidity'),
                 initialValue: _location?.humidity,
@@ -1317,7 +1317,7 @@ class DetailsPageState extends State<DetailsPage> {
                   _locationHumidity = value!;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               TextFormField(
                 decoration: decorator('Rainfall', "", 'Enter the rainfall'),
                 initialValue: _location?.rainfall.toString(),
@@ -1332,7 +1332,7 @@ class DetailsPageState extends State<DetailsPage> {
                   _locationRainfall = int.parse(value!);
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
@@ -1341,7 +1341,7 @@ class DetailsPageState extends State<DetailsPage> {
                     Navigator.pushNamed(context, '/modeltab');
                   }
                 },
-                child: Text('Save Location'),
+                child: const Text('Save Location'),
               ),
             ],
           ),
@@ -1368,8 +1368,8 @@ class DetailsPageState extends State<DetailsPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text("Seed Details", style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
-              SizedBox(height: 20),
+              const Text("Seed Details", style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -1389,19 +1389,19 @@ class DetailsPageState extends State<DetailsPage> {
                   )
                 ],
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               seedForm('view'),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Text('Date Created: ${_seed?.dateCreated.toDate().day} | ${_seed?.dateCreated.toDate().month} | ${_seed?.dateCreated.toDate().year}'),
               Text('Date Updated: ${_seed?.dateUpdated.toDate().day} | ${_seed?.dateUpdated.toDate().month} | ${_seed?.dateUpdated.toDate().year}'),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  fixedSize: Size(200, 50),
+                  fixedSize: const Size(200, 50),
                 ),
                 onPressed: () {
                   showDialog(
@@ -1452,7 +1452,7 @@ class DetailsPageState extends State<DetailsPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Add New Seed', style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w500)),
+            const Text('Add New Seed', style: TextStyle(fontSize: 26, fontWeight: FontWeight.w500)),
             seedForm('new'),
           ],
         ),
@@ -1495,7 +1495,7 @@ class DetailsPageState extends State<DetailsPage> {
                   _seedName = value!;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               TextFormField(
                 decoration: decorator('Seed Manufacturer', 'Seed Co.', 'Enter the seed manufacturer'),
                 validator: (value) {
@@ -1508,7 +1508,7 @@ class DetailsPageState extends State<DetailsPage> {
                   _seedManufacturer = value!;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               TextFormField(
                 decoration: decorator('Seed Crop', 'Maize', 'Enter the seed crop'),
                 validator: (value) {
@@ -1521,7 +1521,7 @@ class DetailsPageState extends State<DetailsPage> {
                   _seedCrop = value!;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               TextFormField(
                 decoration: decorator('Seed Maturity', '90 days', 'Enter the days to maturity'),
                 validator: (value) {
@@ -1534,7 +1534,7 @@ class DetailsPageState extends State<DetailsPage> {
                   _seedMaturity = value!;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
@@ -1543,7 +1543,7 @@ class DetailsPageState extends State<DetailsPage> {
                     Navigator.pushNamed(context, '/modeltab');
                   }
                 },
-                child: Text('Save Seed'),
+                child: const Text('Save Seed'),
               ),
             ],
           ),
@@ -1601,8 +1601,8 @@ class DetailsPageState extends State<DetailsPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('Edit Seed Details', style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w400)),
-              SizedBox(height: 20),
+              const Text('Edit Seed Details', style: TextStyle(fontSize: 26, fontWeight: FontWeight.w400)),
+              const SizedBox(height: 20),
               TextFormField(
                 decoration: decorator('Seed Name', _seed?.name, 'Enter the seed name'),
                 initialValue: _seed?.name,
@@ -1616,7 +1616,7 @@ class DetailsPageState extends State<DetailsPage> {
                   _seedName = value!;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               TextFormField(
                 decoration: decorator('Seed Manufacturer', _seed?.manufacturer, 'Enter the seed manufacturer'),
                 initialValue: _seed?.manufacturer,
@@ -1630,7 +1630,7 @@ class DetailsPageState extends State<DetailsPage> {
                   _seedManufacturer = value!;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               TextFormField(
                 decoration: decorator('Seed Crop', _seed?.crop, 'Enter the seed crop'),
                 initialValue: _seed?.crop,
@@ -1644,7 +1644,7 @@ class DetailsPageState extends State<DetailsPage> {
                   _seedCrop = value!;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               TextFormField(
                 decoration: decorator('Seed Maturity', _seed?.timeToMaturity, 'Enter the seed maturity'),
                 initialValue: _seed?.timeToMaturity,
@@ -1658,7 +1658,7 @@ class DetailsPageState extends State<DetailsPage> {
                   _seedMaturity = value!;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
@@ -1667,7 +1667,7 @@ class DetailsPageState extends State<DetailsPage> {
                     Navigator.pushNamed(context, '/modeltab');
                   }
                 },
-                child: Text('Save Seed'),
+                child: const Text('Save Seed'),
               ),
             ],
           ),
@@ -1713,12 +1713,12 @@ class DetailsPageState extends State<DetailsPage> {
                   )
                 ],
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               modelForm("view"),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
-                  fixedSize: Size(200, 50),
+                  fixedSize: const Size(200, 50),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -1728,14 +1728,14 @@ class DetailsPageState extends State<DetailsPage> {
                     context: context,
                     builder: (BuildContext context) {
                       return AlertDialog(
-                        title: Text('Delete Model'),
-                        content: Text('Are you sure you want to delete this model?'),
+                        title: const Text('Delete Model'),
+                        content: const Text('Are you sure you want to delete this model?'),
                         actions: [
                           TextButton(
                             onPressed: () {
                               Navigator.of(context).pop();
                             },
-                            child: Text('Cancel'),
+                            child: const Text('Cancel'),
                           ),
                           TextButton(
                             onPressed: () async {
@@ -1743,7 +1743,7 @@ class DetailsPageState extends State<DetailsPage> {
                               await _db.deleteModel(_model?.id);
                               Navigator.pushNamed(context, '/');
                             },
-                            child: Text('Delete'),
+                            child: const Text('Delete'),
                           ),
                         ],
                       );
@@ -1758,7 +1758,7 @@ class DetailsPageState extends State<DetailsPage> {
                   ),
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               OutlinedButton.icon(
                 onPressed: () async {
                   // ping model
@@ -1800,7 +1800,7 @@ class DetailsPageState extends State<DetailsPage> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text('Add New Model', style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w500)),
+          const Text('Add New Model', style: TextStyle(fontSize: 26, fontWeight: FontWeight.w500)),
           modelForm('new'),
         ],
       ),
@@ -1817,8 +1817,8 @@ class DetailsPageState extends State<DetailsPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text("Edit Model Details", style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w500)),
-              SizedBox(height: 20),
+              const Text("Edit Model Details", style: TextStyle(fontSize: 26, fontWeight: FontWeight.w500)),
+              const SizedBox(height: 20),
               modelForm('edit'),
             ],
           ),
@@ -1851,7 +1851,7 @@ class DetailsPageState extends State<DetailsPage> {
                   _modelName = value!;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               TextFormField(
                 decoration: decorator('Model Descryption', "predict crop yield", 'Enter a short description'),
                 validator: (value) {
@@ -1864,7 +1864,7 @@ class DetailsPageState extends State<DetailsPage> {
                   _modelDescription = value!;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               TextFormField(
                 decoration: decorator("Model URL", "www.model.com/yield", "enter the model URL"),
                 validator: (value) {
@@ -1877,10 +1877,10 @@ class DetailsPageState extends State<DetailsPage> {
                   _modelUrl = value!;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  fixedSize: Size(200, 50),
+                  fixedSize: const Size(200, 50),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -1892,7 +1892,7 @@ class DetailsPageState extends State<DetailsPage> {
                     Navigator.pushNamed(context, '/modeltab');
                   }
                 },
-                child: Text('Save Model'),
+                child: const Text('Save Model'),
               ),
             ],
           ),
@@ -1923,7 +1923,7 @@ class DetailsPageState extends State<DetailsPage> {
             ),
             TextFormField(
               decoration: decorator("Model URL", "", ""),
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
@@ -1939,8 +1939,8 @@ class DetailsPageState extends State<DetailsPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Edit Model Details', style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w400)),
-            SizedBox(height: 20),
+            const Text('Edit Model Details', style: TextStyle(fontSize: 26, fontWeight: FontWeight.w400)),
+            const SizedBox(height: 20),
             TextFormField(
               decoration: decorator("Model Name", "", ""),
               style: const TextStyle(
@@ -2042,12 +2042,12 @@ class DetailsPageState extends State<DetailsPage> {
                   )
                 ],
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               cropForm('view'),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
-                  fixedSize: Size(200, 50),
+                  fixedSize: const Size(200, 50),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -2101,7 +2101,7 @@ class DetailsPageState extends State<DetailsPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Add New Crop', style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w500)),
+            const Text('Add New Crop', style: TextStyle(fontSize: 26, fontWeight: FontWeight.w500)),
             cropForm('new'),
           ],
         ),
@@ -2142,7 +2142,7 @@ class DetailsPageState extends State<DetailsPage> {
                   _cropName = value!;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               TextFormField(
                 decoration: decorator('Crop Market Price', '20', 'Enter the market price in ksh per kg.'),
                 validator: (value) {
@@ -2155,7 +2155,7 @@ class DetailsPageState extends State<DetailsPage> {
                   _cropMarketPrice = value!;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
@@ -2164,7 +2164,7 @@ class DetailsPageState extends State<DetailsPage> {
                     Navigator.pushNamed(context, '/modeltab');
                   }
                 },
-                child: Text('Save Crop'),
+                child: const Text('Save Crop'),
               ),
             ],
           ),
@@ -2204,8 +2204,8 @@ class DetailsPageState extends State<DetailsPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('Edit Crop Details', style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w400)),
-              SizedBox(height: 20),
+              const Text('Edit Crop Details', style: TextStyle(fontSize: 26, fontWeight: FontWeight.w400)),
+              const SizedBox(height: 20),
               TextFormField(
                 decoration: decorator('Crop Name', _crop?.name, 'Enter the crop name'),
                 initialValue: _crop?.name,
@@ -2219,7 +2219,7 @@ class DetailsPageState extends State<DetailsPage> {
                   _cropName = value!;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               TextFormField(
                 decoration: decorator('Crop Market Price', _crop?.marketPrice, 'Enter the crop market price in ksh per kg.'),
                 initialValue: _crop?.marketPrice,
@@ -2233,10 +2233,10 @@ class DetailsPageState extends State<DetailsPage> {
                   _cropMarketPrice = value!;
                 },
               ), 
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Text('Date Created: ${_crop?.dateCreated.toDate().day} | ${_crop?.dateCreated.toDate().month} | ${_crop?.dateCreated.toDate().year}'),
               Text('Date Updated: ${_crop?.dateUpdated.toDate().day} | ${_crop?.dateUpdated.toDate().month} | ${_crop?.dateUpdated.toDate().year} | Time: ${_crop?.dateUpdated.toDate().hour} : ${_crop?.dateUpdated.toDate().minute}'),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
@@ -2245,7 +2245,7 @@ class DetailsPageState extends State<DetailsPage> {
                     Navigator.pushNamed(context, '/modeltab');
                   }
                 },
-                child: Text('Save Crop'),
+                child: const Text('Save Crop'),
               ),
             ],
           ),
@@ -2296,7 +2296,7 @@ class DetailsPageState extends State<DetailsPage> {
               color: const Color(0xffF7F8F8),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(Icons.arrow_back, color: Colors.grey,),
+            child: const Icon(Icons.arrow_back, color: Colors.grey,),
           )
         ),
         actions: [
@@ -2322,7 +2322,7 @@ class DetailsPageState extends State<DetailsPage> {
             color: const Color(0xffF7F8F8),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Icon(Icons.edit, color: Colors.grey, size: 20,),
+          child: const Icon(Icons.edit, color: Colors.grey, size: 20,),
         ),
       );
     }
@@ -2355,7 +2355,7 @@ class DetailsPageState extends State<DetailsPage> {
           color: const Color(0xffF7F8F8),
           borderRadius: BorderRadius.circular(10),
         ),
-        child: Icon(Icons.info, color: Colors.grey, size: 20,),
+        child: const Icon(Icons.info, color: Colors.grey, size: 20,),
       ),
     );
   }

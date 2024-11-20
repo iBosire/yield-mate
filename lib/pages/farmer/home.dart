@@ -192,7 +192,30 @@ class FieldPageState extends State<FieldPage> with SingleTickerProviderStateMixi
         centerTitle: true,
         leading: GestureDetector(
           onTap: () async {
-            await _auth.signOut();
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text('YieldMate'),
+                  content: const Text('Are you sure you want to logout?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('Cancel'),
+                    ),
+                    TextButton(
+                      onPressed: () async {
+                        await _auth.signOut();
+                        Navigator.pushReplacementNamed(context, '/login');
+                      },
+                      child: const Text('Logout'),
+                    ),
+                  ],
+                );
+              }
+            );
           },
           child: Container(
             margin: const EdgeInsets.all(10),
