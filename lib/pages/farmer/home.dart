@@ -135,7 +135,7 @@ class FieldPageState extends State<FieldPage> with SingleTickerProviderStateMixi
                   Center(
                     child: navPages[_selectedTabIndex],
                   ),
-                  Center(
+                  const Center(
                     child: CircularProgressIndicator(),
                   )
                 ]
@@ -208,7 +208,7 @@ class FieldPageState extends State<FieldPage> with SingleTickerProviderStateMixi
                     TextButton(
                       onPressed: () async {
                         await _auth.signOut();
-                        Navigator.pushReplacementNamed(context, '/login');
+                        Navigator.pushReplacementNamed(context, '/');
                       },
                       child: const Text('Logout'),
                     ),
@@ -224,7 +224,7 @@ class FieldPageState extends State<FieldPage> with SingleTickerProviderStateMixi
               color: const Color(0xffF7F8F8),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(Icons.logout, color: Colors.grey,),
+            child: const Icon(Icons.logout, color: Colors.grey,),
           )
         ),
         actions: [
@@ -272,15 +272,15 @@ void _showSettings(BuildContext context, AuthService _auth) {
             child: Column(
               children: [
                 ListTile(
-                  leading: Icon(Icons.logout),
-                  title: Text('Logout'),
+                  leading: const Icon(Icons.logout),
+                  title: const Text('Logout'),
                   onTap: () async {
                     await _auth.signOut();
                   },
                 ),
                 ListTile(
-                  leading: Icon(Icons.settings),
-                  title: Text('Settings'),
+                  leading: const Icon(Icons.settings),
+                  title: const Text('Settings'),
                   onTap: () {
                     Navigator.pop(context);
                   },
@@ -311,8 +311,8 @@ class AddNew extends StatelessWidget {
           borderRadius: BorderRadius.circular(15),
           boxShadow: [
             BoxShadow(
-              color: Color(0xff1D1617).withOpacity(0.11),
-              offset: Offset(0, 10),
+              color: const Color(0xff1D1617).withOpacity(0.11),
+              offset: const Offset(0, 10),
               blurRadius: 40,
               spreadRadius: 0,
             )
@@ -321,16 +321,16 @@ class AddNew extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            SizedBox(width: 30,),
-            Icon(Icons.add, size: 40,),
-            SizedBox(width: 20),
+            const SizedBox(width: 30,),
+            const Icon(Icons.add, size: 40,),
+            const SizedBox(width: 20),
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'Add $name',
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.black,
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -338,7 +338,7 @@ class AddNew extends StatelessWidget {
                 ),
                 Text(
                   'add new ${name.toLowerCase()}',
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.grey,
                     fontSize: 16,
                     fontWeight: FontWeight.w400,
@@ -406,6 +406,7 @@ class AllPlotsSection extends StatelessWidget {
                 decoration: BoxDecoration(
                   color:Colors.white,
                   borderRadius: BorderRadius.circular(15),
+                  border: plots[index].active? Border.all(color: Colors.amber, width: 2) : Border.all(color: Colors.green, width: 2),
                   boxShadow: [
                     BoxShadow(
                       color: const Color(0xff1D1617).withOpacity(0.11),
@@ -418,7 +419,7 @@ class AllPlotsSection extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Icon(Icons.grass, size: 50,),
+                    const Icon(Icons.grass, size: 50,),
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -447,14 +448,14 @@ class AllPlotsSection extends StatelessWidget {
                       width: 37,
                       height: 37,
                       decoration: BoxDecoration(
-                        color: const Color(0xffF7F8F8),
+                        color: Colors.green,
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: GestureDetector(
                         onTap: () {
                           Navigator.pushNamed(context, '/plot', arguments: plots[index]);
                         },
-                        child: Icon(Icons.arrow_forward_ios_rounded, size: 30, color: Colors.grey,),
+                        child: const Icon(Icons.arrow_forward_ios_rounded, size: 30, color: Colors.white,),
                         ),
                     ),
                   ],
