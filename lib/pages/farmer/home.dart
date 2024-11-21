@@ -4,8 +4,6 @@ import 'package:yield_mate/models/plot_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:yield_mate/pages/farmer/plot_list.dart';
-import 'package:yield_mate/pages/wrapper.dart';
 import 'package:yield_mate/services/auth.dart';
 import 'package:yield_mate/services/database.dart';
 import 'package:provider/provider.dart';
