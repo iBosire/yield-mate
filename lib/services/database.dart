@@ -24,7 +24,6 @@ class DatabaseService {
   final CollectionReference seedCollection = FirebaseFirestore.instance.collection('seeds');
   final CollectionReference cropCollection = FirebaseFirestore.instance.collection('crops');
   final CollectionReference modelCollection = FirebaseFirestore.instance.collection('models');
-  final CollectionReference reportCollection = FirebaseFirestore.instance.collection('reports');
 
   //? USER functions
   // create new user
@@ -164,10 +163,11 @@ class DatabaseService {
       'dateUpdated': DateTime.now(),
     });
   }
-  Future updatePlotStatus(String plotId, bool active, double yieldAmount) async {
+  Future updatePlotStatus(String plotId, bool active, double yieldAmount, double revenue) async {
     return await plotCollection.doc(plotId).update({
       'active': active,
       'yieldAmount': yieldAmount,
+      'actualRevenue': revenue,
       'dateUpdated': DateTime.now(),
     });
   }
@@ -216,8 +216,32 @@ class DatabaseService {
     // .map((QuerySnapshot snapshot) => _plotListFromSnapshot(snapshot))
     return plotCollection.where("user", isEqualTo: uid).snapshots().map((QuerySnapshot snapshot) => _plotListFromSnapshot(snapshot));
   }
-
-  // region functions
+  // get total yield harvested
+  Future<double> getTotalYield() async {
+    QuerySnapshot response = await plotCollection.where('user', isEqualTo: uid).get();
+    log("Total Yield Response: ${response.docs.length}");
+    List<PlotModel> plots = _plotListFromSnapshot(response);
+    double totalYield = 0.0;
+    for (var plot in plots) {
+      if(!plot.active){
+        totalYield += (plot.yieldAmount as num).toDouble();
+      }
+    }
+    return totalYield;
+  }
+  // get total revenue generated
+  Future<double> getTotalRevenue() async {
+    QuerySnapshot response = await plotCollection.where('user', isEqualTo: uid).get();
+    log("Total Revenue Response: ${response.docs.length}");
+    List<PlotModel> plots = _plotListFromSnapshot(response);
+    double totalRevenue = 0.0;
+    for (var plot in plots) {
+      if(!plot.active){
+        totalRevenue += (plot.actualRevenue as num).toDouble();
+      }
+    }
+    return totalRevenue;
+  }
 
   //? SEED functions
   // add seed

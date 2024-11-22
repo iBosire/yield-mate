@@ -15,12 +15,12 @@ class FieldPage extends StatefulWidget {
   @override
   State<FieldPage> createState() => FieldPageState();
 }
+String currentUser = "";
 
 class FieldPageState extends State<FieldPage> with SingleTickerProviderStateMixin {
   final AuthService _auth = AuthService();
   List<PlotModel?> plots = [];
   int _selectedTabIndex = 0;
-  String currentUser = "";
   int currentTabIndex = 0;
 
   Future<List<PlotModel?>?> _getPlots(String uid) async {
@@ -133,8 +133,11 @@ class FieldPageState extends State<FieldPage> with SingleTickerProviderStateMixi
                   Center(
                     child: navPages[_selectedTabIndex],
                   ),
-                  const Center(
-                    child: CircularProgressIndicator(),
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 20, right: 20),
+                      child: ReportsSection(),
+                    ),
                   )
                 ]
               ),
@@ -256,6 +259,97 @@ class FieldPageState extends State<FieldPage> with SingleTickerProviderStateMixi
             ),
           ],
         ),
+    );
+  }
+}
+
+class ReportsSection extends StatelessWidget {
+
+  Future<List<String?>> getReports(String uid) async {
+    double r = await DatabaseService(uid: uid).getTotalRevenue();
+    double y = await DatabaseService(uid: uid).getTotalYield();
+    log("Reports: $r, Yield $y");
+    return [r.toString(), y.toString()];
+  }
+
+  const ReportsSection({
+    super.key,
+  });
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        const Padding(
+          padding: EdgeInsets.only(top: 20),
+          child: Text(
+            'Reports',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        const SizedBox(height: 15),
+        const Divider(
+          color: Colors.grey,
+          thickness: 0.5,
+        ),
+        FutureBuilder<List<String?>>(
+          future: getReports(currentUser),
+          builder: (context, reports){
+            log("Reports: ${reports.data}");
+            return Column(
+                children: [
+                  const SizedBox(height: 20),
+                  Row(
+                    children: [
+                      const Text(
+                        'Total Revenue',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        reports.data != null && reports.data!.isNotEmpty ? '${reports.data![0]} ksh': '0 ksh',
+                        style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20,),
+                  Row(
+                    children: [
+                      const Text(
+                        'Total Yield',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        reports.data != null && reports.data!.isNotEmpty ? '${reports.data![1]} kg' : '0 kg',
+                        style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              );
+          }
+        ),
+      ],
     );
   }
 }

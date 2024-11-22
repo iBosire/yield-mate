@@ -148,7 +148,7 @@ class DetailsPageState extends State<DetailsPage> {
                     children: [
                       plotForm('view'),
                       const SizedBox(height: 20),
-                      ElevatedButton.icon(
+                      _plot.active ? ElevatedButton.icon(
                         icon: const Icon(Icons.analytics),
                         style: actionButton(),
                         onPressed: () {
@@ -164,9 +164,9 @@ class DetailsPageState extends State<DetailsPage> {
                           );
                         },
                         label: const Text('Analyze Plot'),
-                      ),
+                      ) : const SizedBox(),
                       const SizedBox(height: 5),
-                      ElevatedButton.icon(
+                      _plot.active ? ElevatedButton.icon(
                         style: actionButton(),
                         onPressed: () async {
                           showDialog(
@@ -232,7 +232,7 @@ class DetailsPageState extends State<DetailsPage> {
                                     onPressed: () async {
                                       if (_formKey.currentState!.validate()) {
                                         _formKey.currentState!.save();
-                                        await _db.updatePlotStatus(_plot.plotId, false, plotHarvest);
+                                        await _db.updatePlotStatus(_plot.plotId, false, plotHarvest, plotRevenue);
                                         Navigator.pushNamed(context, '/');
                                       }
                                     },
@@ -245,7 +245,7 @@ class DetailsPageState extends State<DetailsPage> {
                         }, 
                         label: const Text('Harvest Plot'),
                         icon: const Icon(Icons.done),
-                      ),
+                      ) : const SizedBox(),
                       const SizedBox(height: 5),
                       ElevatedButton(
                         style: deleteButton(),
