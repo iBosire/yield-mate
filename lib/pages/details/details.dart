@@ -121,8 +121,20 @@ class DetailsPageState extends State<DetailsPage> {
     return Scaffold(
       appBar: appBar('Edit Plot', 1, '', null),
       backgroundColor: Colors.white,
-      body: const Center(
-        child: Text('Details Page'),
+      body: Center(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.only(left: 16.0, right: 16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text('Edit Plot Details', style: TextStyle(fontSize: 26, fontWeight: FontWeight.w400)),
+                const SizedBox(height: 20),
+                plotForm('edit'),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -162,6 +174,7 @@ class DetailsPageState extends State<DetailsPage> {
                             _plot.crop,
                             _plot.regionId,
                           );
+                          Navigator.pushNamed(context, '/');
                         },
                         label: const Text('Analyze Plot'),
                       ) : const SizedBox(),
@@ -186,7 +199,7 @@ class DetailsPageState extends State<DetailsPage> {
                                           hintText: '80',
                                         ),
                                         keyboardType: TextInputType.number,
-                                        maxLength: 5,
+                                        maxLength: 10,
                                         validator: (value) {
                                           if (value == null || value.isEmpty) {
                                             return 'Please enter the amount harvested in kg';
@@ -205,7 +218,7 @@ class DetailsPageState extends State<DetailsPage> {
                                           hintText: '8000',
                                         ),
                                         keyboardType: TextInputType.number,
-                                        maxLength: 5,
+                                        maxLength: 10,
                                         validator: (value) {
                                           if (value == null || value.isEmpty) {
                                             return 'Please enter the total revenue in Ksh';
@@ -599,7 +612,104 @@ class DetailsPageState extends State<DetailsPage> {
           ),
         ),
       );
-    } else {
+    } else if(type == 'edit'){
+      return Form(
+        key: _formKey,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            TextFormField(
+              decoration: decorator('Plot Name', '', 'Enter the plot name'),
+              initialValue: _plot?.name,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter the plot name';
+                }
+                return null;
+              },
+              onSaved: (value) {
+                _plotName = value!;
+              },
+            ),
+            const SizedBox(height: 20),
+            //* nutrition details
+            TextFormField(
+              decoration: decorator('Nitrogen', '', 'Enter the nitrogen amount'),
+              initialValue: _plot?.nutrients[0].toString(),
+              keyboardType: TextInputType.number,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter the nitrogen amount';
+                }
+                return null;
+              },
+              onSaved: (value) {
+                _nitrogen = int.parse(value!);
+              },
+            ),
+            const SizedBox(height: 20),
+            TextFormField(
+              decoration: decorator('Phosphorus', '', 'Enter the phosphorus amount'),
+              initialValue: _plot?.nutrients[1].toString(),
+              keyboardType: TextInputType.number,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter the phosphorus amount';
+                }
+                return null;
+              },
+              onSaved: (value) {
+                _phosphorus = int.parse(value!);
+              },
+            ),
+            const SizedBox(height: 20),
+            TextFormField(
+              decoration: decorator('Potassium', '', 'Enter the potassium amount'),
+              initialValue: _plot?.nutrients[2].toString(),
+              keyboardType: TextInputType.number,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter the potassium amount';
+                }
+                return null;
+              },
+              onSaved: (value) {
+                _potassium = int.parse(value!);
+              },
+            ),
+            const SizedBox(height: 20),
+            TextFormField(
+              decoration: decorator('pH', '', 'Enter the pH'),
+              initialValue: _plot?.nutrients[3].toString(),
+              keyboardType: TextInputType.number,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter the pH';
+                }
+                return null;
+              },
+              onSaved: (value) {
+                _ph = int.parse(value!);
+              },
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              style: actionButton(),
+              onPressed: () async {
+                if (_formKey.currentState!.validate()) {
+                  _formKey.currentState!.save();
+                  List<int> nutrition = [_nitrogen, _phosphorus, _potassium, _ph];
+                  await _db.updatePlotDetails(_plot.plotId, _plotName, nutrition);
+                  Navigator.pushNamed(context, '/');
+                }
+              },
+              child: const Text('Save Plot'),
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
+      );
+    }else {
       return const Form(
         child: Center(
           child: CircularProgressIndicator(),

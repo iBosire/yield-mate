@@ -610,49 +610,54 @@ class AllPlotsSection extends StatelessWidget {
                     )
                   ]
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    const Icon(Icons.grass, size: 50,),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          plots[index].name,
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
+                child: FittedBox(
+                  fit: BoxFit.contain,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      const Icon(Icons.grass, size: 50,),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            plots[index].name,
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                        Text(
-                          '${plots[index].size} Acres | ${plots[index].crop} | Score: ${plots[index].score}',
-                          style: const TextStyle(
-                            color: Colors.grey,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400,
+                          FittedBox(
+                            child: Text(
+                              '${plots[index].size} Acres | ${plots[index].crop} | Score: ${plots[index].score}',
+                              style: const TextStyle(
+                                color: Colors.grey,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    Container(
-                      margin: const EdgeInsets.all(10),
-                      alignment: Alignment.center,
-                      width: 37,
-                      height: 37,
-                      decoration: BoxDecoration(
-                        color: Colors.green,
-                        borderRadius: BorderRadius.circular(10),
+                        ],
                       ),
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.pushNamed(context, '/plot', arguments: plots[index]);
-                        },
-                        child: const Icon(Icons.arrow_forward_ios_rounded, size: 30, color: Colors.white,),
+                      Container(
+                        margin: const EdgeInsets.all(10),
+                        alignment: Alignment.center,
+                        width: 37,
+                        height: 37,
+                        decoration: BoxDecoration(
+                          color: Colors.green,
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                    ),
-                  ],
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(context, '/plot', arguments: plots[index]);
+                          },
+                          child: const Icon(Icons.arrow_forward_ios_rounded, size: 30, color: Colors.white,),
+                          ),
+                      ),
+                    ],
+                  ),
                 ),
               );
             },
