@@ -264,12 +264,18 @@ class FieldPageState extends State<FieldPage> with SingleTickerProviderStateMixi
 }
 
 class ReportsSection extends StatelessWidget {
-
-  Future<List<String?>> getReports(String uid) async {
+  Future<Map<String, dynamic>> getReports(String uid) async {
     double r = await DatabaseService(uid: uid).getTotalRevenue();
     double y = await DatabaseService(uid: uid).getTotalYield();
+    String c = await DatabaseService(uid: uid).mostProfitableCrop();
+    Map<String, dynamic> rByCrop = await DatabaseService(uid: uid).earningsByCrop();
     log("Reports: $r, Yield $y");
-    return [r.toString(), y.toString()];
+    return {
+      'revenue': r,
+      'yield': y,
+      'crop': c,
+      'rByCrop': rByCrop,
+    };
   }
 
   const ReportsSection({
@@ -292,66 +298,162 @@ class ReportsSection extends StatelessWidget {
         ),
         const SizedBox(height: 15),
         const Divider(
-          color: Colors.grey,
+          color: Colors.black,
           thickness: 0.5,
         ),
-        FutureBuilder<List<String?>>(
+        FutureBuilder<Map<String, dynamic>>(
           future: getReports(currentUser),
           builder: (context, reports){
-            log("Reports: ${reports.data}");
-            return Column(
+          log("Reports: ${reports.data}");
+          return Column(
+            children: [
+              const SizedBox(height: 20),
+              Column(
                 children: [
-                  const SizedBox(height: 20),
-                  Row(
-                    children: [
-                      const Text(
-                        'Total Revenue',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Text(
-                        reports.data != null && reports.data!.isNotEmpty ? '${reports.data![0]} ksh': '0 ksh',
-                        style: const TextStyle(
-                          color: Colors.grey,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ],
+                  const Text(
+                    'Total Revenue',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  const SizedBox(height: 20,),
-                  Row(
-                    children: [
-                      const Text(
-                        'Total Yield',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Text(
-                        reports.data != null && reports.data!.isNotEmpty ? '${reports.data![1]} kg' : '0 kg',
-                        style: const TextStyle(
-                          color: Colors.grey,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ],
+                  const SizedBox(height: 10),
+                  Text(
+                    reports.data != null && reports.data!.isNotEmpty ? '${reports.data!['revenue']} ksh': '0 ksh',
+                    style: const TextStyle(
+                      color: Colors.grey,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ],
-              );
+              ),
+              const SizedBox(height: 20,),
+              Column(
+                children: [
+                  const Text(
+                    'Total Yield',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    reports.data != null && reports.data!.isNotEmpty ? '${reports.data!['yield']} kg' : '0 kg',
+                    style: const TextStyle(
+                      color: Colors.grey,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20,),
+              Column(
+                children: [
+                  const Text(
+                    'Most Profitable Crop',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    reports.data != null && reports.data!.isNotEmpty ? '${reports.data!['crop']}' : '',
+                    style: const TextStyle(
+                      color: Colors.grey,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20,),
+              buildTable(reports.data != null && reports.data!.isNotEmpty ? reports.data!['rByCrop'] : {}),
+              const Divider(
+                color: Colors.black,
+                thickness: 0.5,
+              ),
+              const SizedBox(height: 20,),
+              ],
+            );
           }
         ),
       ],
     );
   }
+}
+
+Widget buildTable(Map<String, dynamic> rByCrop){
+  List<TableRow> rows = [];
+  // table header
+  rows.add(
+    const TableRow(
+      children: [
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text(
+            'Crop',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text(
+            'Revenue',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+  rByCrop.forEach((key, value) {
+    rows.add(
+      TableRow(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              key,
+              style: const TextStyle(
+                color: Colors.black,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              '$value ksh',
+              style: const TextStyle(
+                color: Colors.grey,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  });
+  return Table(
+    border: TableBorder.all(color: Colors.grey),
+    children: rows,
+  );
 }
 
 void _showSettings(BuildContext context, AuthService _auth) {

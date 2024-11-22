@@ -242,6 +242,43 @@ class DatabaseService {
     }
     return totalRevenue;
   }
+  // most profitable crop
+  Future<String> mostProfitableCrop() async {
+    QuerySnapshot response = await plotCollection.where('user', isEqualTo: uid).get();
+    log("Most Profitable Crop Response: ${response.docs.length}");
+    List<PlotModel> plots = _plotListFromSnapshot(response);
+    Map<String, double> cropRevenue = {};
+    for (var plot in plots) {
+      if(!plot.active){
+        if(cropRevenue.containsKey(plot.crop)){
+          cropRevenue[plot.crop] = cropRevenue[plot.crop]! + (plot.actualRevenue as num).toDouble();
+        } else {
+          cropRevenue[plot.crop] = (plot.actualRevenue as num).toDouble();
+        }
+      }
+    }
+    String mostProfitableCrop = cropRevenue.entries.reduce((a, b) => a.value > b.value ? a : b).key;
+    log("Most Profitable Crop: $mostProfitableCrop");
+    return mostProfitableCrop;
+  }
+  // total earnings by crop
+  Future<Map<String, double>> earningsByCrop() async {
+    QuerySnapshot response = await plotCollection.where('user', isEqualTo: uid).get();
+    log("Earnings by Crop Response: ${response.docs.length}");
+    List<PlotModel> plots = _plotListFromSnapshot(response);
+    Map<String, double> cropRevenue = {};
+    for (var plot in plots) {
+      if(!plot.active){
+        if(cropRevenue.containsKey(plot.crop)){
+          cropRevenue[plot.crop] = cropRevenue[plot.crop]! + (plot.actualRevenue as num).toDouble();
+        } else {
+          cropRevenue[plot.crop] = (plot.actualRevenue as num).toDouble();
+        }
+      }
+    }
+    log("Earnings by Crop: $cropRevenue");
+    return cropRevenue;
+  }
 
   //? SEED functions
   // add seed
