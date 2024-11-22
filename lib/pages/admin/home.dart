@@ -15,7 +15,7 @@ import 'package:yield_mate/pages/wrapper.dart';
 import 'package:yield_mate/services/auth.dart';
 import 'package:yield_mate/services/database.dart';
 
-import '../models/category_model.dart';
+import '../../models/category_model.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key, required this.defIndex});

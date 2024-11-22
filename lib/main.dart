@@ -2,8 +2,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yield_mate/models/user_model.dart';
-import 'package:yield_mate/pages/details.dart';
-import 'package:yield_mate/pages/home.dart';
+import 'package:yield_mate/pages/details/details.dart';
+import 'package:yield_mate/pages/admin/home.dart';
 import 'package:yield_mate/pages/wrapper.dart';
 import 'package:yield_mate/services/auth.dart';
 
