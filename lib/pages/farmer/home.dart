@@ -319,12 +319,15 @@ class ReportsSection extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  Text(
-                    reports.data != null && reports.data!.isNotEmpty ? '${reports.data!['revenue']} ksh': '0 ksh',
-                    style: const TextStyle(
-                      color: Colors.grey,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                  FittedBox(
+                    fit: BoxFit.contain,
+                    child: Text(
+                      reports.data != null && reports.data!.isNotEmpty ? '${reports.data!['revenue']} ksh': '0 ksh',
+                      style: const TextStyle(
+                        color: Colors.grey,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ],
