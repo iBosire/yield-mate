@@ -150,13 +150,7 @@ class DetailsPageState extends State<DetailsPage> {
                       const SizedBox(height: 20),
                       ElevatedButton.icon(
                         icon: const Icon(Icons.analytics),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color.fromARGB(255, 154, 211, 155),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          fixedSize: const Size(200, 50),
-                        ),
+                        style: actionButton(),
                         onPressed: () {
                           _analyzePlot(
                             _plot.nutrients[0].toString(),
@@ -171,7 +165,9 @@ class DetailsPageState extends State<DetailsPage> {
                         },
                         label: const Text('Analyze Plot'),
                       ),
+                      const SizedBox(height: 5),
                       ElevatedButton.icon(
+                        style: actionButton(),
                         onPressed: () async {
                           showDialog(
                             context: context, 
@@ -250,7 +246,9 @@ class DetailsPageState extends State<DetailsPage> {
                         label: const Text('Harvest Plot'),
                         icon: const Icon(Icons.done),
                       ),
+                      const SizedBox(height: 5),
                       ElevatedButton(
+                        style: deleteButton(),
                         onPressed: () {
                           showDialog(
                             context: context,
@@ -278,7 +276,7 @@ class DetailsPageState extends State<DetailsPage> {
                             },
                           );
                         }, 
-                        child: const Text('Delete Plot'),
+                        child: const Text('Delete Plot', style: TextStyle(color: Colors.white),),
                       )
                     ],
                   ),
@@ -902,13 +900,7 @@ class DetailsPageState extends State<DetailsPage> {
               Text('Date Updated: ${_user?.updatedAt.toDate().day} | ${_user?.updatedAt.toDate().month} | ${_user?.updatedAt.toDate().year} | Time ${_user?.updatedAt.toDate().hour}:${_user?.updatedAt.toDate().minute}'),
               const SizedBox(height: 20),
               _user.type == "farmer" ? ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  fixedSize: const Size(200, 50),
-                ),
+                style: deleteButton(),
                 onPressed: () {
                   showDialog(
                     context: context,
@@ -1085,6 +1077,7 @@ class DetailsPageState extends State<DetailsPage> {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
+                style: actionButton(),
                 onPressed: () async{
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
@@ -1147,13 +1140,7 @@ class DetailsPageState extends State<DetailsPage> {
               Text('Date Updated: ${_location?.dateUpdated.toDate().day} | ${_location?.dateUpdated.toDate().month} | ${_location?.dateUpdated.toDate().year}'),
               const SizedBox(height: 20),
               ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  fixedSize: const Size(200, 50),
-                ),
+                style: deleteButton(),
                 onPressed: () {
                   showDialog(
                     context: context,
@@ -1290,6 +1277,7 @@ class DetailsPageState extends State<DetailsPage> {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
+                style: actionButton(),
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
@@ -1415,6 +1403,7 @@ class DetailsPageState extends State<DetailsPage> {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
+                style: actionButton(),
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
@@ -1477,13 +1466,7 @@ class DetailsPageState extends State<DetailsPage> {
               Text('Date Updated: ${_seed?.dateUpdated.toDate().day} | ${_seed?.dateUpdated.toDate().month} | ${_seed?.dateUpdated.toDate().year}'),
               const SizedBox(height: 20),
               ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  fixedSize: const Size(200, 50),
-                ),
+                style: deleteButton(),
                 onPressed: () {
                   showDialog(
                     context: context,
@@ -1618,6 +1601,7 @@ class DetailsPageState extends State<DetailsPage> {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
+                style: actionButton(),
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
@@ -1742,6 +1726,7 @@ class DetailsPageState extends State<DetailsPage> {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
+                style: actionButton(),
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
@@ -1798,13 +1783,7 @@ class DetailsPageState extends State<DetailsPage> {
               const SizedBox(height: 20),
               modelForm("view"),
               ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  fixedSize: const Size(200, 50),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
+                style: deleteButton(),
                 onPressed: () async {
                   showDialog(
                     context: context,
@@ -1843,6 +1822,7 @@ class DetailsPageState extends State<DetailsPage> {
               ),
               const SizedBox(height: 20),
               OutlinedButton.icon(
+                style: actionButton(),
                 onPressed: () async {
                   // ping model
                   dynamic res = await _plotModels.ping();
@@ -1962,12 +1942,7 @@ class DetailsPageState extends State<DetailsPage> {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  fixedSize: const Size(200, 50),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
+                style: actionButton(),
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
@@ -2128,13 +2103,7 @@ class DetailsPageState extends State<DetailsPage> {
               const SizedBox(height: 20),
               cropForm('view'),
               ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  fixedSize: const Size(200, 50),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
+                style: deleteButton(),
                 onPressed: () {
                   showDialog(
                     context: context,
@@ -2241,6 +2210,7 @@ class DetailsPageState extends State<DetailsPage> {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
+                style: actionButton(),
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
@@ -2322,6 +2292,7 @@ class DetailsPageState extends State<DetailsPage> {
               Text('Date Updated: ${_crop?.dateUpdated.toDate().day} | ${_crop?.dateUpdated.toDate().month} | ${_crop?.dateUpdated.toDate().year} | Time: ${_crop?.dateUpdated.toDate().hour} : ${_crop?.dateUpdated.toDate().minute}'),
               const SizedBox(height: 10),
               ElevatedButton(
+                style: actionButton(),
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
@@ -2389,7 +2360,33 @@ class DetailsPageState extends State<DetailsPage> {
         bottom: tabBar,
     );
   }
-
+  //? Button Styling
+  ButtonStyle deleteButton() {
+    return ElevatedButton.styleFrom(
+      backgroundColor: Colors.red,
+      textStyle: const TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      fixedSize: const Size(200, 50),
+    );
+  }
+  ButtonStyle actionButton() {
+    return ElevatedButton.styleFrom(
+      backgroundColor: const Color.fromARGB(255, 154, 211, 155),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      fixedSize: const Size(200, 50),
+      textStyle: const TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
   //? AppBar Buttons
   GestureDetector _setButton(int type, String route) {
     //* edit button
