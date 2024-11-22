@@ -128,6 +128,7 @@ class DetailsPageState extends State<DetailsPage> {
   }
   //* View
   double plotHarvest = 0.0;
+  double plotRevenue = 0.0;
   DefaultTabController viewPlot() {
     log("Plot ID: ${_plot?.plotId}");
     log("Plot Status: ${_plot?.status}");
@@ -170,24 +171,59 @@ class DetailsPageState extends State<DetailsPage> {
                         },
                         label: const Text('Analyze Plot'),
                       ),
-                      TextButton.icon(
+                      ElevatedButton.icon(
                         onPressed: () async {
                           showDialog(
                             context: context, 
                             builder: (BuildContext context) {
                               return AlertDialog(
                                 title: const Text('Harvest Plot'),
-                                content: TextField(
-                                  decoration: const InputDecoration(
-                                    labelText: 'Enter the amount harvested',
+                                backgroundColor: Colors.white,
+                                content: Form(
+                                  key: _formKey,
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      TextFormField(
+                                        decoration: const InputDecoration(
+                                          labelText: 'Enter the amount harvested (kg)',
+                                          hintText: '80',
+                                        ),
+                                        keyboardType: TextInputType.number,
+                                        maxLength: 5,
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Please enter the amount harvested in kg';
+                                          }
+                                          return null;
+                                        },
+                                        onSaved: (value) {
+                                          setState(() {
+                                            plotHarvest = double.parse(value!);
+                                          });
+                                        },
+                                      ),
+                                      TextFormField(
+                                        decoration: const InputDecoration(
+                                          labelText: 'Enter the total revenue (Ksh)',
+                                          hintText: '8000',
+                                        ),
+                                        keyboardType: TextInputType.number,
+                                        maxLength: 5,
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Please enter the total revenue in Ksh';
+                                          }
+                                          return null;
+                                        },
+                                        onSaved: (value) {
+                                          setState(() {
+                                            plotRevenue = double.parse(value!);
+                                          });
+                                        },
+                                      ),
+                                    ],
                                   ),
-                                  keyboardType: TextInputType.number,
-                                  maxLength: 5,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      plotHarvest = double.parse(value);
-                                    });
-                                  },
                                 ),
                                 actions: [
                                   TextButton(
@@ -198,8 +234,11 @@ class DetailsPageState extends State<DetailsPage> {
                                   ),
                                   TextButton(
                                     onPressed: () async {
-                                      await _db.updatePlotStatus(_plot.plotId, false, plotHarvest);
-                                      Navigator.pushNamed(context, '/');
+                                      if (_formKey.currentState!.validate()) {
+                                        _formKey.currentState!.save();
+                                        await _db.updatePlotStatus(_plot.plotId, false, plotHarvest);
+                                        Navigator.pushNamed(context, '/');
+                                      }
                                     },
                                     child: const Text('Finish'),
                                   ),
@@ -208,7 +247,7 @@ class DetailsPageState extends State<DetailsPage> {
                             },
                           );
                         }, 
-                        label: const Text('Finish Plot'),
+                        label: const Text('Harvest Plot'),
                         icon: const Icon(Icons.done),
                       ),
                       ElevatedButton(
@@ -218,6 +257,7 @@ class DetailsPageState extends State<DetailsPage> {
                             builder: (BuildContext context) {
                               return AlertDialog(
                                 title: const Text('Delete Plot'),
+                                backgroundColor: Colors.white,
                                 content: const Text('Are you sure you want to delete this plot?'),
                                 actions: [
                                   TextButton(
@@ -875,6 +915,7 @@ class DetailsPageState extends State<DetailsPage> {
                     builder: (BuildContext context) {
                       return AlertDialog(
                         title: const Text('Delete User'),
+                        backgroundColor: Colors.white,
                         content: const Text('Are you sure you want to delete this user?'),
                         actions: [
                           TextButton(
@@ -1119,6 +1160,7 @@ class DetailsPageState extends State<DetailsPage> {
                     builder: (BuildContext context) {
                       return AlertDialog(
                         title: const Text('Delete Location'),
+                        backgroundColor: Colors.white,
                         content: const Text('Are you sure you want to delete this location?'),
                         actions: [
                           TextButton(
@@ -1448,6 +1490,7 @@ class DetailsPageState extends State<DetailsPage> {
                     builder: (BuildContext context) {
                       return AlertDialog(
                         title: const Text('Delete Seed'),
+                        backgroundColor: Colors.white,
                         content: const Text('Are you sure you want to delete this seed?'),
                         actions: [
                           TextButton(
@@ -1768,6 +1811,7 @@ class DetailsPageState extends State<DetailsPage> {
                     builder: (BuildContext context) {
                       return AlertDialog(
                         title: const Text('Delete Model'),
+                        backgroundColor: Colors.white,
                         content: const Text('Are you sure you want to delete this model?'),
                         actions: [
                           TextButton(
@@ -2097,6 +2141,7 @@ class DetailsPageState extends State<DetailsPage> {
                     builder: (BuildContext context) {
                       return AlertDialog(
                         title: const Text('Delete Crop'),
+                        backgroundColor: Colors.white,
                         content: const Text('Are you sure you want to delete this crop?'),
                         actions: [
                           TextButton(
