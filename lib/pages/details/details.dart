@@ -765,7 +765,7 @@ class DetailsPageState extends State<DetailsPage> {
                   ),
                   const SizedBox(width: 5,),
                   Text(
-                    "${plot.predictedYield.toStringAsFixed(2)} /Acre",
+                    "${plot.predictedYield.toStringAsFixed(2)} kg /Acre",
                     style: const TextStyle(
                       fontSize: 18,
                     ),
@@ -785,7 +785,7 @@ class DetailsPageState extends State<DetailsPage> {
                   ),
                   const SizedBox(width: 5,),
                   Text(
-                    plot.predictedRevenue.toStringAsFixed(2),
+                    '${plot.predictedRevenue.toStringAsFixed(2)} ksh',
                     style: const TextStyle(
                       fontSize: 18,
                     ),
