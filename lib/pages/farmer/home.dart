@@ -249,10 +249,10 @@ class FieldPageState extends State<FieldPage> with SingleTickerProviderStateMixi
         bottom: const TabBar(
           tabs: [
             Tab(
-              child: Text('Plots', style: TextStyle(color: Colors.black),),
+              child: Text('Plots', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16),),
             ),
             Tab(
-              child: Text('Reports', style: TextStyle(color: Colors.black),),
+              child: Text('Reports', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16),),
             ),
           ],
         ),
