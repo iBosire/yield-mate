@@ -24,12 +24,12 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
+String currentAdminUser = "";
 class _HomePageState extends State<HomePage> {
   final AuthService _auth = AuthService();
   late DatabaseService _db;
   List<PlotModel> plots = [];
   List<UserModel> users = [];
-  String currentUser = "";
 
   // void _getUsers() async {
   //   users = UserModel.getUsers();
@@ -44,12 +44,12 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     _initialData();
     _auth.user.listen((user) {
-      currentUser = user?.uid ?? 'No user';
+      currentAdminUser = user?.uid ?? 'No user';
     });
-    _db = DatabaseService(uid: currentUser); // Ensure this is awaited if necessary
+    _db = DatabaseService(uid: currentAdminUser); // Ensure this is awaited if necessary
     return DefaultTabController(
       initialIndex: widget.defIndex,
-      length: 2,
+      length: 3,
       child: Scaffold(
         // NAVIGATION BAR
         appBar: appBar(),
@@ -65,9 +65,19 @@ class _HomePageState extends State<HomePage> {
             ),
             ListView(
               children: [
-                SizedBox(height: 40),
+                SizedBox(height: 20),
                 // CATEGORIES
                 CategoriesWidget(db: _db,),
+              ]
+            ),
+            ListView(
+              children: [
+                // SizedBox(height: 40),
+                // REPORTS
+                Padding(
+                  padding: const EdgeInsets.only(left: 20, right: 20),
+                  child: AdminReportsSection(),
+                ),
               ]
             ),
           ],
@@ -162,6 +172,16 @@ class _HomePageState extends State<HomePage> {
             Tab(
               child: Text(
                 'Model',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            Tab(
+              child: Text(
+                'Reports',
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 16,
@@ -855,6 +875,53 @@ Widget CropsSection(BuildContext context, {required List<CropModel> crops}){
       ],
     ),
   );
+}
+
+//* Admin Reports Section
+class AdminReportsSection extends StatelessWidget {
+  const AdminReportsSection({super.key});
+
+  Future<Map<String, dynamic>> getAdminReports(String uid) async {
+    // return await _db.getAdminReports(uid);
+    return {'status': 'error', 'message': 'Not implemented'};
+  }
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 20),
+          child: Text(
+            'Reports',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        SizedBox(height: 15),
+        Divider(
+          color: Colors.black,
+          thickness: 0.1,
+          indent: 20,
+          endIndent: 20,
+        ),
+        FutureBuilder(
+          future: getAdminReports(currentAdminUser), 
+          builder: (context, reports){
+            log('Admin Reports: ${reports.data}');
+            return Column(
+              children: [
+                const SizedBox(height: 20),
+                Text('Model Analysis'),
+              ],
+            );
+          }
+        )
+      ],
+    );
+  }
 }
 
 //* Add Button
