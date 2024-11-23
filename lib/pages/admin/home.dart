@@ -903,7 +903,7 @@ class AdminReportsSection extends StatelessWidget {
         SizedBox(height: 15),
         Divider(
           color: Colors.black,
-          thickness: 0.1,
+          thickness: 0.3,
           indent: 20,
           endIndent: 20,
         ),
@@ -914,10 +914,160 @@ class AdminReportsSection extends StatelessWidget {
             return Column(
               children: [
                 const SizedBox(height: 20),
-                Text('Model Analysis'),
-              ],
+                // User Analytics
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('User Analytics', style: TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),),
+                    SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text('Total Farmers: ', style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w400),),
+                        SizedBox(width: 10),
+                        Text('0', style: TextStyle(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.bold),),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text('Average Plots Per Farmer: ', style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w400),),
+                        SizedBox(width: 10),
+                        Text('0', style: TextStyle(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.bold),),
+                      ],
+                    )
+                  ]
+                ),
+                const SizedBox(height: 20),
+                Divider(
+                  color: Colors.black,
+                  thickness: 0.1,
+                  indent: 20,
+                  endIndent: 20,
+                ),
+                const SizedBox(height: 20),
+                // Model Analytics
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Model Analytics', style: TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),),
+                    SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text('Total Models: ', style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w400),),
+                        SizedBox(width: 10),
+                        Text('0', style: TextStyle(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.bold),),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text('Average Accuracy: ', style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w400),),
+                        SizedBox(width: 10),
+                        Text('0%', style: TextStyle(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.bold),),
+                      ],
+                    )
+                  ]
+                ),
+                const SizedBox(height: 20),
+                Divider(
+                  color: Colors.black,
+                  thickness: 0.1,
+                  indent: 20,
+                  endIndent: 20,
+                ),
+                const SizedBox(height: 20),
+                // Crop and Seed Analytics: Most Popular, Most Profitable
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Crop & Seed Analytics', style: TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),),
+                    SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text('Most Popular Crop: ', style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w400),),
+                        SizedBox(width: 10),
+                        Text('None', style: TextStyle(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.bold),),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text('Most Popular Seed: ', style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w400),),
+                        SizedBox(width: 10),
+                        Text('None', style: TextStyle(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.bold),),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text('Most Profitable Crop: ', style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w400),),
+                        SizedBox(width: 10),
+                        Text('None', style: TextStyle(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.bold),),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text('Most Profitable Seed: ', style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w400),),
+                        SizedBox(width: 10),
+                        Text('None', style: TextStyle(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.bold),),
+                      ],
+                    ),
+                  ]
+                ),
+                const SizedBox(height: 20),
+                Divider(
+                  color: Colors.black,
+                  thickness: 0.1,
+                  indent: 20,
+                  endIndent: 20,
+                ),
+                const SizedBox(height: 20),
+                // Location Analytics Table: project density, most popular crop, average yield
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Location Analytics', style: TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),),
+                    SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text('Project Density: ', style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w400),),
+                        SizedBox(width: 10),
+                        Text('0', style: TextStyle(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.bold),),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text('Most Popular Crop: ', style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w400),),
+                        SizedBox(width: 10),
+                        Text('None', style: TextStyle(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.bold),),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text('Average Yield: ', style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w400),),
+                        SizedBox(width: 10),
+                        Text('0', style: TextStyle(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.bold),),
+                      ],
+                    ),
+                  ]
+                ),
+                const SizedBox(height: 20), 
+              ], 
             );
           }
+        ),
+        Divider(
+          color: Colors.black,
+          thickness: 0.3,
+          indent: 20,
+          endIndent: 20,
         )
       ],
     );

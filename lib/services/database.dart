@@ -103,11 +103,27 @@ class DatabaseService {
     log("Response from the DB: ${users.length} users");
     return users;
   }
+  // total farmers
+  Future<int> totalFarmers() async {
+    QuerySnapshot response = await userCollection.where("type", isEqualTo: "farmer").get();
+    return response.docs.length;
+  }
+  // average plots per farmer
+  Future<double> averagePlotsPerFarmer() async {
+    QuerySnapshot response = await userCollection.where("type", isEqualTo: "farmer").get();
+    List<UserModel> users = _userListFromSnapshot(response);
+    double totalPlots = 0.0;
+    for (var _ in users) {
+      QuerySnapshot plots = await plotCollection.where('seedId', isNotEqualTo: 'demo').get();
+      totalPlots += plots.docs.length;
+    }
+    return totalPlots / users.length;
+  }
 
 
   //? PLOT FUNCTIONS
   Future demoPlotData() async {
-    return await plotCollection.doc('demo').set({
+    return await plotCollection.doc().set({
       'user': uid,
       'name': 'Demo Plot',
       'size': 5.0,
@@ -330,6 +346,44 @@ class DatabaseService {
       );
     }).toList();
   }
+  // most popular seed
+  Future<String> mostPopularSeed() async {
+    QuerySnapshot response = await plotCollection.where('seedId', isNotEqualTo: 'demo').get();
+    log("Most Popular Seed Response: ${response.docs.length}");
+    List<PlotModel> plots = _plotListFromSnapshot(response);
+    Map<String, int> seedCount = {};
+    for (var plot in plots) {
+      if(!plot.active){
+        if(seedCount.containsKey(plot.seed)){
+          seedCount[plot.seed] = seedCount[plot.seed]! + 1;
+        } else {
+          seedCount[plot.seed] = 1;
+        }
+      }
+    }
+    String mostPopularSeed = seedCount.entries.reduce((a, b) => a.value > b.value ? a : b).key;
+    log("Most Popular Seed: $mostPopularSeed");
+    return mostPopularSeed;
+  }
+  // most profitable seed
+  Future<String> mostProfitableSeed() async {
+    QuerySnapshot response = await plotCollection.where('seedId', isNotEqualTo: 'demo').get();
+    log("Most Profitable Seed Response: ${response.docs.length}");
+    List<PlotModel> plots = _plotListFromSnapshot(response);
+    Map<String, double> seedRevenue = {};
+    for (var plot in plots) {
+      if(!plot.active){
+        if(seedRevenue.containsKey(plot.seed)){
+          seedRevenue[plot.seed] = seedRevenue[plot.seed]! + (plot.actualRevenue as num).toDouble();
+        } else {
+          seedRevenue[plot.seed] = (plot.actualRevenue as num).toDouble();
+        }
+      }
+    }
+    String mostProfitableSeed = seedRevenue.entries.reduce((a, b) => a.value > b.value ? a : b).key;
+    log("Most Profitable Seed: $mostProfitableSeed");
+    return mostProfitableSeed;
+  }
 
   //? MODEL functions
   // add model
@@ -369,6 +423,30 @@ class DatabaseService {
       );
     }).toList();
   }
+  // average accuracy of model: compare predicted yield with actual yield
+  Future<double> averageModelAccuracy() async {
+  QuerySnapshot response = await plotCollection.where('seedId', isNotEqualTo: 'demo').get();
+  log("Average Model Accuracy Response: ${response.docs.length}");
+  List<PlotModel> plots = _plotListFromSnapshot(response);
+
+  if (plots.isEmpty) return 0.0;
+  double totalErrorPercentage = 0.0;
+  for (var plot in plots) {
+    if (!plot.active) {
+      double predictedYield = (plot.predictedYield as num).toDouble();
+      double actualYield = (plot.yieldAmount as num).toDouble();
+
+      if (actualYield > 0) {
+        double error = ((predictedYield - actualYield).abs() / actualYield) * 100;
+        totalErrorPercentage += error;
+      } else {
+        log("Skipped plot with zero yield: ${plot.plotId}");
+      }
+    }
+  }
+  return totalErrorPercentage / plots.length;
+}
+
 
   //? REGION functions
   // add region
@@ -424,6 +502,62 @@ class DatabaseService {
     log("Received Region ID: $regionId");
     DocumentSnapshot doc = await regionCollection.doc(regionId).get();
     return [doc['temperature'], doc['rainfall'].toString(), doc['humidity']];
+  }
+  // total plots, average yield, and most popular crop for each region
+  Future<Map<String, dynamic>> regionStats() async {
+    // get all regions
+    QuerySnapshot regionResponse = await regionCollection.get();
+    log("Region Stats Response: ${regionResponse.docs.length}");
+    List<LocationModel> regions = _regionListFromSnapshot(regionResponse);
+
+    // get all plots
+    QuerySnapshot plotResponse = await plotCollection.get();
+    List<PlotModel> allPlots = _plotListFromSnapshot(plotResponse);
+
+    // group plots by regionId
+    Map<String, List<PlotModel>> plotsByRegion = {};
+    for (var plot in allPlots) {
+      if (!plot.active) { // Only consider inactive plots
+        plotsByRegion.putIfAbsent(plot.regionId, () => []).add(plot);
+      }
+    }
+
+    // Prepare region statistics
+    Map<String, dynamic> regionStats = {};
+    for (var region in regions) {
+      List<PlotModel> regionPlots = plotsByRegion[region.id] ?? [];
+
+      if (regionPlots.isEmpty) {
+        // handle empty regions
+        regionStats[region.name] = {
+          'totalPlots': 0,
+          'averageYield': 0.0,
+          'mostPopularCrop': 'N/A',
+        };
+        continue;
+      }
+
+      // Calculate total yield and crop counts
+      double totalYield = 0.0;
+      Map<String, int> cropCount = {};
+      for (var plot in regionPlots) {
+        totalYield += (plot.yieldAmount as num).toDouble();
+        cropCount[plot.crop] = (cropCount[plot.crop] ?? 0) + 1;
+      }
+
+      // Find the most popular crop
+      String mostPopularCrop = cropCount.entries.reduce((a, b) => a.value > b.value ? a : b).key;
+
+      // Populate statistics for the region
+      regionStats[region.name] = {
+        'totalPlots': regionPlots.length,
+        'averageYield': totalYield / regionPlots.length,
+        'mostPopularCrop': mostPopularCrop,
+      };
+    }
+
+    log("Region Stats: $regionStats");
+    return regionStats;
   } 
 
   //? CROP functions
@@ -474,5 +608,34 @@ class DatabaseService {
   Future<String> getCropPrice(String crop) async {
     DocumentSnapshot doc = await cropCollection.where('name', isEqualTo: crop).get().then((value) => value.docs.first);
     return doc['marketPrice'];
+  }
+  // most popular and profitable crops
+  Future<Map<String, String>> cropStatisticsAll() async {
+    QuerySnapshot response = await plotCollection.where('seedId', isNotEqualTo: 'demo').get();
+    log("Crop Statistics Response: ${response.docs.length}");
+    List<PlotModel> plots = _plotListFromSnapshot(response);
+
+    Map<String, double> cropRevenue = {};
+    Map<String, int> cropCount = {};
+    for (var plot in plots) {
+      if (!plot.active) {
+        cropRevenue[plot.crop] = (cropRevenue[plot.crop] ?? 0) + (plot.actualRevenue as num).toDouble();
+        cropCount[plot.crop] = (cropCount[plot.crop] ?? 0) + 1;
+      }
+    }
+
+    // Find the most profitable and most popular crops
+    String mostProfitableCrop = cropRevenue.isEmpty
+        ? 'No Data'
+        : cropRevenue.entries.reduce((a, b) => a.value > b.value ? a : b).key;
+    String mostPopularCrop = cropCount.isEmpty
+        ? 'No Data'
+        : cropCount.entries.reduce((a, b) => a.value > b.value ? a : b).key;
+
+    log("Most Profitable Crop: $mostProfitableCrop, Most Popular Crop: $mostPopularCrop");
+    return {
+      'mostProfitableCrop': mostProfitableCrop,
+      'mostPopularCrop': mostPopularCrop,
+    };
   }
 }
