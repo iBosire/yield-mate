@@ -882,8 +882,22 @@ class AdminReportsSection extends StatelessWidget {
   const AdminReportsSection({super.key});
 
   Future<Map<String, dynamic>> getAdminReports(String uid) async {
-    // return await _db.getAdminReports(uid);
-    return {'status': 'error', 'message': 'Not implemented'};
+    int allUsers = await DatabaseService(uid: uid).totalFarmers();
+    double avgPlotsPerFarmer = await DatabaseService(uid: uid).averagePlotsPerFarmer();
+    double modelAccuracy = await DatabaseService(uid: uid).averageModelAccuracy();
+    Map<String, dynamic> regionReport = await DatabaseService(uid: uid).regionStats();
+    Map<String, dynamic> cropReport = await DatabaseService(uid: uid).cropStatisticsAll();
+    String popSeed = await DatabaseService(uid: uid).mostPopularSeed();
+    String profSeed = await DatabaseService(uid: uid).mostProfitableSeed();
+    return {
+      'total users': allUsers,
+      'avg plots': avgPlotsPerFarmer,
+      'model accuracy': modelAccuracy,
+      'region data': regionReport,
+      'cropNSeedData': cropReport,
+      'popSeed': popSeed,
+      'profSeed': profSeed,
+    };
   }
   @override
   Widget build(BuildContext context) {
@@ -911,7 +925,14 @@ class AdminReportsSection extends StatelessWidget {
           future: getAdminReports(currentAdminUser), 
           builder: (context, reports){
             log('Admin Reports: ${reports.data}');
-            return Column(
+            if(reports.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else if (reports.hasError) {
+              return Center(child: Text('Error: ${reports.error}'));
+            } else if (!reports.hasData) {
+              return Center(child: Text('No data'));
+            }else{
+              return Column(
               children: [
                 const SizedBox(height: 20),
                 // User Analytics
@@ -925,7 +946,7 @@ class AdminReportsSection extends StatelessWidget {
                       children: [
                         Text('Total Farmers: ', style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w400),),
                         SizedBox(width: 10),
-                        Text('0', style: TextStyle(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.bold),),
+                        Text(reports.data!['total users'].toString(), style: TextStyle(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.bold),),
                       ],
                     ),
                     Row(
@@ -933,7 +954,7 @@ class AdminReportsSection extends StatelessWidget {
                       children: [
                         Text('Average Plots Per Farmer: ', style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w400),),
                         SizedBox(width: 10),
-                        Text('0', style: TextStyle(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.bold),),
+                        Text('${reports.data!['avg plots'].toStringAsFixed(0)} plots', style: TextStyle(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.bold),),
                       ],
                     )
                   ]
@@ -955,17 +976,9 @@ class AdminReportsSection extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Text('Total Models: ', style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w400),),
-                        SizedBox(width: 10),
-                        Text('0', style: TextStyle(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.bold),),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
                         Text('Average Accuracy: ', style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w400),),
                         SizedBox(width: 10),
-                        Text('0%', style: TextStyle(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.bold),),
+                        Text('${reports.data!['model accuracy'].toStringAsFixed(2)}%', style: TextStyle(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.bold),),
                       ],
                     )
                   ]
@@ -989,7 +1002,7 @@ class AdminReportsSection extends StatelessWidget {
                       children: [
                         Text('Most Popular Crop: ', style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w400),),
                         SizedBox(width: 10),
-                        Text('None', style: TextStyle(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.bold),),
+                        Text('${reports.data!['cropNSeedData']['mostPopularCrop']}', style: TextStyle(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.bold),),
                       ],
                     ),
                     Row(
@@ -997,7 +1010,7 @@ class AdminReportsSection extends StatelessWidget {
                       children: [
                         Text('Most Popular Seed: ', style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w400),),
                         SizedBox(width: 10),
-                        Text('None', style: TextStyle(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.bold),),
+                        Text('${reports.data!['popSeed']}', style: TextStyle(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.bold),),
                       ],
                     ),
                     Row(
@@ -1005,7 +1018,7 @@ class AdminReportsSection extends StatelessWidget {
                       children: [
                         Text('Most Profitable Crop: ', style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w400),),
                         SizedBox(width: 10),
-                        Text('None', style: TextStyle(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.bold),),
+                        Text('${reports.data!['cropNSeedData']['mostProfitableCrop']}', style: TextStyle(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.bold),),
                       ],
                     ),
                     Row(
@@ -1013,7 +1026,7 @@ class AdminReportsSection extends StatelessWidget {
                       children: [
                         Text('Most Profitable Seed: ', style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w400),),
                         SizedBox(width: 10),
-                        Text('None', style: TextStyle(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.bold),),
+                        Text('${reports.data!['profSeed']}', style: TextStyle(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.bold),),
                       ],
                     ),
                   ]
@@ -1032,35 +1045,13 @@ class AdminReportsSection extends StatelessWidget {
                   children: [
                     Text('Location Analytics', style: TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),),
                     SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Text('Project Density: ', style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w400),),
-                        SizedBox(width: 10),
-                        Text('0', style: TextStyle(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.bold),),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Text('Most Popular Crop: ', style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w400),),
-                        SizedBox(width: 10),
-                        Text('None', style: TextStyle(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.bold),),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Text('Average Yield: ', style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w400),),
-                        SizedBox(width: 10),
-                        Text('0', style: TextStyle(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.bold),),
-                      ],
-                    ),
+                    locationTable(reports.data!['region data']),
                   ]
                 ),
                 const SizedBox(height: 20), 
               ], 
             );
+            }
           }
         ),
         Divider(
@@ -1073,6 +1064,81 @@ class AdminReportsSection extends StatelessWidget {
     );
   }
 }
+
+// Table for Location Analytics
+Widget locationTable(Map<String, dynamic> data) {
+  List<TableRow> rows = [];
+
+  rows.add(
+    TableRow(
+      children: [
+        TableCell(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text('Region', style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),),
+          ),
+        ),
+        TableCell(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text('Total Plots', style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),),
+          ),
+        ),
+        TableCell(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text('Most Popular Crop', style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),),
+          ),
+        ),
+        TableCell(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text('Average Yield', style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),),
+          ),
+        ),
+      ]
+    )
+  );
+
+  data.forEach((key, value) {
+    rows.add(
+      TableRow(
+        children: [
+          TableCell(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: FittedBox(fit: BoxFit.scaleDown, child: Text(key, style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600),)),
+            ),
+          ),
+          TableCell(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: FittedBox(fit: BoxFit.scaleDown, child: Text(value['totalPlots'].toString(), style: TextStyle(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.bold),)),
+            ),
+          ),
+          TableCell(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: FittedBox(fit: BoxFit.scaleDown, child: Text(value['mostPopularCrop'], style: TextStyle(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.bold),)),
+            ),
+          ),
+          TableCell(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: FittedBox(fit: BoxFit.scaleDown, child: Text('${value['averageYield'].toStringAsFixed(0)} kg', style: TextStyle(color: Colors.grey, fontSize: 16, fontWeight: FontWeight.bold),)),
+            ),
+          ),
+        ]
+      )
+    );
+  });
+
+  return Table(
+    border: TableBorder.all(color: Colors.black, width: 0.1),
+    children: rows,
+  );
+}
+          
 
 //* Add Button
 class AddNew extends StatelessWidget {

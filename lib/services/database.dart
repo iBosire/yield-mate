@@ -425,27 +425,27 @@ class DatabaseService {
   }
   // average accuracy of model: compare predicted yield with actual yield
   Future<double> averageModelAccuracy() async {
-  QuerySnapshot response = await plotCollection.where('seedId', isNotEqualTo: 'demo').get();
-  log("Average Model Accuracy Response: ${response.docs.length}");
-  List<PlotModel> plots = _plotListFromSnapshot(response);
+    QuerySnapshot response = await plotCollection.where('seedId', isNotEqualTo: 'demo').get();
+    log("Average Model Accuracy Response: ${response.docs.length}");
+    List<PlotModel> plots = _plotListFromSnapshot(response);
 
-  if (plots.isEmpty) return 0.0;
-  double totalErrorPercentage = 0.0;
-  for (var plot in plots) {
-    if (!plot.active) {
-      double predictedYield = (plot.predictedYield as num).toDouble();
-      double actualYield = (plot.yieldAmount as num).toDouble();
+    if (plots.isEmpty) return 0.0;
+    double totalErrorPercentage = 0.0;
+    for (var plot in plots) {
+      if (!plot.active) {
+        double predictedYield = (plot.predictedYield as num).toDouble();
+        double actualYield = (plot.yieldAmount as num).toDouble();
 
-      if (actualYield > 0) {
-        double error = ((predictedYield - actualYield).abs() / actualYield) * 100;
-        totalErrorPercentage += error;
-      } else {
-        log("Skipped plot with zero yield: ${plot.plotId}");
+        if (actualYield > 0) {
+          double error = ((predictedYield - actualYield).abs() / actualYield) * 100;
+          totalErrorPercentage += error;
+        } else {
+          log("Skipped plot with zero yield: ${plot.plotId}");
+        }
       }
     }
+    return totalErrorPercentage / plots.length;
   }
-  return totalErrorPercentage / plots.length;
-}
 
 
   //? REGION functions
@@ -530,6 +530,7 @@ class DatabaseService {
       if (regionPlots.isEmpty) {
         // handle empty regions
         regionStats[region.name] = {
+          'regionName': region.name,
           'totalPlots': 0,
           'averageYield': 0.0,
           'mostPopularCrop': 'N/A',
@@ -550,6 +551,7 @@ class DatabaseService {
 
       // Populate statistics for the region
       regionStats[region.name] = {
+        'regionName': region.name,
         'totalPlots': regionPlots.length,
         'averageYield': totalYield / regionPlots.length,
         'mostPopularCrop': mostPopularCrop,
