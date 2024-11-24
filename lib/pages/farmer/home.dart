@@ -603,7 +603,7 @@ class AllPlotsSection extends StatelessWidget {
                 decoration: BoxDecoration(
                   color:Colors.white,
                   borderRadius: BorderRadius.circular(15),
-                  border: plots[index].active? Border.all(color: Colors.amber, width: 2) : Border.all(color: Colors.green, width: 2),
+                  border: !plots[index].active? Border.all(color: Colors.green, width: 2) : plots[index].status == 1 ? Border.all(color: Colors.amber, width: 2) : null,
                   boxShadow: [
                     BoxShadow(
                       color: const Color(0xff1D1617).withOpacity(0.11),

@@ -468,6 +468,7 @@ Widget resultsSection(String? index, DatabaseService db){
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
+            log("Model Category Error: ${snapshot}");
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (snapshot.hasData) {
             return Container(

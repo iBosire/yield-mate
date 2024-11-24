@@ -425,16 +425,16 @@ class DatabaseService {
   }
   // set default model
   Future setDefaultModel(String modelId, String modelUrl) async {
-    return await modelCollection.doc('default').update({
-      'modelId:': modelId,
-      'modelUrl': modelUrl,
+    return await modelCollection.doc('XpNs2EBjBODiQButVdTy').update({
+      'description:': modelId,
+      'url': modelUrl,
       'dateUpdated': DateTime.now(),
     });
   }
   // get default model url
   Future<String> getDefaultModelUrl() async {
-    DocumentSnapshot doc = await modelCollection.doc('default').get();
-    return doc['modelUrl'];
+    DocumentSnapshot doc = await modelCollection.doc('XpNs2EBjBODiQButVdTy').get();
+    return doc['url'];
   }
   // average accuracy of model: compare predicted yield with actual yield
   Future<double> averageModelAccuracy() async {
