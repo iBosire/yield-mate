@@ -497,6 +497,8 @@ class DetailsPageState extends State<DetailsPage> {
           child: Column(
             children: [
               TextFormField(
+                keyboardType: TextInputType.text,
+                maxLength: 18,
                 decoration: decorator('Plot Name', '', 'Enter the plot name'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -510,11 +512,11 @@ class DetailsPageState extends State<DetailsPage> {
               ),
               const SizedBox(height: 20),
               TextFormField(
-                decoration: decorator('Size', '', 'Enter the plot size'),
+                decoration: decorator('Size', '', 'Enter the plot size in acres'),
                 keyboardType: TextInputType.number,
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter the plot size';
+                  if (value == null || value.isEmpty || double.parse(value) <= 0 || double.parse(value) > 100) {
+                    return 'Please enter the plot size(1-100)';
                   }
                   return null;
                 },
@@ -532,8 +534,9 @@ class DetailsPageState extends State<DetailsPage> {
               TextFormField(
                 decoration: decorator('Seed Amount', '', 'Enter the seed amount'),
                 keyboardType: TextInputType.number,
+                maxLength: 8,
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
+                  if (value == null || value.isEmpty || int.parse(value) <= 0) {
                     return 'Please enter the seed amount';
                   }
                   return null;
@@ -547,8 +550,9 @@ class DetailsPageState extends State<DetailsPage> {
               TextFormField(
                 decoration: decorator('Nitrogen', '', 'Enter the nitrogen amount'),
                 keyboardType: TextInputType.number,
+                maxLength: 3,
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
+                  if (value == null || value.isEmpty || int.parse(value) <= 0) {
                     return 'Please enter the nitrogen amount';
                   }
                   return null;
@@ -561,8 +565,9 @@ class DetailsPageState extends State<DetailsPage> {
               TextFormField(
                 decoration: decorator('Phosphorus', '', 'Enter the phosphorus amount'),
                 keyboardType: TextInputType.number,
+                maxLength: 3,
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
+                  if (value == null || value.isEmpty || int.parse(value) <= 0) {
                     return 'Please enter the phosphorus amount';
                   }
                   return null;
@@ -575,8 +580,9 @@ class DetailsPageState extends State<DetailsPage> {
               TextFormField(
                 decoration: decorator('Potassium', '', 'Enter the potassium amount'),
                 keyboardType: TextInputType.number,
+                maxLength: 3,
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
+                  if (value == null || value.isEmpty || int.parse(value) <= 0) {
                     return 'Please enter the potassium amount';
                   }
                   return null;
@@ -589,9 +595,10 @@ class DetailsPageState extends State<DetailsPage> {
               TextFormField(
                 decoration: decorator('pH', '', 'Enter the pH'),
                 keyboardType: TextInputType.number,
+                maxLength: 2,
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter the pH';
+                  if (value == null || value.isEmpty || int.parse(value) <= 0 || int.parse(value) > 14) {
+                    return 'Please enter the pH (1-14)';
                   }
                   return null;
                 },
@@ -624,6 +631,8 @@ class DetailsPageState extends State<DetailsPage> {
             TextFormField(
               decoration: decorator('Plot Name', '', 'Enter the plot name'),
               initialValue: _plot?.name,
+              keyboardType: TextInputType.text,
+              maxLength: 18,
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter the plot name';
@@ -640,8 +649,9 @@ class DetailsPageState extends State<DetailsPage> {
               decoration: decorator('Nitrogen', '', 'Enter the nitrogen amount'),
               initialValue: _plot?.nutrients[0].toString(),
               keyboardType: TextInputType.number,
+              maxLength: 3,
               validator: (value) {
-                if (value == null || value.isEmpty) {
+                if (value == null || value.isEmpty || int.parse(value) <= 0) {
                   return 'Please enter the nitrogen amount';
                 }
                 return null;
@@ -655,8 +665,9 @@ class DetailsPageState extends State<DetailsPage> {
               decoration: decorator('Phosphorus', '', 'Enter the phosphorus amount'),
               initialValue: _plot?.nutrients[1].toString(),
               keyboardType: TextInputType.number,
+              maxLength: 3,
               validator: (value) {
-                if (value == null || value.isEmpty) {
+                if (value == null || value.isEmpty || int.parse(value) <= 0) {
                   return 'Please enter the phosphorus amount';
                 }
                 return null;
@@ -670,8 +681,9 @@ class DetailsPageState extends State<DetailsPage> {
               decoration: decorator('Potassium', '', 'Enter the potassium amount'),
               initialValue: _plot?.nutrients[2].toString(),
               keyboardType: TextInputType.number,
+              maxLength: 3,
               validator: (value) {
-                if (value == null || value.isEmpty) {
+                if (value == null || value.isEmpty || int.parse(value) <= 0) {
                   return 'Please enter the potassium amount';
                 }
                 return null;
@@ -685,9 +697,10 @@ class DetailsPageState extends State<DetailsPage> {
               decoration: decorator('pH', '', 'Enter the pH'),
               initialValue: _plot?.nutrients[3].toString(),
               keyboardType: TextInputType.number,
+              maxLength: 2,
               validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter the pH';
+                if (value == null || value.isEmpty || int.parse(value) <= 0 || int.parse(value) > 14) {
+                  return 'Please enter the pH (1-14)';
                 }
                 return null;
               },
@@ -1127,6 +1140,7 @@ class DetailsPageState extends State<DetailsPage> {
               TextFormField(
                 decoration: decorator('First Name', "", 'Enter first name'),
                 initialValue: _user?.fName,
+                keyboardType: TextInputType.text,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter an first name';
@@ -1140,6 +1154,7 @@ class DetailsPageState extends State<DetailsPage> {
               TextFormField(
                 decoration: decorator('Last Name', "", 'Enter last name'),
                 initialValue: _user?.lName,
+                keyboardType: TextInputType.text,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter an last name';
@@ -1169,6 +1184,7 @@ class DetailsPageState extends State<DetailsPage> {
               TextFormField(
                 decoration: decorator('Username', "", 'Enter new username'),
                 initialValue: _user?.username,
+                keyboardType: TextInputType.text,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter an username';
@@ -1329,6 +1345,7 @@ class DetailsPageState extends State<DetailsPage> {
             children: [
               TextFormField(
                 decoration: decorator('Location Name', 'Nairobi', 'Enter the location name'),
+                keyboardType: TextInputType.text,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter the location name';
@@ -1342,8 +1359,10 @@ class DetailsPageState extends State<DetailsPage> {
               const SizedBox(height: 20),
               TextFormField(
                 decoration: decorator('Temperature', '25', 'Enter the average temperature in Celsius'),
+                keyboardType: TextInputType.number,
+                maxLength: 3,
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
+                  if (value == null || value.isEmpty || int.parse(value) <= 0) {
                     return 'Please enter the temperature';
                   }
                   return null;
@@ -1354,9 +1373,11 @@ class DetailsPageState extends State<DetailsPage> {
               ),
               const SizedBox(height: 20),
               TextFormField(
-                decoration: decorator('Humidity', '60%', 'Enter the humidity'),
+                decoration: decorator('Humidity', '60', 'Enter the humidity percentage'),
+                keyboardType: TextInputType.number,
+                maxLength: 3,
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
+                  if (value == null || value.isEmpty || int.parse(value) <= 0 || int.parse(value) > 100) {
                     return 'Please enter the humidity';
                   }
                   return null;
@@ -1367,10 +1388,11 @@ class DetailsPageState extends State<DetailsPage> {
               ),
               const SizedBox(height: 20),
               TextFormField(
-                decoration: decorator('Rainfall', '100mm', 'Enter the rainfall'),
+                decoration: decorator('Rainfall', '100', 'Enter the rainfall (mm)'),
                 keyboardType: TextInputType.number,
+                maxLength: 5,
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
+                  if (value == null || value.isEmpty || int.parse(value) <= 0) {
                     return 'Please enter the rainfall';
                   }
                   return null;
@@ -1452,6 +1474,7 @@ class DetailsPageState extends State<DetailsPage> {
               TextFormField(
                 decoration: decorator('Location Name', _location?.name, 'Enter the location name'),
                 initialValue: _location?.name,
+                keyboardType: TextInputType.text,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter the location name';
@@ -1464,10 +1487,12 @@ class DetailsPageState extends State<DetailsPage> {
               ),
               const SizedBox(height: 20),
               TextFormField(
-                decoration: decorator('Temperature', _location?.temperature, 'Enter the temperature'),
+                decoration: decorator('Temperature', _location?.temperature, 'Enter the temperature in Celsius'),
                 initialValue: _location?.temperature,
+                keyboardType: TextInputType.number,
+                maxLength: 3,
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
+                  if (value == null || value.isEmpty || int.parse(value) <= 0) {
                     return 'Please enter the temperature';
                   }
                   return null;
@@ -1478,10 +1503,12 @@ class DetailsPageState extends State<DetailsPage> {
               ),
               const SizedBox(height: 20),
               TextFormField(
-                decoration: decorator('Humidity', _location?.humidity, 'Enter the humidity'),
+                decoration: decorator('Humidity', _location?.humidity, 'Enter the humidity (%)'),
                 initialValue: _location?.humidity,
+                keyboardType: TextInputType.number,
+                maxLength: 3,
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
+                  if (value == null || value.isEmpty || int.parse(value) <= 0 || int.parse(value) > 100) {
                     return 'Please enter the humidity';
                   }
                   return null;
@@ -1492,11 +1519,12 @@ class DetailsPageState extends State<DetailsPage> {
               ),
               const SizedBox(height: 20),
               TextFormField(
-                decoration: decorator('Rainfall', "", 'Enter the rainfall'),
+                decoration: decorator('Rainfall', "", 'Enter the rainfall (mm)'),
                 initialValue: _location?.rainfall.toString(),
                 keyboardType: TextInputType.number,
+                maxLength: 5,
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
+                  if (value == null || value.isEmpty || int.parse(value) <= 0) {
                     return 'Please enter the rainfall';
                   }
                   return null;
@@ -1642,7 +1670,6 @@ class DetailsPageState extends State<DetailsPage> {
   Form seedForm(String type){
     String _seedName = '';
     String _seedManufacturer = '';
-    String _seedCrop = '';
     String _seedMaturity = '';
 
     if(type == "new"){
@@ -1654,6 +1681,8 @@ class DetailsPageState extends State<DetailsPage> {
             children: [
               TextFormField(
                 decoration: decorator('Seed Name', 'Maize', 'Enter the seed name'),
+                keyboardType: TextInputType.text,
+                maxLength: 18,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter the seed name';
@@ -1667,6 +1696,8 @@ class DetailsPageState extends State<DetailsPage> {
               const SizedBox(height: 20),
               TextFormField(
                 decoration: decorator('Seed Manufacturer', 'Seed Co.', 'Enter the seed manufacturer'),
+                keyboardType: TextInputType.text,
+                maxLength: 18,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter the seed manufacturer';
@@ -1678,23 +1709,14 @@ class DetailsPageState extends State<DetailsPage> {
                 },
               ),
               const SizedBox(height: 20),
-              TextFormField(
-                decoration: decorator('Seed Crop', 'Maize', 'Enter the seed crop'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter the seed crop';
-                  }
-                  return null;
-                },
-                onSaved: (value) {
-                  _seedCrop = value!;
-                },
-              ),
+              _cropList(),
               const SizedBox(height: 20),
               TextFormField(
-                decoration: decorator('Seed Maturity', '90 days', 'Enter the days to maturity'),
+                decoration: decorator('Seed Maturity', '90', 'Enter the days to maturity'),
+                keyboardType: TextInputType.number,
+                maxLength: 3,
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
+                  if (value == null || value.isEmpty || int.parse(value) <= 0) {
                     return 'Please enter the seed maturity';
                   }
                   return null;
@@ -1709,7 +1731,7 @@ class DetailsPageState extends State<DetailsPage> {
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
-                    await _db.addSeed(_seedName, _seedManufacturer, _seedCrop, _seedMaturity);
+                    await _db.addSeed(_seedName, _seedManufacturer, crop, _seedMaturity);
                     Navigator.pushNamed(context, '/modeltab');
                   }
                 },
@@ -1776,6 +1798,8 @@ class DetailsPageState extends State<DetailsPage> {
               TextFormField(
                 decoration: decorator('Seed Name', _seed?.name, 'Enter the seed name'),
                 initialValue: _seed?.name,
+                keyboardType: TextInputType.text,
+                maxLength: 18,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter the seed name';
@@ -1790,6 +1814,8 @@ class DetailsPageState extends State<DetailsPage> {
               TextFormField(
                 decoration: decorator('Seed Manufacturer', _seed?.manufacturer, 'Enter the seed manufacturer'),
                 initialValue: _seed?.manufacturer,
+                keyboardType: TextInputType.text,
+                maxLength: 18,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter the seed manufacturer';
@@ -1801,25 +1827,15 @@ class DetailsPageState extends State<DetailsPage> {
                 },
               ),
               const SizedBox(height: 20),
-              TextFormField(
-                decoration: decorator('Seed Crop', _seed?.crop, 'Enter the seed crop'),
-                initialValue: _seed?.crop,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter the seed crop';
-                  }
-                  return null;
-                },
-                onSaved: (value) {
-                  _seedCrop = value!;
-                },
-              ),
+              _cropList(),
               const SizedBox(height: 20),
               TextFormField(
                 decoration: decorator('Seed Maturity', _seed?.timeToMaturity, 'Enter the seed maturity'),
                 initialValue: _seed?.timeToMaturity,
+                keyboardType: TextInputType.number,
+                maxLength: 3,
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
+                  if (value == null || value.isEmpty || int.parse(value) <= 0) {
                     return 'Please enter the seed maturity';
                   }
                   return null;
@@ -1834,7 +1850,7 @@ class DetailsPageState extends State<DetailsPage> {
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
-                    _db.updateSeedDetails(_seed?.id, _seedName, _seedManufacturer, _seedCrop, _seedMaturity);
+                    _db.updateSeedDetails(_seed?.id, _seedName, _seedManufacturer, crop, _seedMaturity);
                     Navigator.pushNamed(context, '/modeltab');
                   }
                 },
@@ -2009,6 +2025,8 @@ class DetailsPageState extends State<DetailsPage> {
             children: [
               TextFormField(
                 decoration: decorator('Model Name', "Yield Predictor", 'Enter the model name'),
+                keyboardType: TextInputType.text,
+                maxLength: 18,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter a model name';
@@ -2022,6 +2040,8 @@ class DetailsPageState extends State<DetailsPage> {
               const SizedBox(height: 20),
               TextFormField(
                 decoration: decorator('Model Descryption', "predict crop yield", 'Enter a short description'),
+                keyboardType: TextInputType.text,
+                maxLength: 18,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter the model description';
@@ -2035,6 +2055,8 @@ class DetailsPageState extends State<DetailsPage> {
               const SizedBox(height: 20),
               TextFormField(
                 decoration: decorator("Model URL", "www.model.com/yield", "enter the model URL"),
+                keyboardType: TextInputType.text,
+                maxLength: 30,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter the model URL';
@@ -2115,6 +2137,8 @@ class DetailsPageState extends State<DetailsPage> {
             const SizedBox(height: 20),
             TextFormField(
               decoration: decorator("Model Name", "", ""),
+              keyboardType: TextInputType.text,
+              maxLength: 18,
               style: const TextStyle(
                 fontSize: 18,
               ),
@@ -2131,6 +2155,8 @@ class DetailsPageState extends State<DetailsPage> {
             ),
             TextFormField(
               decoration: decorator("Model Description", "", ""),
+              keyboardType: TextInputType.text,
+              maxLength: 18,
               style: const TextStyle(
                 fontSize: 18,
               ),
@@ -2147,6 +2173,8 @@ class DetailsPageState extends State<DetailsPage> {
             ),
             TextFormField(
               decoration: decorator("Model URL", "", ""),
+              keyboardType: TextInputType.text,
+              maxLength: 30,
               style: const TextStyle(
                 fontSize: 18,
               ),
@@ -2299,6 +2327,8 @@ class DetailsPageState extends State<DetailsPage> {
             children: [
               TextFormField(
                 decoration: decorator('Crop Name', 'Maize', 'Enter the crop name'),
+                keyboardType: TextInputType.text,
+                maxLength: 18,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter the crop name';
@@ -2312,9 +2342,10 @@ class DetailsPageState extends State<DetailsPage> {
               const SizedBox(height: 20),
               TextFormField(
                 decoration: decorator('Crop Market Price', '20', 'Enter the market price in ksh per kg.'),
+                keyboardType: TextInputType.number,
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter the crop variety';
+                  if (value == null || value.isEmpty || int.parse(value) <= 0) {
+                    return 'Please enter the crop market price';
                   }
                   return null;
                 },
@@ -2376,6 +2407,8 @@ class DetailsPageState extends State<DetailsPage> {
               const SizedBox(height: 20),
               TextFormField(
                 decoration: decorator('Crop Name', _crop?.name, 'Enter the crop name'),
+                keyboardType: TextInputType.text,
+                maxLength: 18,
                 initialValue: _crop?.name,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -2391,9 +2424,10 @@ class DetailsPageState extends State<DetailsPage> {
               TextFormField(
                 decoration: decorator('Crop Market Price', _crop?.marketPrice, 'Enter the crop market price in ksh per kg.'),
                 initialValue: _crop?.marketPrice,
+                keyboardType: TextInputType.number,
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter the crop description';
+                  if (value == null || value.isEmpty || int.parse(value) <= 0) {
+                    return 'Please enter the crop market price';
                   }
                   return null;
                 },
