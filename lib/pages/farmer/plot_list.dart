@@ -1,7 +1,5 @@
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:yield_mate/models/plot_model.dart';
 
@@ -57,40 +55,38 @@ class _PlotListState extends State<PlotList> {
                   )
                 ]
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Icon(Icons.grass, size: 50,),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        plots[index]?.name ?? "No Name",
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(context, '/plot', arguments: plots[index]);
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Icon(Icons.grass, size: 50,),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          plots[index]?.name ?? "No Name",
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      Text(
-                        '${plots[index]?.size ?? 'Unknown Size'} Acres | Score: ${plots[index]?.score ?? 'Unknown Score'} | Crop: ${plots[index]?.crop ?? 'Unknown Crop'}',
-                        style: const TextStyle(
-                          color: Colors.grey,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
+                        Text(
+                          '${plots[index]?.size ?? 'Unknown Size'} Acres | Score: ${plots[index]?.score ?? 'Unknown Score'} | Crop: ${plots[index]?.crop ?? 'Unknown Crop'}',
+                          style: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  GestureDetector(
-                    onTap: () async {
-                      // got to details page with field id
-                      Navigator.pushNamed(context, '/plot', arguments: plots[index]);
-                    },
-                    child: SvgPicture.asset('assets/icons/right-arrow.svg',)
+                      ],
                     ),
-                ],
+                  ],
+                ),
               ),
             );
           },
