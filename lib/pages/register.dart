@@ -52,6 +52,7 @@ class RegisterPageState extends State<RegisterPage> {
                 TextFormField(
                   autofocus: true,
                   textCapitalization: TextCapitalization.words,
+                  keyboardType: TextInputType.name,
                   decoration: InputDecoration(
                     helperText: ' ',
                     hintText: 'First Name',
@@ -72,6 +73,7 @@ class RegisterPageState extends State<RegisterPage> {
                 // LAST NAME
                 TextFormField(
                   textCapitalization: TextCapitalization.words,
+                  keyboardType: TextInputType.name,
                   decoration: InputDecoration(
                     helperText: ' ',
                     hintText: 'Last Name',
@@ -99,6 +101,8 @@ class RegisterPageState extends State<RegisterPage> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
+                  keyboardType: TextInputType.text,
+                  maxLength: 20,
                   onChanged: (value) => _username = value,
                   validator: (value) {
                     if (value!.isEmpty) {
@@ -122,6 +126,7 @@ class RegisterPageState extends State<RegisterPage> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
+                  keyboardType: TextInputType.emailAddress,
                   onChanged: (value) => _email = value,
                   validator: (value) {
                     if (value!.isEmpty) {
@@ -153,6 +158,7 @@ class RegisterPageState extends State<RegisterPage> {
                       },
                     ),
                   ),
+                  keyboardType: TextInputType.text,
                   validator: (value) {
                     if (value!.isEmpty || value.length < 6) {
                       return 'Please enter a password that is at least 6 characters long';
@@ -165,6 +171,7 @@ class RegisterPageState extends State<RegisterPage> {
                 // CONFIRM PASSWORD
                 TextFormField(
                   obscureText: _obscureTextC,
+                  keyboardType: TextInputType.text,
                   decoration: InputDecoration(
                     helperText: ' ',
                     hintText: 'Confirm Password',

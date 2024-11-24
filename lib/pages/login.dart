@@ -214,6 +214,7 @@ class LoginPageState extends State<LoginPage> {
             child: Column(
               children: [
                 TextFormField(
+                  keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
                     hintText: 'Email',
                     labelText: 'Email',
@@ -234,6 +235,7 @@ class LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 10),
                 TextFormField(
+                  keyboardType: TextInputType.text,
                   obscureText: obscureText,
                   decoration: InputDecoration(
                     hintText: 'Password',
