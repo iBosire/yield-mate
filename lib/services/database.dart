@@ -423,6 +423,19 @@ class DatabaseService {
       );
     }).toList();
   }
+  // set default model
+  Future setDefaultModel(String modelId, String modelUrl) async {
+    return await modelCollection.doc('default').update({
+      'modelId:': modelId,
+      'modelUrl': modelUrl,
+      'dateUpdated': DateTime.now(),
+    });
+  }
+  // get default model url
+  Future<String> getDefaultModelUrl() async {
+    DocumentSnapshot doc = await modelCollection.doc('default').get();
+    return doc['modelUrl'];
+  }
   // average accuracy of model: compare predicted yield with actual yield
   Future<double> averageModelAccuracy() async {
     QuerySnapshot response = await plotCollection.where('seedId', isNotEqualTo: 'demo').get();

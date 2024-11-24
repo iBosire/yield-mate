@@ -59,7 +59,10 @@ class DetailsPageState extends State<DetailsPage> {
         setState(() {
           currentUser = user?.uid ?? 'No user';
           _db = DatabaseService(uid: currentUser);
-          _plotModels = PlotAnalysisService('http://10.0.2.2:5000'); //TODO: get url from model object
+          _db.getDefaultModelUrl().then((url) {
+            _plotModels = PlotAnalysisService();
+            _plotModels.setApiUrl(url);
+          });
         });
       });
     });
@@ -862,85 +865,76 @@ class DetailsPageState extends State<DetailsPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const Text(
-                    "Predicted Yield: ",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold
-                    ),
-                  ),
-                  const SizedBox(width: 5,),
-                  Text(
-                    "${plot.predictedYield.toStringAsFixed(2)} kg /Acre",
-                    style: const TextStyle(
-                      fontSize: 18,
-                    ),
-                  )
-                ],
+              const Text(
+                "Predicted Yield: ",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold
+                ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const Text(
-                    "Predicted Revenue: ",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+              const SizedBox(height: 10,),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  "${plot.predictedYield.toStringAsFixed(2)} kg /Acre",
+                  style: const TextStyle(
+                    fontSize: 18,
                   ),
-                  const SizedBox(width: 5,),
-                  Text(
-                    '${plot.predictedRevenue.toStringAsFixed(2)} ksh',
-                    style: const TextStyle(
-                      fontSize: 18,
-                    ),
-                  )
-                ],
+                ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const Text(
-                    "Crop Suitability Score: ",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(width: 5,),
-                  Text(
-                    "${plot.score}",
-                    style: const TextStyle(
-                      fontSize: 18,
-                    ),
-                  )
-                ],
+              const SizedBox(height: 10,),
+              const Text(
+                "Predicted Revenue: ",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const Text(
-                    "Recommended Crop: ",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+              const SizedBox(height: 10,),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  '${plot.predictedRevenue.toStringAsFixed(2)} ksh',
+                  style: const TextStyle(
+                    fontSize: 18,
                   ),
-                  const SizedBox(width: 5,),
-                  Text(
-                    plot.recommendedCrop,
-                    style: const TextStyle(
-                      fontSize: 18
-                    ),
-                  )
-                ],
+                ),
+              ),
+              const SizedBox(height: 10,),
+              const Text(
+                "Crop Suitability Score: ",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 10,),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  "${plot.score}",
+                  style: const TextStyle(
+                    fontSize: 18,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10,),
+              const Text(
+                "Recommended Crop: ",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 10,),
+              FittedBox(
+                fit: BoxFit.contain,
+                child: Text(
+                  plot.recommendedCrop,
+                  style: const TextStyle(
+                    fontSize: 18
+                  ),
+                ),
               )
             ],
           ),
@@ -968,7 +962,7 @@ class DetailsPageState extends State<DetailsPage> {
       'plot_id': id,
     };
     final result = await _plotModels.analyzePlot(plotData);
-    log('Result: $result');
+    log('Analysis Result: $result');
   }
   //? USER Pages
   //* View 
@@ -1892,6 +1886,7 @@ class DetailsPageState extends State<DetailsPage> {
               ),
               const SizedBox(height: 20),
               modelForm("view"),
+              const SizedBox(height: 20),
               ElevatedButton(
                 style: deleteButton(),
                 onPressed: () async {
@@ -2097,6 +2092,15 @@ class DetailsPageState extends State<DetailsPage> {
               ),
               initialValue: _model?.url,
               readOnly: true,
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              style: actionButton(),
+              onPressed: () async {
+                await _db.setDefaultModel(_model?.id, _model?.url);
+                Navigator.pushNamed(context, '/modeltab');
+              },
+              child: const Text('Set Default'),
             ),
           ],
         ),
