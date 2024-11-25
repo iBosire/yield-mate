@@ -459,35 +459,38 @@ Widget buildTable(Map<String, dynamic> rByCrop){
   );
 }
 
-void _showSettings(BuildContext context, AuthService _auth) {
-      showModalBottomSheet(
-        context: context,
-        builder: (BuildContext context) {
-          return Container(
-            height: 200,
-            color: Colors.white,
-            child: Column(
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.logout),
-                  title: const Text('Logout'),
-                  onTap: () async {
-                    await _auth.signOut();
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.settings),
-                  title: const Text('Settings'),
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
+void _showSettings(BuildContext context, AuthService _auth) async {
+  showModalBottomSheet(
+    context: context,
+    backgroundColor: Colors.white,
+    showDragHandle: true,
+    isScrollControlled: true,
+    builder: (BuildContext context) {
+      return DraggableScrollableSheet(
+        expand: false,
+        builder: (BuildContext context, ScrollController scrollController) {
+          return SingleChildScrollView(
+            controller: scrollController,
+            child: Container(
+              color: Colors.white,
+              child: Column(
+                children: [
+                  ListTile(
+                    leading: const Icon(Icons.info),
+                    title: const Text('App Info'),
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
+              ),
             ),
           );
-        }
+        },
       );
     }
+  );
+}
 
 class AddNew extends StatelessWidget {
   const AddNew({
