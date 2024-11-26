@@ -147,7 +147,7 @@ class DatabaseService {
     });
   }
   // create plot
-  Future addPlot(String name, String crop, double size, String regionId, String region, String seedId, String seed, int seedAmount, List<int> nutrients) async {
+  Future addPlot(String name, String crop, double size, String regionId, String region, String seedId, String seed, int seedAmount, List<double> nutrients) async {
     return await plotCollection.add({
       'user': uid,
       'name': name,
@@ -172,7 +172,7 @@ class DatabaseService {
     });
   }
   // update plot
-  Future updatePlotDetails(String plotId, String name, List<int> nutrients) async {
+  Future updatePlotDetails(String plotId, String name, List<double> nutrients) async {
     return await plotCollection.doc(plotId).update({
       'name': name,
       'nutrients': nutrients,

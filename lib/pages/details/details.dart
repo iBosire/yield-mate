@@ -177,6 +177,13 @@ class DetailsPageState extends State<DetailsPage> {
                             _plot.crop,
                             _plot.regionId,
                           );
+                          // toast message
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Plot submitted for analysis'),
+                              duration: Duration(seconds: 3),
+                            ),
+                          );
                           Navigator.pushNamed(context, '/');
                         },
                         label: const Text('Analyze Plot'),
@@ -201,8 +208,8 @@ class DetailsPageState extends State<DetailsPage> {
                                           labelText: 'Enter the amount harvested (kg)',
                                           hintText: '80',
                                         ),
-                                        keyboardType: TextInputType.number,
-                                        maxLength: 10,
+                                        keyboardType: TextInputType.numberWithOptions(decimal: true),
+                                        maxLength: 15,
                                         validator: (value) {
                                           if (value == null || value.isEmpty) {
                                             return 'Please enter the amount harvested in kg';
@@ -221,7 +228,7 @@ class DetailsPageState extends State<DetailsPage> {
                                           hintText: '8000',
                                         ),
                                         keyboardType: TextInputType.number,
-                                        maxLength: 10,
+                                        maxLength: 15,
                                         validator: (value) {
                                           if (value == null || value.isEmpty) {
                                             return 'Please enter the total revenue in Ksh';
@@ -249,6 +256,13 @@ class DetailsPageState extends State<DetailsPage> {
                                       if (_formKey.currentState!.validate()) {
                                         _formKey.currentState!.save();
                                         await _db.updatePlotStatus(_plot.plotId, false, plotHarvest, plotRevenue);
+                                        // toast message
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(
+                                            content: Text('Plot harvest recorded'),
+                                            duration: Duration(seconds: 3),
+                                          ),
+                                        );
                                         Navigator.pushNamed(context, '/');
                                       }
                                     },
@@ -283,6 +297,13 @@ class DetailsPageState extends State<DetailsPage> {
                                   TextButton(
                                     onPressed: () async {
                                       await _db.deletePlot(_plot.plotId);
+                                      // toast message
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text('Plot deleted'),
+                                          duration: Duration(seconds: 3),
+                                        ),
+                                      );
                                       Navigator.pushNamed(context, '/');
                                     },
                                     child: const Text('Delete'),
@@ -429,10 +450,10 @@ class DetailsPageState extends State<DetailsPage> {
     String _plotName = '';
     double _plotSize = 0.0;
     int _seedAmount = 0;
-    int _nitrogen = 0;
-    int _phosphorus = 0;
-    int _potassium = 0;
-    int _ph = 0;
+    double _nitrogen = 0;
+    double _phosphorus = 0;
+    double _potassium = 0;
+    double _ph = 0;
 
     if(type == 'view'){
       return Form(
@@ -548,70 +569,77 @@ class DetailsPageState extends State<DetailsPage> {
               const SizedBox(height: 20),
               //* nutrition details
               TextFormField(
-                decoration: decorator('Nitrogen', '', 'Enter the nitrogen amount'),
-                keyboardType: TextInputType.number,
-                maxLength: 3,
+                decoration: decorator('Nitrogen', '', 'Enter the nitrogen amount (pounds per acre)'),
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                maxLength: 5,
                 validator: (value) {
-                  if (value == null || value.isEmpty || int.parse(value) <= 0) {
+                  if (value == null || value.isEmpty || double.parse(value) <= 0) {
                     return 'Please enter the nitrogen amount';
                   }
                   return null;
                 },
                 onSaved: (value) {
-                  _nitrogen = int.parse(value!);
+                  _nitrogen = double.parse(value!);
                 },
               ),
               const SizedBox(height: 20),
               TextFormField(
-                decoration: decorator('Phosphorus', '', 'Enter the phosphorus amount'),
-                keyboardType: TextInputType.number,
-                maxLength: 3,
+                decoration: decorator('Phosphorus', '', 'Enter the phosphorus amount (pounds per acre)'),
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                maxLength: 5,
                 validator: (value) {
-                  if (value == null || value.isEmpty || int.parse(value) <= 0) {
+                  if (value == null || value.isEmpty || double.parse(value) <= 0) {
                     return 'Please enter the phosphorus amount';
                   }
                   return null;
                 },
                 onSaved: (value) {
-                  _phosphorus = int.parse(value!);
+                  _phosphorus = double.parse(value!);
                 },
               ),
               const SizedBox(height: 20),
               TextFormField(
                 decoration: decorator('Potassium', '', 'Enter the potassium amount'),
-                keyboardType: TextInputType.number,
-                maxLength: 3,
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                maxLength: 5,
                 validator: (value) {
-                  if (value == null || value.isEmpty || int.parse(value) <= 0) {
+                  if (value == null || value.isEmpty || double.parse(value) <= 0) {
                     return 'Please enter the potassium amount';
                   }
                   return null;
                 },
                 onSaved: (value) {
-                  _potassium = int.parse(value!);
+                  _potassium = double.parse(value!);
                 },
               ),
               const SizedBox(height: 20),
               TextFormField(
                 decoration: decorator('pH', '', 'Enter the pH'),
-                keyboardType: TextInputType.number,
-                maxLength: 2,
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                maxLength: 4,
                 validator: (value) {
-                  if (value == null || value.isEmpty || int.parse(value) <= 0 || int.parse(value) > 14) {
+                  if (value == null || value.isEmpty || double.parse(value) <= 0 || double.parse(value) > 14) {
                     return 'Please enter the pH (1-14)';
                   }
                   return null;
                 },
                 onSaved: (value) {
-                  _ph = int.parse(value!);
+                  _ph = double.parse(value!);
                 },
               ),
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
-                    List<int> nutrition = [_nitrogen, _phosphorus, _potassium, _ph];
+                    List<double> nutrition = [_nitrogen, _phosphorus, _potassium, _ph];
                     _db.addPlot(_plotName, crop, _plotSize, _regionId, region, _seedId, seed, _seedAmount.toInt(), nutrition);
+                    // toast message
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('New plot created'),
+                        duration: Duration(seconds: 3),
+                      ),
+                    );
                     Navigator.pushNamed(context, '/');
                   }
                 },
@@ -646,66 +674,66 @@ class DetailsPageState extends State<DetailsPage> {
             const SizedBox(height: 20),
             //* nutrition details
             TextFormField(
-              decoration: decorator('Nitrogen', '', 'Enter the nitrogen amount'),
+              decoration: decorator('Nitrogen', '', 'Enter the nitrogen amount (pounds per acre)'),
               initialValue: _plot?.nutrients[0].toString(),
-              keyboardType: TextInputType.number,
-              maxLength: 3,
+              keyboardType: TextInputType.numberWithOptions(decimal: true),
+              maxLength: 5,
               validator: (value) {
-                if (value == null || value.isEmpty || int.parse(value) <= 0) {
+                if (value == null || value.isEmpty || double.parse(value) <= 0) {
                   return 'Please enter the nitrogen amount';
                 }
                 return null;
               },
               onSaved: (value) {
-                _nitrogen = int.parse(value!);
+                _nitrogen = double.parse(value!);
               },
             ),
             const SizedBox(height: 20),
             TextFormField(
-              decoration: decorator('Phosphorus', '', 'Enter the phosphorus amount'),
+              decoration: decorator('Phosphorus', '', 'Enter the phosphorus amount (pounds per acre)'),
               initialValue: _plot?.nutrients[1].toString(),
-              keyboardType: TextInputType.number,
-              maxLength: 3,
+              keyboardType: TextInputType.numberWithOptions(decimal: true),
+              maxLength: 5,
               validator: (value) {
-                if (value == null || value.isEmpty || int.parse(value) <= 0) {
+                if (value == null || value.isEmpty || double.parse(value) <= 0) {
                   return 'Please enter the phosphorus amount';
                 }
                 return null;
               },
               onSaved: (value) {
-                _phosphorus = int.parse(value!);
+                _phosphorus = double.parse(value!);
               },
             ),
             const SizedBox(height: 20),
             TextFormField(
-              decoration: decorator('Potassium', '', 'Enter the potassium amount'),
+              decoration: decorator('Potassium', '', 'Enter the potassium amount (pounds per acre)'),
               initialValue: _plot?.nutrients[2].toString(),
-              keyboardType: TextInputType.number,
-              maxLength: 3,
+              keyboardType: TextInputType.numberWithOptions(decimal: true),
+              maxLength: 5,
               validator: (value) {
-                if (value == null || value.isEmpty || int.parse(value) <= 0) {
+                if (value == null || value.isEmpty || double.parse(value) <= 0) {
                   return 'Please enter the potassium amount';
                 }
                 return null;
               },
               onSaved: (value) {
-                _potassium = int.parse(value!);
+                _potassium = double.parse(value!);
               },
             ),
             const SizedBox(height: 20),
             TextFormField(
               decoration: decorator('pH', '', 'Enter the pH'),
               initialValue: _plot?.nutrients[3].toString(),
-              keyboardType: TextInputType.number,
-              maxLength: 2,
+              keyboardType: TextInputType.numberWithOptions(decimal: true),
+              maxLength: 4,
               validator: (value) {
-                if (value == null || value.isEmpty || int.parse(value) <= 0 || int.parse(value) > 14) {
+                if (value == null || value.isEmpty || double.parse(value) <= 0 || double.parse(value) > 14) {
                   return 'Please enter the pH (1-14)';
                 }
                 return null;
               },
               onSaved: (value) {
-                _ph = int.parse(value!);
+                _ph = double.parse(value!);
               },
             ),
             const SizedBox(height: 20),
@@ -714,8 +742,15 @@ class DetailsPageState extends State<DetailsPage> {
               onPressed: () async {
                 if (_formKey.currentState!.validate()) {
                   _formKey.currentState!.save();
-                  List<int> nutrition = [_nitrogen, _phosphorus, _potassium, _ph];
+                  List<double> nutrition = [_nitrogen, _phosphorus, _potassium, _ph];
                   await _db.updatePlotDetails(_plot.plotId, _plotName, nutrition);
+                  // toast message
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Plot details updated'),
+                      duration: Duration(seconds: 3),
+                    ),
+                  );
                   Navigator.pushNamed(context, '/');
                 }
               },
@@ -728,7 +763,7 @@ class DetailsPageState extends State<DetailsPage> {
     }else {
       return const Form(
         child: Center(
-          child: CircularProgressIndicator(),
+          child: Text('Submit Plot for Analysis First'),
         ),
       );
     }
@@ -962,13 +997,13 @@ class DetailsPageState extends State<DetailsPage> {
     dynamic loc = await _db.getRegionDetails(region);
     String price = await _db.getCropPrice(crop);
     final plotData = {
-      'Nitrogen': int.parse(n),
-      'Phosphorus': int.parse(p),
-      'Potassium': int.parse(k),
+      'Nitrogen': double.parse(n),
+      'Phosphorus': double.parse(p),
+      'Potassium': double.parse(k),
       'Temperature': int.parse(loc[0]),
       'Humidity': int.parse(loc[2]),
       'Rainfall': int.parse(loc[1]),
-      'pH': int.parse(ph),
+      'pH': double.parse(ph),
       'plot_size': double.parse(size),
       'crop': crop,
       'price': int.parse(price),
@@ -1036,6 +1071,13 @@ class DetailsPageState extends State<DetailsPage> {
                           TextButton(
                             onPressed: () async {
                               await _db.deleteUserAccount(_user?.uid);
+                              // toast message
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('User deleted'),
+                                  duration: Duration(seconds: 3),
+                                ),
+                              );
                               Navigator.pushNamed(context, '/');
                             },
                             child: const Text('Delete'),
@@ -1202,6 +1244,13 @@ class DetailsPageState extends State<DetailsPage> {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
                     await _db.updateUserDetails(_user.uid, _user?.username, _user?.fName, _user?.lName, _user?.type);
+                    // toast message
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('User details updated'),
+                        duration: Duration(seconds: 3),
+                      ),
+                    );
                     Navigator.pushNamed(context, '/');
                   }
                 },
@@ -1279,6 +1328,13 @@ class DetailsPageState extends State<DetailsPage> {
                           TextButton(
                             onPressed: () async {
                               await _db.deleteRegion(_location?.id);
+                              // toast message
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Location deleted'),
+                                  duration: Duration(seconds: 3),
+                                ),
+                              );
                               Navigator.pushNamed(context, '/modeltab');
                             },
                             child: const Text('Delete'),
@@ -1408,6 +1464,13 @@ class DetailsPageState extends State<DetailsPage> {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
                     _db.addRegion(_locationName, _locationTemperature, _locationRainfall, _locationHumidity);
+                    // toast message
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('New location created'),
+                        duration: Duration(seconds: 3),
+                      ),
+                    );
                     Navigator.pushNamed(context, '/modeltab');
                   }
                 },
@@ -1540,6 +1603,13 @@ class DetailsPageState extends State<DetailsPage> {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
                     _db.updateRegionDetails(_location?.id, _locationName, _locationTemperature, _locationRainfall, _locationHumidity);
+                    // toast message
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Location details updated'),
+                        duration: Duration(seconds: 3),
+                      ),
+                    );
                     Navigator.pushNamed(context, '/modeltab');
                   }
                 },
@@ -1617,6 +1687,13 @@ class DetailsPageState extends State<DetailsPage> {
                           TextButton(
                             onPressed: () async {
                               await _db.deleteSeed(_seed?.id);
+                              // toast message
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Seed deleted'),
+                                  duration: Duration(seconds: 3),
+                                ),
+                              );
                               Navigator.pushNamed(context, '/modeltab');
                             },
                             child: const Text('Delete'),
@@ -1732,6 +1809,13 @@ class DetailsPageState extends State<DetailsPage> {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
                     await _db.addSeed(_seedName, _seedManufacturer, crop, _seedMaturity);
+                    // toast message
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('New seed added'),
+                        duration: Duration(seconds: 3),
+                      ),
+                    );
                     Navigator.pushNamed(context, '/modeltab');
                   }
                 },
@@ -1851,6 +1935,13 @@ class DetailsPageState extends State<DetailsPage> {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
                     _db.updateSeedDetails(_seed?.id, _seedName, _seedManufacturer, crop, _seedMaturity);
+                    // toast message
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Seed details updated'),
+                        duration: Duration(seconds: 3),
+                      ),
+                    );
                     Navigator.pushNamed(context, '/modeltab');
                   }
                 },
@@ -1924,6 +2015,13 @@ class DetailsPageState extends State<DetailsPage> {
                             onPressed: () async {
                               Navigator.of(context).pop();
                               await _db.deleteModel(_model?.id);
+                              // toast message
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Model deleted'),
+                                  duration: Duration(seconds: 3),
+                                ),
+                              );
                               Navigator.pushNamed(context, '/');
                             },
                             child: const Text('Delete'),
@@ -2074,6 +2172,13 @@ class DetailsPageState extends State<DetailsPage> {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
                     await _db.addModel(_modelUrl, _modelName, _modelDescription);
+                    // toast message
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('New model added'),
+                        duration: Duration(seconds: 3),
+                      ),
+                    );
                     Navigator.pushNamed(context, '/modeltab');
                   }
                 },
@@ -2120,6 +2225,13 @@ class DetailsPageState extends State<DetailsPage> {
               style: actionButton(),
               onPressed: () async {
                 await _db.setDefaultModel(_model?.id, _model?.url);
+                // toast message
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Model set as default'),
+                    duration: Duration(seconds: 3),
+                  ),
+                );
                 Navigator.pushNamed(context, '/modeltab');
               },
               child: const Text('Set Default'),
@@ -2194,6 +2306,13 @@ class DetailsPageState extends State<DetailsPage> {
                 if (_formKey.currentState!.validate()) {
                   _formKey.currentState!.save();
                   await _db.updateModelDetails(_model?.id, _modelUrl, _modelName, _modelDescription);
+                  // toast message
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Model details updated'),
+                      duration: Duration(seconds: 3),
+                    ),
+                  );
                   Navigator.pushNamed(context, '/modeltab');
                 }
               },
@@ -2264,6 +2383,13 @@ class DetailsPageState extends State<DetailsPage> {
                           TextButton(
                             onPressed: () async {
                               await _db.deleteCrop(_crop?.id);
+                              // toast message
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Crop deleted'),
+                                  duration: Duration(seconds: 3),
+                                ),
+                              );
                               Navigator.pushNamed(context, '/modeltab');
                             },
                             child: const Text('Delete'),
@@ -2360,6 +2486,13 @@ class DetailsPageState extends State<DetailsPage> {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
                     await _db.addCrop(_cropName, _cropMarketPrice);
+                    // toast message
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('New crop added'),
+                        duration: Duration(seconds: 3),
+                      ),
+                    );
                     Navigator.pushNamed(context, '/modeltab');
                   }
                 },
@@ -2445,6 +2578,13 @@ class DetailsPageState extends State<DetailsPage> {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
                     _db.updateCropDetails(_crop?.id, _cropName, _cropMarketPrice);
+                    // toast message
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Crop details updated'),
+                        duration: Duration(seconds: 3),
+                      ),
+                    );
                     Navigator.pushNamed(context, '/modeltab');
                   }
                 },
