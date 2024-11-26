@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:yield_mate/models/plot_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:yield_mate/services/auth.dart';
 import 'package:yield_mate/services/database.dart';
 import 'package:provider/provider.dart';
@@ -231,7 +230,7 @@ class FieldPageState extends State<FieldPage> with SingleTickerProviderStateMixi
         actions: [
           GestureDetector(
             onTap: () {
-              Navigator.pushNamed(context, '/info');
+              Navigator.pushNamed(context, '/farmerinfo');
             },
             child: Container(
               margin: const EdgeInsets.all(10),
