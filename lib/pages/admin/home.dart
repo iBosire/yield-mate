@@ -139,7 +139,7 @@ class _HomePageState extends State<HomePage> {
         actions: [
           GestureDetector(
             onTap: () {
-
+              Navigator.pushNamed(context, '/admininfo');
             },
             child: Container(
               margin: const EdgeInsets.all(10),
@@ -149,11 +149,7 @@ class _HomePageState extends State<HomePage> {
                 color: Color(0xffF7F8F8),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: SvgPicture.asset(
-                'assets/icons/settings.svg',
-                height: 20,
-                width: 20,
-              )
+              child: Icon(Icons.help, color: Colors.black38,),
             ),
           )
         ],

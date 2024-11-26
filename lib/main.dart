@@ -6,6 +6,7 @@ import 'package:yield_mate/pages/details/details.dart';
 import 'package:yield_mate/pages/admin/home.dart';
 import 'package:yield_mate/pages/wrapper.dart';
 import 'package:yield_mate/services/auth.dart';
+import 'package:yield_mate/shared/info.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -48,7 +49,9 @@ class MyApp extends StatelessWidget {
           '/editmodel': (context) => DetailsPage(type: 'editmodel',),
           '/crop': (context) => DetailsPage(type: 'viewcrop',),
           '/addcrop': (context) => DetailsPage(type: "newcrop",),
-          '/editcrop': (context) => DetailsPage(type: "editcrop",)
+          '/editcrop': (context) => DetailsPage(type: "editcrop",),
+          '/farmerinfo': (context) => InfoPage(type: "farmer",),
+          '/admininfo': (context) => InfoPage(type: "admin",),
         },
       ),
     );

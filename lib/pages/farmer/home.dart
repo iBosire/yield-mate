@@ -230,8 +230,8 @@ class FieldPageState extends State<FieldPage> with SingleTickerProviderStateMixi
         ),
         actions: [
           GestureDetector(
-            onTap: () async {
-              _showSettings(context, _auth);
+            onTap: () {
+              Navigator.pushNamed(context, '/info');
             },
             child: Container(
               margin: const EdgeInsets.all(10),
@@ -241,11 +241,7 @@ class FieldPageState extends State<FieldPage> with SingleTickerProviderStateMixi
                 color: const Color(0xffF7F8F8),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: SvgPicture.asset(
-                'assets/icons/settings.svg',
-                height: 20,
-                width: 20,
-              )
+              child: Icon(Icons.help, color: Colors.black38,),
             ),
           )
         ],
@@ -479,6 +475,8 @@ void _showSettings(BuildContext context, AuthService _auth) async {
                     leading: const Icon(Icons.info),
                     title: const Text('App Info'),
                     onTap: () {
+                      // app info
+                      Navigator.pushNamed(context, '/info');
                       Navigator.pop(context);
                     },
                   ),

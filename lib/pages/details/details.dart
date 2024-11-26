@@ -2702,16 +2702,30 @@ class DetailsPageState extends State<DetailsPage> {
         showDialog(
           context: context, 
           builder: (BuildContext context) => Dialog.fullscreen(
-            child: Column(
-              children: [
-                const Text('Info Page'),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: const Text('Close'),
-                ),
-              ],
+            backgroundColor: Colors.white,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('Info Page'),
+                  const SizedBox(height: 20),
+                  if(widget.type == 'editplot' || widget.type == 'newplot') const Text('Add a new plot by entering the plot name, location, and crop type.'),
+                  if(widget.type == 'editlocation' || widget.type == 'newlocation') const Text('Add a new location by entering the location name, temperature, humidity, and rainfall.'),
+                  if(widget.type == 'editseed' || widget.type == 'newseed') const Text('Add a new seed by entering the seed name, manufacturer, crop type, and days to maturity.'),
+                  if(widget.type == 'editmodel' || widget.type == 'newmodel') const Text('Add a new model by entering the model name, description, and URL.'),
+                  if(widget.type == 'editcrop' || widget.type == 'newcrop') const Text('Add a new crop by entering the crop name and market price.'),
+                  if(widget.type == 'edituser' || widget.type == 'newuser') const Text('Add a new user by entering the user name, email, and password.'),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    style: actionButton(),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text('Close'),
+                  ),
+                ],
+              ),
             ),
           ),
         );
