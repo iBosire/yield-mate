@@ -133,10 +133,10 @@ class FieldPageState extends State<FieldPage> with SingleTickerProviderStateMixi
                   Center(
                     child: navPages[_selectedTabIndex],
                   ),
-                  Center(
+                  const Center(
                     child: Padding(
-                      padding: const EdgeInsets.only(left: 20, right: 20),
-                      child: ReportsSection(),
+                      padding: EdgeInsets.only(left: 20, right: 20),
+                      child: SingleChildScrollView(child: ReportsSection()),
                     ),
                   )
                 ]

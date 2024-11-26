@@ -441,6 +441,7 @@ class DatabaseService {
     QuerySnapshot response = await plotCollection.where('seedId', isNotEqualTo: 'demo').get();
     log("Average Model Accuracy Response: ${response.docs.length}");
     List<PlotModel> plots = _plotListFromSnapshot(response);
+    int total = 0;
 
     if (plots.isEmpty) return 0.0;
     double totalErrorPercentage = 0.0;
@@ -448,7 +449,7 @@ class DatabaseService {
       if (!plot.active) {
         double predictedYield = (plot.predictedYield as num).toDouble();
         double actualYield = (plot.yieldAmount as num).toDouble();
-
+        total += 1;
         if (actualYield > 0) {
           double error = ((predictedYield - actualYield).abs() / actualYield) * 100;
           totalErrorPercentage += error;
@@ -457,7 +458,7 @@ class DatabaseService {
         }
       }
     }
-    return totalErrorPercentage / plots.length;
+    return totalErrorPercentage / total;
   }
 
 
