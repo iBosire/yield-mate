@@ -241,7 +241,7 @@ class RegisterPageState extends State<RegisterPage> {
                   },
                   child: const Text('Register'),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Text(
                   error, 
                   style: const TextStyle(

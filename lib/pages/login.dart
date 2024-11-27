@@ -21,7 +21,7 @@ class LoginPageState extends State<LoginPage> {
   final _signInFormKey = GlobalKey<FormState>();
   bool obscureText = true;
   String error = '';
-  String _emailPattern = r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$';
+  final String _emailPattern = r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$';
   bool loading = false;
 
   // text field values
@@ -30,7 +30,7 @@ class LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return loading ? Loading() : Scaffold(
+    return loading ? const Loading() : Scaffold(
       appBar: _appBar(),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -147,7 +147,7 @@ class LoginPageState extends State<LoginPage> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       Text(
                         error, 
                         style: const TextStyle(
@@ -280,7 +280,7 @@ class LoginPageState extends State<LoginPage> {
                   },
                   child: const Text('Login'),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Text(
                   error, 
                   style: const TextStyle(

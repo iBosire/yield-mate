@@ -62,7 +62,7 @@ class _PlotListState extends State<PlotList> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Icon(Icons.grass, size: 50,),
+                    const Icon(Icons.grass, size: 50,),
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,

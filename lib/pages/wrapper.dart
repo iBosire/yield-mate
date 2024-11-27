@@ -11,7 +11,7 @@ import 'package:yield_mate/shared/loading.dart';
 
 
 class Wrapper extends StatelessWidget {
-  Wrapper({super.key});
+  const Wrapper({super.key});
   
   Future<UserModel?> getUserData(UserModel? user) async {
     if(user == null) {
@@ -28,12 +28,12 @@ class Wrapper extends StatelessWidget {
 
   Widget getHomePage(UserModel user) {
     if(user.type == "farmer") {
-      return FieldPage();
+      return const FieldPage();
     } else if(user.type == "admin") {
       log("admin found");
-      return HomePage(defIndex: 0,);
+      return const HomePage(defIndex: 0,);
     } else {
-      return LoginPage();
+      return const LoginPage();
     }
   }
 
@@ -44,14 +44,14 @@ class Wrapper extends StatelessWidget {
       future: getUserData(user),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Loading();
+          return const Loading();
         } else if (snapshot.hasError) {
           log("Error: ${snapshot.error}");
-          return LoginPage();
+          return const LoginPage();
         } else if (snapshot.hasData) {
           return getHomePage(snapshot.data!);
         } else {
-          return LoginPage();
+          return const LoginPage();
         }
       },
     );

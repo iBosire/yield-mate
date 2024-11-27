@@ -127,7 +127,7 @@ class DetailsPageState extends State<DetailsPage> {
       body: Center(
         child: SingleChildScrollView(
           child: Padding(
-            padding: EdgeInsets.only(left: 16.0, right: 16.0),
+            padding: const EdgeInsets.only(left: 16.0, right: 16.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -208,7 +208,7 @@ class DetailsPageState extends State<DetailsPage> {
                                           labelText: 'Enter the amount harvested (kg)',
                                           hintText: '80',
                                         ),
-                                        keyboardType: TextInputType.numberWithOptions(decimal: true),
+                                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
                                         maxLength: 15,
                                         validator: (value) {
                                           if (value == null || value.isEmpty) {
@@ -600,7 +600,7 @@ class DetailsPageState extends State<DetailsPage> {
               const SizedBox(height: 20),
               TextFormField(
                 decoration: decorator('Potassium', '', 'Enter the potassium amount'),
-                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 maxLength: 5,
                 validator: (value) {
                   if (value == null || value.isEmpty || double.parse(value) <= 0) {
@@ -615,7 +615,7 @@ class DetailsPageState extends State<DetailsPage> {
               const SizedBox(height: 20),
               TextFormField(
                 decoration: decorator('pH', '', 'Enter the pH'),
-                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 maxLength: 4,
                 validator: (value) {
                   if (value == null || value.isEmpty || double.parse(value) <= 0 || double.parse(value) > 14) {
@@ -676,7 +676,7 @@ class DetailsPageState extends State<DetailsPage> {
             TextFormField(
               decoration: decorator('Nitrogen', '', 'Enter the nitrogen amount (pounds per acre)'),
               initialValue: _plot?.nutrients[0].toString(),
-              keyboardType: TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
               maxLength: 5,
               validator: (value) {
                 if (value == null || value.isEmpty || double.parse(value) <= 0) {
@@ -692,7 +692,7 @@ class DetailsPageState extends State<DetailsPage> {
             TextFormField(
               decoration: decorator('Phosphorus', '', 'Enter the phosphorus amount (pounds per acre)'),
               initialValue: _plot?.nutrients[1].toString(),
-              keyboardType: TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
               maxLength: 5,
               validator: (value) {
                 if (value == null || value.isEmpty || double.parse(value) <= 0) {
@@ -708,7 +708,7 @@ class DetailsPageState extends State<DetailsPage> {
             TextFormField(
               decoration: decorator('Potassium', '', 'Enter the potassium amount (pounds per acre)'),
               initialValue: _plot?.nutrients[2].toString(),
-              keyboardType: TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
               maxLength: 5,
               validator: (value) {
                 if (value == null || value.isEmpty || double.parse(value) <= 0) {
@@ -724,7 +724,7 @@ class DetailsPageState extends State<DetailsPage> {
             TextFormField(
               decoration: decorator('pH', '', 'Enter the pH'),
               initialValue: _plot?.nutrients[3].toString(),
-              keyboardType: TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
               maxLength: 4,
               validator: (value) {
                 if (value == null || value.isEmpty || double.parse(value) <= 0 || double.parse(value) > 14) {
